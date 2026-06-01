@@ -17,6 +17,6 @@ jobs:
           username: ${{ secrets.LINODE_USER }}
           key: ${{ secrets.LINODE_SSH_KEY }}
           script: |
-            cd /opt/duladoc
+            cd/opt/duladoc
             git pull origin main
             docker compose up --build -d
