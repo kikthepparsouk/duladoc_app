@@ -34,6 +34,7 @@ services:
       - media_volume:/app/media:ro
       - /etc/letsencrypt:/etc/letsencrypt:ro
       - /var/www/certbot:/var/www/certbot:ro
+      - /duladoc/static:/static
     depends_on:
       - backend
     restart: unless-stopped
