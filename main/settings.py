@@ -71,12 +71,16 @@ CORS_ALLOWED_ORIGINS = [
     "https://www.duladoc.com",
 ]
 
-# def parse_hosts(x):
-#     if isinstance(x, (list, tuple)):
-#         return x
-#     return [item.strip() for item in str(x).split(',')]
+def parse_allowed_hosts(value):
+    if isinstance(value, (list, tuple)):
+        return list(value)
+    if isinstance(value, str):
+        if not value:
+            return ['localhost', '127.0.0.1', 'duladoc.com', 'www.duladoc.com']
+        return [item.strip() for item in value.split(',')]
+    return ['localhost', '127.0.0.1', 'duladoc.com', 'www.duladoc.com']
 
-ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="localhost,127.0.0.1,duladoc.com,www.duladoc.com", cast=Csv)
+ALLOWED_HOSTS = parse_allowed_hosts(os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1,duladoc.com,www.duladoc.com"))
 
 
 # Application definition
