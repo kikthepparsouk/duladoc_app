@@ -10,13 +10,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.LINODE_HOST }}
           username: ${{ secrets.LINODE_USER }}
           key: ${{ secrets.LINODE_SSH_KEY }}
+          port: ${{ secrets.LINODE_PORT || 22 }}
           script: |
-            cd /opt/clickmart
-            git pull origin main
-            docker compose up --build -d
+            set -e
+            echo "Starting deployment..."
+            cd /opt/duladoc || exit 1
+            echo "Pulling latest code..."
+            git pull origin main || { echo "Git pull failed"; exit 1; }
+            echo "Stopping containers..."
+            docker compose down || true
+            echo "Building and starting containers..."
+            docker compose up --build -d || { echo "Docker compose failed"; exit 1; }
+            echo "Deployment completed successfully!"
+            docker compose ps
