@@ -66,7 +66,7 @@ if not DEBUG and SECRET_KEY == DEFAULT_INSECURE_SECRET_KEY:
 
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:8000',
-    'http://172.104.60.39:8000'
+    'http://172.104.60.39:8000',
     "https://duladoc.com",
     "https://www.duladoc.com",
 ]
@@ -76,7 +76,7 @@ CORS_ALLOWED_ORIGINS = [
 #         return x
 #     return [item.strip() for item in str(x).split(',')]
 
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
+ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="localhost,127.0.0.1,duladoc.com,www.duladoc.com", cast=Csv)
 
 
 # Application definition
