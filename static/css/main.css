@@ -6332,8 +6332,10 @@ h6.post-title {
 .mobile-header-wrapper-style .mobile-header-wrapper-inner .mobile-header-content-area .mobile-menu-wrap nav .mobile-menu li {
   display: block;
   position: relative;
-  padding: 10px 0;
+  padding:  10px 0;
   border-bottom: 1px solid #f2f2f2;
+  width: 290px !important;
+  color: #00cdff;
 }
 
 .mobile-header-wrapper-style .mobile-header-wrapper-inner .mobile-header-content-area .mobile-menu-wrap nav .mobile-menu li:last-child {
@@ -6348,8 +6350,8 @@ h6.post-title {
   text-align: center;
   font-size: 12px;
   display: block;
-  width: 30px;
-  height: 30px;
+  width: 70px;
+  height: 60px;
   line-height: 35px;
   color: #1a1a1a;
 }

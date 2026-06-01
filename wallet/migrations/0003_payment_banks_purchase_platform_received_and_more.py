@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name_banks', models.CharField(max_length=255)),
-                ('name_account', models.CharField(blank=True, null=True)),
+                ('name_account', models.CharField(blank=True, max_length=255, null=True)),
                 ('account_number', models.IntegerField(blank=True, null=True)),
                 ('image_qrccode', models.ImageField(upload_to='wallet/qr_code/%Y/%m/')),
             ],
