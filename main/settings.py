@@ -67,6 +67,8 @@ if not DEBUG and SECRET_KEY == DEFAULT_INSECURE_SECRET_KEY:
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:8000',
     'http://172.104.60.39:8000'
+    "https://duladoc.com",
+    "https://www.duladoc.com",
 ]
 
 # def parse_hosts(x):
