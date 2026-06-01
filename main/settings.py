@@ -64,13 +64,17 @@ DEBUG = config('DEBUG', default=False, cast=parse_bool)
 if not DEBUG and SECRET_KEY == DEFAULT_INSECURE_SECRET_KEY:
     raise RuntimeError('SECRET_KEY must be set in production.')
 
-# ALLOWED_HOSTS must be a list - use lambda to ensure cast is always applied
-def parse_hosts(x):
-    if isinstance(x, (list, tuple)):
-        return x
-    return [item.strip() for item in str(x).split(',')]
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:8000',
+    'http://172.104.60.39:8000'
+]
 
-ALLOWED_HOSTS = parse_hosts(config('ALLOWED_HOSTS', default='localhost,127.0.0.1'))
+# def parse_hosts(x):
+#     if isinstance(x, (list, tuple)):
+#         return x
+#     return [item.strip() for item in str(x).split(',')]
+
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
 
 
 # Application definition
