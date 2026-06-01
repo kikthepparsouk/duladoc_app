@@ -1,0 +1,663 @@
+{% extends 'base.html' %}
+
+{% block title %}Duladoc{% endblock %}
+{% block meta_description %}
+Duladoc - Your Trusted Document Management Solution
+{% endblock %}
+{% load humanize %}
+
+{% block content %}
+
+{% load static %}
+<main class="main">
+  <style>
+    :root {
+
+      /* --bg: #789ed7; */
+      /* --surface: #466487; */
+      /* --surface2: #426c9a; */
+      --border: #87929f;
+      --accent: #1f6feb;
+      --accent-light: #388bfd;
+      --success: #3fb950;
+      --warning: #d29922;
+      --danger: #f85149;
+      --info: #58a6ff;
+      --text: #1c2023;
+      --text-muted: #8b949e;
+      --text-subtle: #484f58;
+      --radius: 8px;
+      --radius-lg: 12px;
+      --shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+
+
+
+
+
+    /* LAYOUT */
+    .container-sm {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 32px 24px;
+    }
+
+    /* CARDS */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      font-family: phetsarath ot;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+      font-family: phetsarath ot;
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      font-family: phetsarath ot;
+    }
+
+    /* STAT CARDS */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px 24px;
+      font-family: phetsarath ot;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 8px;
+    }
+
+    .stat-value {
+      font-size: 28px;
+      font-weight: 700;
+      font-family: 'IBM Plex Mono', monospace;
+    }
+
+    .stat-value.green {
+      color: var(--success);
+    }
+
+    .stat-value.blue {
+      color: var(--info);
+    }
+
+    .stat-value.yellow {
+      color: var(--warning);
+    }
+
+    /* BUTTONS */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 18px;
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-weight: 600;
+      font-family: 'phetsarath ot', 'Sarabun', sans-serif;
+      border: none;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-decoration: none;
+    }
+
+    .btn:hover {
+      text-decoration: none;
+      filter: brightness(1.1);
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: #000;
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: #fff;
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-outline:hover {
+      background: var(--surface2);
+    }
+
+    .btn-sm {
+      padding: 5px 12px;
+      font-size: 13px;
+    }
+
+    .btn-lg {
+      padding: 12px 24px;
+      font-size: 16px;
+    }
+
+    .btn-full {
+      width: 100%;
+      justify-content: center;
+    }
+
+    /* FORMS */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .form-input {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px 14px;
+      font-size: 15px;
+      color: var(--text);
+      font-family: 'Sarabun', sans-serif;
+      transition: border-color 0.15s;
+      font-family: phetsarath ot;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--accent-light);
+      box-shadow: 0 0 0 3px rgba(31, 111, 235, 0.2);
+    }
+
+    .form-input::placeholder {
+      color: var(--text-subtle);
+    }
+
+    .form-hint {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    .errorlist {
+      list-style: none;
+      color: var(--danger);
+      font-size: 13px;
+      margin-top: 6px;
+    }
+
+    /* ALERTS */
+    .messages {
+      margin-bottom: 20px;
+    }
+
+    .alert {
+      padding: 12px 16px;
+      border-radius: var(--radius);
+      font-size: 14px;
+      margin-bottom: 10px;
+      border-left: 4px solid;
+      font-family: phetsarath ot;
+    }
+
+    .alert-success {
+      background: rgba(63, 185, 80, .1);
+      border-color: var(--success);
+      color: #7ee787;
+    }
+
+    .alert-error {
+      background: rgba(248, 81, 73, .1);
+      border-color: var(--danger);
+      color: #ff7b72;
+    }
+
+    .alert-warning {
+      background: rgba(210, 153, 34, .1);
+      border-color: var(--warning);
+      color: #f0c060;
+    }
+
+    .alert-info {
+      background: rgba(88, 166, 255, .1);
+      border-color: var(--info);
+      color: var(--info);
+    }
+
+    /* BADGES */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      font-family: phetsarath ot;
+    }
+
+    .badge-pending {
+      background: rgba(210, 153, 34, .15);
+      color: var(--warning);
+      border: 1px solid rgba(210, 153, 34, .3);
+    }
+
+    .badge-approved {
+      background: rgba(63, 185, 80, .15);
+      color: var(--success);
+      border: 1px solid rgba(63, 185, 80, .3);
+    }
+
+    .badge-rejected {
+      background: rgba(248, 81, 73, .15);
+      color: var(--danger);
+      border: 1px solid rgba(248, 81, 73, .3);
+    }
+
+    .badge-topup {
+      background: rgba(88, 166, 255, .15);
+      color: var(--info);
+      border: 1px solid rgba(88, 166, 255, .3);
+    }
+
+    .badge-purchase {
+      background: rgba(210, 153, 34, .15);
+      color: var(--warning);
+      border: 1px solid rgba(210, 153, 34, .3);
+    }
+
+    /* TABLE */
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th {
+      text-align: left;
+      padding: 10px 16px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+      font-family: phetsarath ot;
+    }
+
+    td {
+      padding: 12px 16px;
+      font-size: 14px;
+      border-bottom: 1px solid var(--surface2);
+      font-family: phetsarath ot;
+      vertical-align: middle;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: rgba(255, 255, 255, .02);
+    }
+
+    /* MISC */
+    .text-muted {
+      color: var(--text-muted);
+    }
+
+    .text-mono {
+      font-family: 'IBM Plex Mono', monospace;
+    }
+
+    .text-green {
+      color: var(--success);
+    }
+
+    .text-red {
+      color: var(--danger);
+    }
+
+    .text-blue {
+      color: var(--info);
+    }
+
+    .page-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .page-subtitle {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-bottom: 28px;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 24px 0;
+    }
+
+    .flex {
+      display: flex;
+    }
+
+    .items-center {
+      align-items: center;
+    }
+
+    .justify-between {
+      justify-content: space-between;
+    }
+
+    .gap-8 {
+      gap: 8px;
+    }
+
+    .gap-12 {
+      gap: 12px;
+    }
+
+    .mt-8 {
+      margin-top: 8px;
+    }
+
+    .mt-16 {
+      margin-top: 16px;
+    }
+
+    .mt-24 {
+      margin-top: 24px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 48px 24px;
+      color: var(--text-muted);
+    }
+
+    .empty-state .icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+    }
+
+    .empty-state p {
+      font-size: 14px;
+    }
+
+    /* Amount display */
+    .amount-plus {
+      color: var(--success);
+      font-family: 'IBM Plex Mono', monospace;
+      font-weight: 600;
+    }
+
+    .amount-minus {
+      color: var(--danger);
+      font-family: 'IBM Plex Mono', monospace;
+      font-weight: 600;
+    }
+  </style>
+  <div class="page-header breadcrumb-wrap">
+    <div class="container">
+      <div class="breadcrumb" style="font-family: phetsarath ot;">
+        <a href="index.html" rel="nofollow">Home</a>
+        <span></span> ຕື່ມເງິນ
+      </div>
+    </div>
+  </div>
+  <section class="pt-50 pb-150">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12 m-auto">
+          <div class="row">
+            {% include "includes/sidebar_dashboard.html" %}
+            <div class="col-md-9">
+              <div class="tab-content dashboard-content">
+
+                <div class="tab-pane show active" role="tabpanel" aria-labelledby="topup">
+                  <div class="tab-pane show active" role="tabpanel">
+                    <div class="card">
+                      <div class="page-title">💳 ເພີ່ມເງິນເຂົ້າກະເປົາ</div>
+                      <div class="page-subtitle">ກອກຂໍ້ມູນ ແລະ ແນບສະລິບເພື່ອສົ່ງໃຫ້ Admin ກວດສອບ</div>
+
+                      <!-- ຍອດເງິນ -->
+                      <div class="card"
+                        style="margin-bottom:24px; background: linear-gradient(135deg, #1a2540 0%, #161b22 100%); border-color: var(--accent);">
+                        <div class="flex justify-between items-center">
+                          <div>
+                            <div style="font-size:13px; color:var(--text-muted); margin-bottom:6px; " class="text-white">
+                              ຍອດເງິນປະຈຸບັນ
+                            </div>
+                            <div
+                              style="font-size:30px; font-weight:700; font-family:'phetsarath ot',monospace; color:var(--success);">
+                              {{ wallet.balance|intcomma }} ກີບ
+                            </div>
+                          </div>
+                          <div style="font-size:48px; opacity:0.3;">💰</div>
+                        </div>
+                      </div>
+
+                      <!-- ຂໍ້ມູນບັນຊີ -->
+                      <div class="card" style="margin-bottom:24px; border-color:var(--warning);">
+
+                        <div class="flex gap-12 items-center" style="margin-bottom:12px;">
+                          <span style="font-size:20px;">🏦</span>
+                          <div class="card-title">ຂໍ້ມູນບັນຊີສໍາລັບໂອນເງິນ</div>
+                        </div>
+
+                        <!-- 👇 FLEX LAYOUT -->
+                        <div style="display:flex; gap:50px; align-items:center; flex-wrap:wrap;">
+
+                        {% for pay in payment_bank %}
+{% if pay.is_active %}
+
+  <!-- 🔵 QR CODE (ຝັ່ງຊ້າຍ) -->
+  <div style="flex:0 0 180px; text-align:center;">
+    {% if pay.image_qrccode %}
+      <img src="{{ pay.image_qrccode.url }}" alt="QR Code"
+        style="width:160px; height:160px; border-radius:10px; border:1px solid var(--border);">
+    {% else %}
+      <img src="{% static 'imgs/qr-code.png' %}" alt="QR Code"
+        style="width:160px; height:160px; border-radius:10px; border:1px solid var(--border);">
+    {% endif %}
+    <div style="font-size:12px; color:var(--text-muted); margin-top:6px;">
+      ສະແກນເພື່ອໂອນ
+    </div>
+  </div>
+
+  <!-- 🟢 ຂໍ້ມູນບັນຊີ (ຝັ່ງຂວາ) -->
+  <div style="flex:1; background:var(--bg); border-radius:var(--radius); padding:16px;">
+    <div style="margin-bottom:8px;">
+      <span>ທະນາຄານ:</span>
+      <span style="margin-left:12px;">{{ pay.name_banks }}</span>
+    </div>
+    <div style="margin-bottom:8px;">
+      <span>ຊື່ບັນຊີ:</span>
+      <span style="margin-left:12px;">{{ pay.name_account }}</span>
+    </div>
+    <div>
+      <span>ເລກບັນຊີ:</span>
+      <span style="margin-left:12px; font-weight:600;">{{ pay.account_number }}</span>
+    </div>
+  </div>
+
+{% endif %}
+{% endfor %}
+
+                        </div>
+
+                        <p style="font-size:12px; margin-top:10px;">
+                          ⚠️ ກະລຸນາໂອນເງິນກ່ອນ ແລ້ວຈຶ່ງກອກຟອມພ້ອມແນບສະລິບ
+                        </p>
+
+                      </div>
+
+                      <!-- ຟອມ -->
+                      <div class="card">
+                        <div class="card-header" style="margin-bottom:24px; background: linear-gradient(135deg, #1a2540 0%, #161b22 100%); border-color: var(--accent);">
+                          <div class="card-title text-white">📤 ສົ່ງຫຼັກຖານການໂອນເງິນ</div>
+                        </div>
+
+                        <form method="post" enctype="multipart/form-data">
+                          {% csrf_token %}
+
+                          <!-- ຈໍານວນເງິນ -->
+                          <div class="form-group">
+                            <label class="form-label">ຈໍານວນເງິນ</label>
+                            {{ form.amount }}
+                            <div class="form-hint">ກະລຸນາໃສ່ຈໍານວນໃຫ້ຕົງກັບສະລິບ</div>
+                          </div>
+
+                           <!-- Upload Area -->
+        <div id="upload-area" style="
+          border: 2px dashed var(--border);
+          border-radius: var(--radius-lg);
+          padding: 32px;
+          text-align: center;
+          cursor: pointer;
+          transition: all 0.2s;
+          background: var(--bg);
+        " onclick="document.getElementById('slip_image_input').click()">
+          <div id="upload-placeholder">
+            <div style="font-size:36px; margin-bottom:8px;">🖼️</div>
+            <div style="font-size:14px; color:var(--text-muted);">ຄິຣກຫຼືລາກໄຟຣມາງວາງທີ່ນີ້</div>
+            <div style="font-size:12px; color:var(--text-subtle); margin-top:4px;">ຮອງຮັບ: JPG, PNG, WEBP (ຂະໜາດບໍ່ເກີນ 5MB)</div>
+          </div>
+          <div id="upload-preview" style="display:none;">
+            <img id="preview-img" style="max-height:200px; border-radius:var(--radius); border:1px solid var(--border);" />
+            <div id="preview-name" style="font-size:13px; color:var(--text-muted); margin-top:8px;"></div>
+          </div>
+        </div>
+        <div style="display:none;">{{ form.slip_image }}</div>
+        {% if form.slip_image.errors %}<ul class="errorlist">{% for e in form.slip_image.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+      </div>
+
+                          <!-- ໝາຍເຫດ -->
+                          <div class="form-group">
+                            <label class="form-label">ໝາຍເຫດ</label>
+                            {{ form.note }}
+                          </div>
+
+                          <hr class="divider">
+
+                          <div class="flex gap-12">
+                            <button type="submit" class="btn btn-primary btn-lg" style="flex:1;">
+                              📤 ສົ່ງຄໍາຂໍ
+                            </button>
+                            <a href="{% url 'dashboard' %}" class="btn btn-warning btn-lg" style="background-color: #1a2540;">
+                              ຍົກເລີກ
+                            </a>
+                          </div>
+                        </form>
+                      </div>
+
+                      <!-- ຂັ້ນຕອນ -->
+                      <div class="card mt-16">
+                        <div style="margin-bottom:12px;">ຂັ້ນຕອນ</div>
+
+                        <div>
+                          <p>1. ໂອນເງິນເຂົ້າບັນຊີ</p>
+                          <p>2. ກອກຟອມ ແລະ ແນບສະລິບ</p>
+                          <p>3. Admin ກວດສອບ ແລະ ເພີ່ມເງິນໃຫ້</p>
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <script>
+  const input = document.getElementById('slip_image_input');
+  const area = document.getElementById('upload-area');
+  const placeholder = document.getElementById('upload-placeholder');
+  const preview = document.getElementById('upload-preview');
+  const previewImg = document.getElementById('preview-img');
+  const previewName = document.getElementById('preview-name');
+
+  input.addEventListener('change', function() {
+    if (this.files && this.files[0]) {
+      const file = this.files[0];
+      const reader = new FileReader();
+      reader.onload = e => {
+        previewImg.src = e.target.result;
+        previewName.textContent = file.name;
+        placeholder.style.display = 'none';
+        preview.style.display = 'block';
+        area.style.borderColor = 'var(--success)';
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  area.addEventListener('dragover', e => { e.preventDefault(); area.style.borderColor = 'var(--accent-light)'; });
+  area.addEventListener('dragleave', () => { area.style.borderColor = 'var(--border)'; });
+  area.addEventListener('drop', e => {
+    e.preventDefault();
+    input.files = e.dataTransfer.files;
+    input.dispatchEvent(new Event('change'));
+  });
+</script>
+</main>
+
+{% endblock %}

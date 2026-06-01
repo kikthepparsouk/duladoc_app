@@ -1,0 +1,719 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Duladoc - ແຊເອກະສານງ່າຍໆ{% endblock %}
+
+{% block meta_description %}
+Duladoc - ແຊເອກະສານ ຫົວບົດສອບເສັງ ບົດພີເຊັ້ນ ສະຫຼຸບເນື້ອໃນ ອັບໂຫຼດຟີຣ! ຕະຫຼາດຊື້ຂາຍເອກກະສານອອນໄລສ ອັນດັບ 1 ໃນລາວ
+{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+<style>
+    .font-all {
+        font-family: 'Phetsarath OT', sans-serif;
+    }
+
+    #previewFileInput,
+    #previewFileInputimage {
+        display: none;
+    }
+
+    .file-tag {
+        display: inline-block;
+        margin: 4px 6px 4px 0;
+        padding: 4px 10px;
+        border-radius: 6px;
+        background: #f0f0f0;
+        font-size: 0.9rem;
+    }
+
+    .file-tag i.remove-file {
+        margin-left: 6px;
+        cursor: pointer;
+        color: #c0392b;
+    }
+    
+    .error-message {
+        color: #dc2626;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+        display: block;
+    }
+    
+    .form-group.error input,
+    .form-group.error select,
+    .form-group.error textarea {
+        border-color: #dc2626;
+    }
+</style>
+
+<div class="main-container font-all"
+    style="max-width: 1280px; margin:0 auto; padding:2.8rem 3rem; background:white; border-radius:48px 48px 40px 40px; box-shadow:0 25px 45px -12px rgba(0,20,60,0.15);">
+
+    <!-- Header -->
+    <span
+        style="display:inline-block; background:#e9edf4; padding:0.4rem 1.2rem; border-radius:50px; font-size:0.95rem; font-weight:500; color:#1d3a5c; margin-bottom:1.8rem; border:1px solid #cbd5e1;">
+        <i class="fas fa-book-open font-all" style="color:#2e7d5e; margin-right:6px; "></i>
+        📚 ສູນລວມເອກະສານອອນໄລນ໌ອັນດັບ 1, ຄົນໃຊ້ຫຼາຍກາວ 10 ລ້ານໄຟລ໌
+    </span>
+
+    <h1 style="font-size:2.8rem; font-weight:700; color:#0a1e3c; margin-bottom:0.5rem; line-height:1.2; "
+        class="font-all">
+        ແຊສໄຟສ໌ ເພື່ອສ້າງລາຍໄດ້ ງ່າຍໆພຽງປາຍນິວ
+    </h1>
+
+    <div
+        style="font-size:1.2rem; color:#3a4e6b; font-weight:400; margin-bottom:2.5rem; border-left:5px solid #2a7a4b; padding-left:1.25rem; background:linear-gradient(to right,#f0f7fa,transparent);">
+        <i class="fas fa-graduation-cap font-all" style="color:#2a7a4b; margin-right:6px;"></i>
+        ແບ່ງປັນເອກະສານ ແລະ ຄວາມຮູ້ ເພື່ອສ້າງຊຸມຊົນນັກຮຽນຮູ້ໄປ ພ້ອມກັນ!
+    </div>
+
+    {% if messages %}
+    {% for message in messages %}
+    <div
+        style="padding:10px; margin-bottom:15px; border-radius:8px; background-color:{% if message.tags == 'error' %}#ffdddd{% else %}#ddffdd{% endif %};">
+        {{ message }}
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    <form method="POST" enctype="multipart/form-data" action="" id="uploadForm">
+        {% csrf_token %}
+
+        <!-- UPLOAD SECTION -->
+        <div class="upload-panel" id="dropZone"
+            style="border: 2px dashed #b0c4de; padding: 1.5rem; text-align:center; border-radius:12px; margin-bottom:2rem;">
+            <i class="fas fa-cloud-upload-alt" style="font-size:2rem;"></i>
+            <h3 class="font-all">ອັບໂຫຼດໄຟສ໌ ຫຼື ເອກະສານ ຂອງທ່ານ</h3>
+            <div class="or-divider font-all">ຫຼື</div>
+            <button type="button" class="btn-choose" id="selectFileBtn">
+                <i class="fas fa-folder-open"></i> ຄລິກເພື່ອເລືອກໄຟລ໌
+            </button>
+            <input type="file" id="fileInput" name="file" accept=".doc,.docx,.pdf,.ppt,.pptx,.xls,.xlsx">
+
+            <!-- File preview -->
+            <div id="fileListContainer" class="file-list" style="display:none; margin-top:1rem; text-align:left;">
+                <h4><i class="fas fa-paper-plane"></i> 📎 ໄຟລ໌ທີ່ເລືອກ:</h4>
+                <div id="fileItems" class="file-items"></div>
+                <p style="font-size: 0.85rem; margin-top: 0.8rem; color: #34675a;">
+                    <i class="fas fa-info-circle"></i> ກົດ ✖ ເພື່ອລຶບ, ອັບໂຫຼດເອກະສານໄດ້ 1 ຄັ້ັງ/ໄຟລ໌ · 100MB/ໄຟລ໌
+                </p>
+            </div>
+            <div id="fileError" class="error-message" style="display:none;"></div>
+        </div>
+
+        <!-- INFO BOX -->
+        <div class="info-box" style="margin-bottom:2rem;">
+            <span class="info-title"><i class="fas fa-clipboard-list"></i> 📋 ຂໍ້ມູນການໃຊ້:</span>
+            <ul class="info-list">
+                <li><i class="fas fa-check-circle"></i> ອັບໂຫຼດໄດ້ຄັ້ງລະ 1 ໄຟສ໌</li>
+                <li><i class="fas fa-weight-hanging"></i> ຂະໜາດໄຟສ໌ສູງສຸດ 100MB</li>
+                <li><i class="fas fa-file-alt"></i> ສະເພາະ DOC, DOCX, PDF, PPT, PPTX, XLS, XLSX</li>
+            </ul>
+            <a href="https://forms.gle/i1Tt59CgPjotwvGH8" target="_blank" class="feedback-link"><i
+                    class="fas fa-comment-dots"></i> ແຈ້ງປັນຫາ/ແນະນຳ</a>
+        </div>
+
+        <!-- DOCUMENT FORM -->
+        <div class="document-form-section">
+            <div class="form-grid">
+
+                <!-- Document title -->
+                <div class="form-group full-width">
+                    <label><i class="fas fa-heading"></i> ຊື່ເອກະສານ <span class="required-star">*</span></label>
+                    <input type="text" id="docTitle" placeholder="ເຊັ່ນ: ສະເພາະການວິທະຍາສາດ" name="title" required>
+                    <span style="font-size:0.8rem; color:#a03838;">
+                        <i class="fas fa-exclamation-triangle"></i> ຕ້ອງຕັ້ງຊື່ເອກະສານເກີນ 2 ຄຳຂື້ນໄປ
+                    </span>
+                </div>
+
+                <!-- PDF Preview -->
+                <div class="form-group full-width">
+                    <label><i class="fas fa-paperclip"></i> ແນບໄຟລ໌ PDF ສຳລັບພລີວິວ</label>
+                    <div class="file-attach-box">
+                        <label for="previewFileInput" class="file-attach-label"><i class="fas fa-file-archive"></i>
+                            ເລືອກໄຟລ໌ PDF ສຳລັບພລີວິວ</label>
+                        <span id="previewFileName" class="attach-info">ຍັງບໍ່ໄດ້ເລືອກໄຟລ໌</span>
+                        <span style="color:#4e6b7c; font-size:0.85rem;"><i class="fas fa-info-circle"></i> ຮອງຮັບ .pdf
+                            ເທົ່ານັ້ນ (ສູງສຸດ 32MB)</span>
+                    </div>
+                    <input type="file" id="previewFileInput" accept=".pdf" name="preview_file">
+                </div>
+
+                <!-- Image Thumbnail -->
+                <div class="form-group full-width">
+                    <label><i class="fas fa-paperclip"></i> ແນບໄຟລ໌ ຮູບພາບໜ້າປົກ</label>
+                    <div class="file-attach-box">
+                        <label for="previewFileInputimage" class="file-attach-label"><i class="fas fa-file-archive"></i>
+                            ເລືອກໄຟລ໌ ຮູບພາບໜ້າປົກ</label>
+                        <span id="previewFileNameimage" class="attach-info">ຍັງບໍ່ໄດ້ເລືອກໄຟລ໌</span>
+                        <span style="color:#4e6b7c; font-size:0.85rem;"><i class="fas fa-info-circle"></i> ຮອງຮັບ
+                            .jpg,.jpeg,.png (ສູງສຸດ 32MB)</span>
+                    </div>
+                    <input type="file" id="previewFileInputimage" accept=".jpg,.jpeg,.png" name="preview_image">
+                </div>
+
+                <!-- Category -->
+                <div class="form-group">
+                    <label><i class="fas fa-tags"></i> ໝວດໝູ່ <span class="required-star">*</span></label>
+                    <select id="docCategory" name="level1" required>
+                        <option value="" disabled selected>-- ເລືອກໝວດໝູ່ --</option>
+                        {% for cat in categories %}
+                        <option value="{{ cat.id }}">{{ cat.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <select id="level2" name="level2" style="display:none;"></select>
+                    <select id="level3" name="level3" style="display:none;"></select>
+                </div>
+
+                <!-- pages -->
+                <div class="form-group">
+                    <label><i class="fas fa-file-alt"></i> ຈຳນວນໜ້າ <span class="required-star">*</span></label>
+                    <div class="price-wrapper">
+                        <span>ໜ້າເອກະສານ</span>
+                        <input type="number" id="docPages" placeholder="1-1000 ໜ້າ" name="pages" required min="1"
+                            max="1000">
+                    </div>
+                </div>
+
+                <!-- Price -->
+                <div class="form-group">
+                    <label><i class="fas fa-coins"></i> ລາຄາຂາຍ <span class="required-star">*</span></label>
+
+                    <!-- Radio toggle -->
+                    <div style="display:flex; gap:10px; margin-bottom:10px;">
+                        <label id="label-paid"
+                            style="flex:1; display:flex; align-items:center; gap:6px; padding:7px 10px; border:2px solid #1a73e8; border-radius:8px; cursor:pointer; background:#e8f0fe;">
+                            <input type="radio" name="price_type" value="paid" checked onchange="togglePriceInput(this)"
+                                style="width:14px; height:14px; margin:0; cursor:pointer; accent-color:#1a73e8;">
+                            <span id="span-paid"
+                                style="font-size:0.85rem; font-weight:500; color:#1a73e8;">ຕັ້ງລາຄາ</span>
+                        </label>
+                        <label id="label-free"
+                            style="flex:1; display:flex; align-items:center; gap:6px; padding:7px 10px; border:1px solid #ccc; border-radius:8px; cursor:pointer; background:white;">
+                            <input type="radio" name="price_type" value="free" onchange="togglePriceInput(this)"
+                                style="width:14px; height:14px; margin:0; cursor:pointer; accent-color:#2e7d32;">
+                            <span id="span-free" style="font-size:0.85rem; font-weight:500; color:#555;">ຟຣີ
+                                (ທຸກຄົນດາວໂຫຼດໄດ້)</span>
+                        </label>
+                    </div>
+
+                    <div class="price-wrapper" id="priceWrapper">
+                        <span>ຕັ້ງລາຄາ</span>
+                        <input type="number" id="docPrice" placeholder="5000" name="price" required min="5000"
+                            max="1000000" value="5000">
+                    </div>
+                    <span style="font-size:0.75rem; color:#5f6b7a;" id="priceHint">
+                        ແນະນຳ 5,000 - 1,000,000 ກີບ ຍິ່ງຖືກຍິ່ງຂາຍດີ
+                    </span>
+                </div>
+
+                <!-- Description -->
+                <div class="form-group full-width">
+                    <label><i class="fas fa-align-left"></i> ລາຍລະອຽດເພີ່ມຕື່ມ</label>
+                    <textarea id="docDescription" name="description" rows="4"
+                        placeholder="ເຊັ່ນ: ເອກະສານນີ້ໃຊ້ປະກອບວິຊາ..."></textarea>
+                </div>
+
+                <!-- ZIP/RAR -->
+                <div class="form-group full-width">
+                    <label><i class="fas fa-paperclip"></i> ແນບໄຟລ໌ ZIP/RAR</label>
+                    <div class="file-attach-box">
+                        <label for="zipRarFile" class="file-attach-label"><i class="fas fa-file-archive"></i> ເລືອກໄຟລ໌
+                            ZIP/RAR</label>
+                        <span id="zipFileName" class="attach-info">ຍັງບໍ່ໄດ້ເລືອກໄຟລ໌</span>
+                        <span style="color:#4e6b7c; font-size:0.85rem;"><i class="fas fa-info-circle"></i> ຮອງຮັບ .zip,
+                            .rar ທັງຫມົດ (ສູງສຸດ 32MB)</span>
+                    </div>
+                    <input type="file" id="zipRarFile" accept=".zip,.rar" name="attached_file">
+                </div>
+
+                <!-- Attachment name -->
+                <div class="form-group full-width filename-input">
+                    <label><i class="fas fa-signature"></i> ຊື່ໄຟລ໌ແນບ (ສະແດງໃຫ້ຄົນເຫັນ)</label>
+                    <input type="text" id="attachmentName" placeholder="ຊື່ໄຟລ໌ແນບ" name="name_attached_file">
+                </div>
+
+            </div>
+
+            <!-- Submit -->
+            <div style="display:flex; justify-content:flex-end; margin-top:1.8rem;">
+                <button type="button" onclick="openTermsModal()" class="btn-save" style="background:#2a7a4b; color:white; padding:12px 24px; border:none; border-radius:8px; cursor:pointer; font-size:16px;">
+                    <i class="fas fa-save"></i> ອັບໂຫຼດເອກະສານ
+                </button>
+            </div>
+
+        </div>
+
+    </form>
+
+</div>
+
+<!-- ===== TERMS & CONDITIONS MODAL ===== -->
+<div id="termsModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;
+            background:rgba(0,0,0,0.55);z-index:99999;align-items:center;
+            justify-content:center;padding:16px;box-sizing:border-box;">
+    <div style="background:#fff;border-radius:16px;width:100%;max-width:560px;
+              font-family:'Phetsarath OT',sans-serif;overflow:hidden;
+              box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+
+        <!-- Header -->
+        <div style="background:linear-gradient(135deg,#0a3d2e,#2a7a4b);padding:20px 24px;
+                display:flex;align-items:center;justify-content:space-between;">
+            <div style="display:flex;align-items:center;gap:10px;">
+                <span style="font-size:1.4rem;">📜</span>
+                <div>
+                    <div style="color:white;font-weight:700;font-size:16px;">ຂໍ້ກຳນົດ ແລະ ເງື່ອນໄຂ</div>
+                    <div style="color:rgba(255,255,255,0.75);font-size:12px;">ກະລຸນາອ່ານກ່ອນອັບໂຫຼດ</div>
+                </div>
+            </div>
+            <button onclick="closeTermsModal()" style="background:rgba(255,255,255,0.15);border:none;color:white;
+                     width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:16px;">✕</button>
+        </div>
+
+        <!-- Scrollable body -->
+        <div style="max-height:340px;overflow-y:auto;padding:20px 24px;
+                border-bottom:1px solid #e2e8f0;font-size:13.5px;line-height:1.9;color:#1c2023;">
+
+            <p style="font-weight:700;margin:0 0 4px;color:#0a3d2e;">1. ການຮັບຮອງສິດໃນເອກະສານ</p>
+            <p style="margin:0 0 14px;color:#475569;">ຜູ້ຂາຍຮັບຮອງວ່າເອກະສານທີ່ນຳມາເຜີຍແຜ່ ຫຼື ຈຳໜ່າຍໃນເວັບໄຊທ
+                ເປັນຜົນງານຂອງຕົນເອງ ຫຼື ໄດ້ຮັບສິດຢ່າງຖືກຕ້ອງຈາກເຈົ້າຂອງລິຂະສິດ.</p>
+
+            <p style="font-weight:700;margin:0 0 4px;color:#0a3d2e;">2. ເນື້ອຫາທີ່ຫ້າມເຜີຍແຜ່</p>
+            <p style="margin:0 0 6px;color:#475569;">ຜູ້ຂາຍຕ້ອງບໍ່ອັບໂຫຼດ ຫຼື ຈຳໜ່າຍເອກະສານທີ່:</p>
+            <ul style="margin:0 0 14px;padding-left:20px;color:#475569;">
+                <li>ລະເມີດລິຂະສິດ ຫຼື ຊັບສິນທາງປັນຍາຂອງຜູ້ອື່ນ</li>
+                <li>ຂັດຕໍ່ກົດໝາຍ ຫຼື ລະບຽບຂອງ ສປປ ລາວ</li>
+                <li>ມີເນື້ອຫາຫຍາບຄາຍ, ລາມົກອານາຈານ ຫຼື ບໍ່ເໝາະສົມ</li>
+                <li>ສົ່ງເສີມການພະນັນ, ຢາເສບຕິດ, ອາວຸດ ຫຼື ກິດຈະກຳຜິດກົດໝາຍ</li>
+                <li>ມີໄວຣັສ, Malware ຫຼື ໂຄດອັນຕະລາຍ</li>
+                <li>ລະເມີດຄວາມລັບ ຫຼື ຂໍ້ມູນສ່ວນບຸກຄົນຂອງຜູ້ອື່ນ</li>
+            </ul>
+
+            <p style="font-weight:700;margin:0 0 4px;color:#0a3d2e;">3. ຄວາມຮັບຜິດຊອບຂອງຜູ້ຂາຍ</p>
+            <p style="margin:0 0 14px;color:#475569;">ຜູ້ຂາຍເປັນຜູ້ຮັບຜິດຊອບແຕ່ພຽງຜູ້ດຽວຕໍ່ເນື້ອຫາ, ຄວາມຖືກຕ້ອງ,
+                ຄຸນນະພາບ ແລະ ຄວາມຊອບດ້ວຍກົດໝາຍຂອງເອກະສານ.</p>
+
+            <p style="font-weight:700;margin:0 0 4px;color:#0a3d2e;">4. ການປະຕິເສດຄວາມຮັບຜິດຊອບຂອງເວັບໄຊທ</p>
+            <ul style="margin:0 0 14px;padding-left:20px;color:#475569;">
+                <li>ການລະເມີດລິຂະສິດ</li>
+                <li>ການລະເມີດກົດໝາຍ</li>
+                <li>ຄວາມເສຍຫາຍທີ່ເກີດຈາກເນື້ອຫາຂອງຜູ້ຂາຍ</li>
+                <li>ຂໍ້ມູນຜິດພາດ ຫຼື ບໍ່ຄົບຖ້ວນໃນເອກະສານ</li>
+            </ul>
+
+            <p style="font-weight:700;margin:0 0 4px;color:#0a3d2e;">5. ສິດໃນການລຶບ ຫຼື ລະງັບເນື້ອຫາ</p>
+            <p style="margin:0 0 14px;color:#475569;">ເວັບໄຊທຂໍສະຫງວນສິດໃນການລຶບເອກະສານ, ລະງັບການຂາຍ ຫຼື ປິດບັນຊີ
+                ໂດຍບໍ່ຕ້ອງແຈ້ງລ່ວງໜ້າ.</p>
+
+            <p style="font-weight:700;margin:0 0 4px;color:#0a3d2e;">6. ການຊົດໃຊ້ຄວາມເສຍຫາຍ</p>
+            <p style="margin:0 0 14px;color:#475569;">ຫາກການກະທຳຂອງຜູ້ຂາຍກໍ່ໃຫ້ເກີດຄວາມເສຍຫາຍ ຜູ້ຂາຍຕົກລົງຊົດໃຊ້ທັງໝົດ.
+            </p>
+
+            <p style="font-weight:700;margin:0 0 4px;color:#0a3d2e;">7. ການຍອມຮັບຂໍ້ກຳນົດ</p>
+            <p style="margin:0;color:#475569;">ການອັບໂຫຼດ ຫຼື ຈຳໜ່າຍເອກະສານໃນເວັບໄຊທ ຖືວ່າຍອມຮັບຂໍ້ກຳນົດທັງໝົດ.</p>
+        </div>
+
+        <!-- Checkbox + buttons -->
+        <div style="padding:18px 24px;">
+            <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;
+                    margin-bottom:16px;font-size:13.5px;color:#1c2023;">
+                <input type="checkbox" id="termsAgreeCheck" onchange="toggleConfirmBtn()" style="margin-top:2px;width:16px;height:16px;
+                      cursor:pointer;accent-color:#2a7a4b;flex-shrink:0;">
+                <span>ຂ້ອຍໄດ້ອ່ານ ແລະ ຍອມຮັບ <strong>ຂໍ້ກຳນົດ ແລະ ເງື່ອນໄຂ</strong> ທັງໝົດຂ້າງເທິງແລ້ວ</span>
+            </label>
+            <div style="display:flex;gap:10px;">
+                <button type="button" onclick="closeTermsModal()" style="flex:1;padding:11px;border:1px solid #e2e8f0;border-radius:10px;
+                       background:#fff;cursor:pointer;font-size:14px;color:#475569;
+                       font-family:'Phetsarath OT',sans-serif;">
+                    ຍົກເລີກ
+                </button>
+                <button type="button" id="termsConfirmBtn" onclick="submitUploadForm()" disabled style="flex:2;padding:11px;border:none;border-radius:10px;
+                       background:linear-gradient(135deg,#0a3d2e,#2a7a4b);
+                       color:white;cursor:not-allowed;opacity:0.45;
+                       font-size:14px;font-weight:700;
+                       font-family:'Phetsarath OT',sans-serif;
+                       transition:opacity 0.2s;">
+                    ✅ ຍືນຍັນ ແລະ ອັບໂຫຼດ
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let selectedFiles = [];
+    
+    document.addEventListener("DOMContentLoaded", function () {
+        "use strict";
+
+        // ------------------------------
+        // File Upload (Drag & Drop + Preview)
+        // ------------------------------
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const selectBtn = document.getElementById('selectFileBtn');
+        const fileListContainer = document.getElementById('fileListContainer');
+        const fileItemsDiv = document.getElementById('fileItems');
+        const fileError = document.getElementById('fileError');
+
+        const MAX_FILES = 1;
+        const MAX_SIZE_MB = 100;
+        const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
+        const ALLOWED_EXTENSIONS = ['.doc', '.docx', '.pdf', '.ppt', '.pptx', '.xls', '.xlsx'];
+
+        function isAllowedFileType(fileName) {
+            return ALLOWED_EXTENSIONS.some(ext => fileName.toLowerCase().endsWith(ext));
+        }
+
+        function clearFileError() {
+            if (fileError) {
+                fileError.style.display = 'none';
+                fileError.textContent = '';
+            }
+        }
+
+        function showFileError(message) {
+            if (fileError) {
+                fileError.textContent = message;
+                fileError.style.display = 'block';
+            }
+            alert(message);
+        }
+
+        function renderFileList() {
+            fileItemsDiv.innerHTML = '';
+            if (!selectedFiles.length) {
+                fileListContainer.style.display = 'none';
+                return;
+            }
+            selectedFiles.forEach((file, index) => {
+                const tag = document.createElement('div');
+                tag.className = 'file-tag';
+                tag.style.display = 'inline-block';
+                tag.innerHTML = `<i class="fas fa-file"></i> ${file.name} <i class="fas fa-times-circle remove-file" data-index="${index}" style="margin-left:6px; cursor:pointer; color:#c0392b;"></i>`;
+                fileItemsDiv.appendChild(tag);
+            });
+            fileListContainer.style.display = 'block';
+
+            document.querySelectorAll('.remove-file').forEach(el => {
+                el.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    selectedFiles.splice(parseInt(this.dataset.index), 1);
+                    renderFileList();
+                    fileInput.value = '';
+                    clearFileError();
+                });
+            });
+        }
+
+        function processFiles(files) {
+            clearFileError();
+            
+            if (files.length === 0) return;
+            
+            const file = files[0]; // Only take first file
+            
+            if (selectedFiles.length >= MAX_FILES) { 
+                showFileError(`ອັບໂຫຼດໄດ້ສູງສຸດ ${MAX_FILES} ໄຟລ໌`); 
+                return; 
+            }
+            if (file.size > MAX_SIZE_BYTES) { 
+                showFileError(`${file.name} ຂະໜາດເກີນ ${MAX_SIZE_MB}MB`); 
+                return; 
+            }
+            if (!isAllowedFileType(file.name)) { 
+                showFileError(`${file.name} ຮອງຮັບສະເພາະ ${ALLOWED_EXTENSIONS.join(', ')}`); 
+                return; 
+            }
+            
+            // Clear previous files
+            selectedFiles = [];
+            selectedFiles.push(file);
+            renderFileList();
+        }
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(event => {
+            dropZone.addEventListener(event, e => { e.preventDefault(); e.stopPropagation(); });
+        });
+        dropZone.addEventListener('drop', e => { processFiles(e.dataTransfer.files); });
+        selectBtn.addEventListener('click', e => { e.preventDefault(); fileInput.click(); });
+        fileInput.addEventListener('change', function () { 
+            if (this.files.length > 0) {
+                processFiles(this.files);
+            }
+        });
+
+        // ------------------------------
+        // ZIP/RAR preview
+        // ------------------------------
+        function handleFilePreview(inputElem, displayElem, maxMB, allowedExtensions = null) {
+            if (inputElem) {
+                inputElem.addEventListener('change', function () {
+                    if (this.files.length > 0) {
+                        const f = this.files[0];
+                        
+                        // Check extension if specified
+                        if (allowedExtensions) {
+                            const ext = '.' + f.name.split('.').pop().toLowerCase();
+                            if (!allowedExtensions.includes(ext)) {
+                                alert(`ຮອງຮັບສະເພາະ ${allowedExtensions.join(', ')}`);
+                                this.value = '';
+                                displayElem.textContent = 'ຍັງບໍ່ເລືອກໄຟລ໌';
+                                return;
+                            }
+                        }
+                        
+                        if (f.size > maxMB * 1024 * 1024) { 
+                            alert(`ໄຟລ໌ຂະໜາດເກີນ ${maxMB}MB`); 
+                            this.value = ''; 
+                            displayElem.textContent = 'ຍັງບໍ່ເລືອກໄຟລ໌';
+                        }
+                        else { 
+                            displayElem.textContent = `${f.name} (${(f.size / 1024 / 1024).toFixed(2)} MB)`; 
+                        }
+                    } else { 
+                        displayElem.textContent = 'ຍັງບໍ່ເລືອກໄຟລ໌'; 
+                    }
+                });
+            }
+        }
+
+        const zipRarFile = document.getElementById('zipRarFile');
+        const previewFileInput = document.getElementById('previewFileInput');
+        const previewFileInputimage = document.getElementById('previewFileInputimage');
+        
+        if (zipRarFile) handleFilePreview(zipRarFile, document.getElementById('zipFileName'), 32, ['.zip', '.rar']);
+        if (previewFileInput) handleFilePreview(previewFileInput, document.getElementById('previewFileName'), 32, ['.pdf']);
+        if (previewFileInputimage) handleFilePreview(previewFileInputimage, document.getElementById('previewFileNameimage'), 32, ['.jpg', '.jpeg', '.png']);
+
+        // ------------------------------
+        // Category cascading
+        // ------------------------------
+        const level1 = document.getElementById('docCategory');
+        const level2 = document.getElementById('level2');
+        const level3 = document.getElementById('level3');
+
+        if (level1) {
+            level1.addEventListener('change', function () {
+                if (!this.value) return;
+                fetch(`/ajax/load-subcategories/?parent_id=${this.value}`)
+                    .then(r => r.json())
+                    .then(data => {
+                        if (!data || data.length === 0) { 
+                            if (level2) level2.style.display = 'none'; 
+                            if (level3) level3.style.display = 'none'; 
+                            if (level2) level2.innerHTML = ''; 
+                            if (level3) level3.innerHTML = ''; 
+                        }
+                        else {
+                            if (level2) {
+                                level2.style.display = 'block'; 
+                                level2.innerHTML = '<option value="">-- ເລືອກໝວດໝູ່ 2 --</option>'; 
+                            }
+                            if (level3) {
+                                level3.style.display = 'none'; 
+                                level3.innerHTML = '';
+                            }
+                            data.forEach(item => { 
+                                if (level2) level2.innerHTML += `<option value="${item.id}">${item.name}</option>`; 
+                            });
+                        }
+                    })
+                    .catch(error => console.error('Error loading categories:', error));
+            });
+        }
+
+        if (level2) {
+            level2.addEventListener('change', function () {
+                if (!this.value) return;
+                fetch(`/ajax/load-subcategories/?parent_id=${this.value}`)
+                    .then(r => r.json())
+                    .then(data => {
+                        if (!data || data.length === 0) { 
+                            if (level3) level3.style.display = 'none'; 
+                            if (level3) level3.innerHTML = ''; 
+                        }
+                        else {
+                            if (level3) {
+                                level3.style.display = 'block'; 
+                                level3.innerHTML = '<option value="">-- ເລືອກໝວດໝູ່ 3 --</option>';
+                                data.forEach(item => { 
+                                    level3.innerHTML += `<option value="${item.id}">${item.name}</option>`; 
+                                });
+                            }
+                        }
+                    })
+                    .catch(error => console.error('Error loading subcategories:', error));
+            });
+        }
+    });
+
+    window.togglePriceInput = function (radio) {
+        const input = document.getElementById('docPrice');
+        const wrapper = document.getElementById('priceWrapper');
+        const hint = document.getElementById('priceHint');
+        const labelPaid = document.getElementById('label-paid');
+        const labelFree = document.getElementById('label-free');
+        const spanPaid = document.getElementById('span-paid');
+        const spanFree = document.getElementById('span-free');
+
+        if (radio.value === 'free') {
+            if (labelFree) {
+                labelFree.style.border = '2px solid #2e7d32';
+                labelFree.style.background = '#e8f5e9';
+            }
+            if (spanFree) spanFree.style.color = '#2e7d32';
+
+            if (labelPaid) {
+                labelPaid.style.border = '1px solid #ccc';
+                labelPaid.style.background = 'white';
+            }
+            if (spanPaid) spanPaid.style.color = '#555';
+
+            if (input) {
+                input.value = '0';
+                input.disabled = true;
+                input.removeAttribute('required');
+            }
+            if (wrapper) {
+                wrapper.style.opacity = '0.4';
+                wrapper.style.pointerEvents = 'none';
+            }
+            if (hint) hint.textContent = 'ເອກະສານນີ້ຈະດາວໂຫຼດໄດ້ຟຣີສຳລັບທຸກຄົນ';
+        } else {
+            if (labelPaid) {
+                labelPaid.style.border = '2px solid #1a73e8';
+                labelPaid.style.background = '#e8f0fe';
+            }
+            if (spanPaid) spanPaid.style.color = '#1a73e8';
+
+            if (labelFree) {
+                labelFree.style.border = '1px solid #ccc';
+                labelFree.style.background = 'white';
+            }
+            if (spanFree) spanFree.style.color = '#555';
+
+            if (input) {
+                input.value = '';
+                input.disabled = false;
+                input.setAttribute('required', 'required');
+            }
+            if (wrapper) {
+                wrapper.style.opacity = '1';
+                wrapper.style.pointerEvents = 'auto';
+            }
+            if (hint) hint.textContent = 'ແນະນຳ 5,000 - 1,000,000 ກີບ ຍິ່ງຖືກຍິ່ງຂາຍດີ';
+        }
+    };
+
+    // Validation function
+    function validateFormBeforeModal() {
+        const title = document.getElementById('docTitle');
+        if (!title || title.value.trim().length < 5) { 
+            alert('ຊື່ເອກະສານຕ້ອງມີຢ່າງໜ້ອຍ 5 ຕົວອັກສອນ'); 
+            return false;
+        }
+       
+        
+        if (!selectedFiles || selectedFiles.length === 0) {
+            alert('ກະລຸນາເລືອກໄຟລ໌ກ່ອນອັບໂຫຼດ');
+            return false;
+        }
+        
+        const category = document.getElementById('docCategory');
+        if (!category || !category.value) {
+            alert('ກະລຸນາເລືອກໝວດໝູ່');
+            return false;
+        }
+        
+        const pages = document.getElementById('docPages');
+        if (!pages || !pages.value || pages.value < 1) {
+            alert('ກະລຸນາປ້ອນຈຳນວນໜ້າ');
+            return false;
+        }
+        
+        const priceTypeElem = document.querySelector('input[name="price_type"]:checked');
+        if (priceTypeElem) {
+            const priceType = priceTypeElem.value;
+            if (priceType === 'paid') {
+                const price = document.getElementById('docPrice');
+                if (!price || !price.value || price.value < 5000) {
+                    alert('ກະລຸນາຕັ້ງລາຄາ (ຕໍ່າສຸດ 5,000 ກີບ)');
+                    return false;
+                }
+            }
+        }
+        
+        return true;
+    }
+
+    window.openTermsModal = function() {
+        if (!validateFormBeforeModal()) {
+            return;
+        }
+        
+        const modal = document.getElementById('termsModal');
+        if (modal) {
+            const checkbox = document.getElementById('termsAgreeCheck');
+            if (checkbox) checkbox.checked = false;
+            const btn = document.getElementById('termsConfirmBtn');
+            if (btn) {
+                btn.disabled = true; 
+                btn.style.opacity = '0.45'; 
+                btn.style.cursor = 'not-allowed';
+            }
+            modal.style.display = 'flex';
+        }
+    }
+    
+    window.closeTermsModal = function() {
+        const modal = document.getElementById('termsModal');
+        if (modal) modal.style.display = 'none';
+    }
+    
+    window.toggleConfirmBtn = function() {
+        const checked = document.getElementById('termsAgreeCheck');
+        const btn = document.getElementById('termsConfirmBtn');
+        if (checked && btn) {
+            const isChecked = checked.checked;
+            btn.disabled = !isChecked;
+            btn.style.opacity = isChecked ? '1' : '0.45';
+            btn.style.cursor = isChecked ? 'pointer' : 'not-allowed';
+        }
+    }
+    
+    window.submitUploadForm = function() {
+        if (!validateFormBeforeModal()) {
+            closeTermsModal();
+            return;
+        }
+        
+        // Sync selectedFiles into the file input before submit
+        const fileInput = document.getElementById('fileInput');
+        if (selectedFiles && selectedFiles.length > 0) {
+            const dt = new DataTransfer();
+            selectedFiles.forEach(f => dt.items.add(f));
+            fileInput.files = dt.files;
+        }
+        
+        closeTermsModal();
+        
+        // Submit the form
+        const form = document.getElementById('uploadForm');
+        if (form) {
+            form.submit();
+        }
+    }
+    
+    // Close modal when clicking outside
+    const modal = document.getElementById('termsModal');
+    if (modal) {
+        modal.addEventListener('click', function (e) {
+            if (e.target === this) closeTermsModal();
+        });
+    }
+</script>
+{% endblock %}

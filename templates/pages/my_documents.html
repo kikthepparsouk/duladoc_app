@@ -1,0 +1,753 @@
+{% extends 'base.html' %}
+
+{% block title %}My Documents Dashboard{% endblock %}
+{% block meta_description %}Manage your documents, track purchases, and monitor downloads{% endblock %}
+
+{% load humanize %}
+{% load static %}
+
+{% block content %}
+
+<main class="main">
+  <style>
+    /* Dashboard specific styles */
+    :root {
+      --surface2: #426c9a;
+      --border: #e2e8f0;
+      --accent: #1f6feb;
+      --success: #3fb950;
+      --warning: #d29922;
+      --danger: #f85149;
+      --info: #58a6ff;
+      --text: #1c2023;
+      --text-muted: #64748b;
+      --radius: 10px;
+      --radius-lg: 18px;
+    }
+
+    .dashboard-wrapper {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    @media (max-width: 991px) {
+      .dashboard-wrapper {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+    }
+
+    /* Sidebar styling */
+    .sidebar-dashboard-container {
+      width: 100%;
+    }
+
+    .dashboard-card {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+}
+
+    .dashboard-title {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      font-family: 'phetsarath ot', sans-serif;
+    }
+
+    .dashboard-subtitle {
+      color: var(--text-muted);
+      margin-bottom: 24px;
+      font-family: 'phetsarath ot', sans-serif;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 991px) {
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 576px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .stat-box {
+      background: linear-gradient(135deg, #163457, #0f2340);
+      border-radius: 18px;
+      padding: 20px;
+      color: white;
+    }
+
+    .stat-label {
+      font-size: 13px;
+      margin-bottom: 8px;
+      opacity: 0.8;
+      font-family: 'phetsarath ot', sans-serif;
+    }
+
+    .stat-value {
+      font-size: 28px;
+      font-weight: 700;
+      font-family: 'phetsarath ot', sans-serif;
+    }
+
+    .document-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 18px 0;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    @media (max-width: 768px) {
+      .document-item {
+        flex-direction: column;
+      }
+    }
+
+    .document-left {
+      display: flex;
+      gap: 16px;
+      flex: 1;
+    }
+
+    .document-thumb {
+      width: 70px;
+      height: 70px;
+      border-radius: 14px;
+      object-fit: cover;
+      background: #f1f5f9;
+    }
+
+    .document-title {
+      font-size: 17px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      font-family: 'phetsarath ot', sans-serif;
+    }
+
+    .document-meta {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-family: 'phetsarath ot', sans-serif;
+      margin-top: 4px;
+    }
+
+    .download-box {
+      text-align: right;
+      min-width: 140px;
+    }
+
+    @media (max-width: 768px) {
+      .download-box {
+        text-align: left;
+        margin-top: 10px;
+      }
+    }
+
+    .download-count {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--success);
+      font-family: 'phetsarath ot', sans-serif;
+    }
+
+    .btn-download {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 10px;
+      text-decoration: none;
+      display: inline-block;
+      margin-top: 8px;
+      font-family: 'phetsarath ot', sans-serif;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 14px;
+    }
+
+    .btn-download:hover {
+      opacity: 0.9;
+      color: white;
+      transform: translateY(-1px);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .btn-outline:hover {
+      background: #f8fafc;
+      color: var(--text);
+    }
+
+    .badge-limit {
+      display: inline-block;
+      background: rgba(248, 81, 73, 0.1);
+      color: var(--danger);
+      border: 1px solid rgba(248, 81, 73, 0.2);
+      padding: 6px 12px;
+      border-radius: 30px;
+      font-size: 12px;
+      margin-top: 8px;
+      font-family: 'phetsarath ot', sans-serif;
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      font-family: 'phetsarath ot', sans-serif;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .text-muted {
+      color: var(--text-muted);
+      text-align: center;
+      padding: 40px;
+    }
+
+    .main-content-area {
+      min-width: 0;
+    }
+
+    /* Action buttons group */
+    .action-buttons {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 12px;
+    }
+  </style>
+
+  <div class="page-header breadcrumb-wrap">
+    <div class="container">
+      <div class="breadcrumb" style="font-family: phetsarath ot;">
+        <a href="{% url 'home' %}">Home</a>
+        <span></span> My Documents
+      </div>
+    </div>
+  </div>
+
+  <section class="pt-50 pb-150">
+    <div class="container">
+      <div class="dashboard-wrapper">
+        <!-- SIDEBAR -->
+          <div class="col-md-13" style="font-family: phetsarath ot;">
+    <div class="dashboard-menu">
+        <ul class="nav flex-column" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link {% if active_tab == 'dashboard' %}active{% endif %}" 
+                   href="{% url 'dashboard' %}">
+                    <i class="fi-rs-settings-sliders mr-10"></i>Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if active_tab == 'seller' %}active{% endif %}" 
+                   href="{% url 'seller_dashboard' %}">
+                    <i class="fa-solid fa-dollar-sign mr-10"></i> ລາຍໄດ້
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if active_tab == 'topup' %}active{% endif %}" 
+                   href="{% url 'topup_request' %}">
+                    <i class="fa-solid fa-dollar-sign mr-10"></i> ຕື່ມເງິນ
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if active_tab == 'withdraw_request' %}active{% endif %}" 
+                    href="{% url 'withdraw_request' %}">
+                        <i class="fa-solid fa-money-bill mr-10"></i> ຖອນເງິນ
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if active_tab == 'my-documents' %}active{% endif %}" 
+                   href="{% url 'my-documents' %}">
+                    <i class="fa-solid fa-file mr-10"></i> ເອກະສານຂອງຂ້ອຍ
+                </a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="#" 
+                   onclick="document.getElementById('logoutModal').style.display='flex'; return false;">
+                    <i class="fi-rs-sign-out mr-10"></i>Logout
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+        <!-- MAIN CONTENT -->
+        <div class="main-content-area">
+          
+          <div class="dashboard-card">
+            <div class="dashboard-title">
+              📚 My Documents Dashboard
+            </div>
+            <div class="dashboard-subtitle">
+              Manage uploaded documents and purchased documents
+            </div>
+
+            <!-- STATS -->
+            <div class="stats-grid">
+              <div class="stat-box">
+                <div class="stat-label">📤 Uploaded Documents</div>
+                <div class="stat-value">{{ total_uploads|default:0 }}</div>
+              </div>
+              <div class="stat-box">
+                <div class="stat-label">📥 Total Downloads</div>
+                <div class="stat-value">{{ total_downloads|default:0 }}</div>
+              </div>
+              <div class="stat-box">
+                <div class="stat-label">🛒 Purchased Docs</div>
+                <div class="stat-value">{{ total_purchased|default:0 }}</div>
+              </div>
+              <div class="stat-box">
+                <div class="stat-label">💰 Total Earned</div>
+                <div class="stat-value">{{ total_earned|floatformat:0|default:0|intcomma }} ₭</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- MY UPLOADS SECTION -->
+          <div class="dashboard-card" id="uploads">
+            <div class="section-title">
+              📄 My Uploaded Documents
+              <span style="font-size: 14px; color: var(--text-muted);">({{ my_uploads|length }} total)</span>
+            </div>
+
+            {% if my_uploads %}
+              {% for doc in my_uploads %}
+              <div class="document-item">
+                <div class="document-left">
+                  {% if doc.preview_image %}
+                    <img src="{{ doc.preview_image.url }}" class="document-thumb" onerror="this.src='{% static 'assets/imgs/file-icon.png' %}'">
+                  {% else %}
+                    <img src="{% static 'assets/imgs/file-icon.png' %}" class="document-thumb">
+                  {% endif %}
+                  <div>
+                    <div class="document-title">{{ doc.title }}</div>
+                    <div class="document-meta">
+                      📂 {{ doc.category.name|default:"Uncategorized" }}
+                    </div>
+                    <div class="document-meta">
+                      💰 {{ doc.price|floatformat:0|intcomma }} ₭
+                    </div>
+                    <div class="document-meta">
+                      📥 {{ doc.downloads|default:0 }} downloads · 👁️ {{ doc.preview_count|default:0 }} views
+                    </div>
+                    <div class="document-meta">
+                      📅 {{ doc.created_at|date:"d M Y" }}
+                    </div>
+                  </div>
+                </div>
+                <div class="download-box">
+                  <div class="action-buttons">
+                    <a href="{% url 'update_document' doc.id %}" 
+                      class="btn-download btn-outline btn-sm" 
+                      style="display:inline-flex; align-items:center; justify-content:center;">
+                      ✏️ Update
+                    </a>
+
+                    <a href="{% url 'preview_document' doc.id %}" 
+                      class="btn-download btn-outline btn-sm"
+                      style="display:inline-flex; align-items:center; justify-content:center;">
+                      📄 Preview
+                    </a>
+                    
+                     <button type="button"
+                              class="btn-download btn-sm btn-delete-trigger"
+                              style="background:#fee2e2; color:#c0392b; border:1px solid #fca5a5;"
+                              data-doc-id="{{ doc.id }}"
+                              data-doc-title="{{ doc.title|escapejs }}"
+                              data-doc-price="{{ doc.price|floatformat:0 }}"
+                              data-doc-image="{% if doc.preview_image %}{{ doc.preview_image.url }}{% endif %}"
+                              data-delete-url="{% url 'delete_document' doc.id %}">
+                          🗑️ Delete
+                      </button>
+                </div>
+                  {% if doc.seller_revenue_percent %}
+                    <div class="document-meta" style="margin-top: 8px; color: var(--success);">
+                      💵 You get {{ doc.seller_revenue_percent }}% per sale
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+              {% endfor %}
+              {# ── Uploads pagination ── #}
+              {% if my_uploads.has_other_pages %}
+              <div class="pagination-wrap" style="margin-top:20px; display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
+                {% if my_uploads.has_previous %}
+                  <a href="?upload_page={{ my_uploads.previous_page_number }}&purchase_page={{ request.GET.purchase_page|default:1 }}"
+                    class="btn-download btn-outline btn-sm">‹ Prev</a>
+                {% endif %}
+
+                {% for num in my_uploads.paginator.page_range %}
+                  {% if my_uploads.number == num %}
+                    <span class="btn-download btn-sm" style="background:#163457;">{{ num }}</span>
+                  {% elif num >= my_uploads.number|add:-2 and num <= my_uploads.number|add:2 %}
+                    <a href="?upload_page={{ num }}&purchase_page={{ request.GET.purchase_page|default:1 }}"
+                      class="btn-download btn-outline btn-sm">{{ num }}</a>
+                  {% endif %}
+                {% endfor %}
+
+                {% if my_uploads.has_next %}
+                  <a href="?upload_page={{ my_uploads.next_page_number }}&purchase_page={{ request.GET.purchase_page|default:1 }}"
+                    class="btn-download btn-outline btn-sm">Next ›</a>
+                {% endif %}
+
+                <span style="font-size:12px; color:var(--text-muted); margin-left:8px;">
+                  Page {{ my_uploads.number }} of {{ my_uploads.paginator.num_pages }}
+                </span>
+              </div>
+{% endif %}
+            {% else %}
+              <div class="text-muted">
+                <div style="font-size: 48px; margin-bottom: 16px;">📂</div>
+                <p>You haven't uploaded any documents yet</p>
+                <a href="{% url 'upload_document' %}" class="btn-download" style="margin-top: 16px;">➕ Upload Your First Document</a>
+              </div>
+            {% endif %}
+          </div>
+
+          <!-- PURCHASED DOCUMENTS SECTION -->
+          <div class="dashboard-card" id="purchased">
+            <div class="section-title">
+              🛒 Purchased Documents
+              <span style="font-size: 14px; color: var(--text-muted);">({{ purchased_items|length }} total)</span>
+            </div>
+
+            {% if purchased_items %}
+              {% for item in purchased_items %}
+              <div class="document-item">
+                <div class="document-left">
+                  {% if item.document.preview_image %}
+                    <img src="{{ item.document.preview_image.url }}" class="document-thumb" onerror="this.src='{% static 'assets/imgs/file-icon.png' %}'">
+                  {% else %}
+                    <img src="{% static 'assets/imgs/file-icon.png' %}" class="document-thumb">
+                  {% endif %}
+                  <div>
+                    <div class="document-title">{{ item.document.title }}</div>
+                    <div class="document-meta">
+                      👤 Seller: {{ item.document.seller.username|default:"Unknown" }}
+                    </div>
+                    <div class="document-meta">
+                      🕐 Purchased: {{ item.purchased_at|date:"d M Y H:i" }}
+                    </div>
+                    <div class="document-meta">
+                      💰 ລາຄາ: {{ item.document.price|floatformat:0|intcomma }} ₭
+                    </div>
+                  </div>
+                </div>
+                <div class="download-box">
+                  <div class="download-count">
+                    {{ item.downloads_remaining|default:0 }}
+                  </div>
+                  <div class="document-meta">Downloads Remaining</div>
+                  
+                  {% if item.downloads_remaining > 0 %}
+                    <div class="action-buttons">
+                      {% if item.document.file %}
+                        <a href="{% url 'protected_document_file' path=item.document.file.name|cut:'documents/' %}" 
+                           class="btn-download"
+                           onclick="return confirm('Download this document? You will have {{ item.downloads_remaining|add:-1 }} download(s) remaining.')">
+                          ⬇️ Download
+                        </a>
+                      {% endif %}
+                      <a href="{% url 'document_detail' item.document.id %}" class="btn-download btn-outline">👁️ Details</a>
+                    </div>
+                  {% else %}
+                    <div class="badge-limit">⛔ Download Limit Reached</div>
+                    <div class="action-buttons" style="margin-top: 8px;">
+                      <a href="{% url 'document_detail' item.document.id %}" class="btn-download btn-outline btn-sm">🔄 Purchase Again</a>
+                    </div>
+                  {% endif %}
+                  
+                  <!-- Download progress -->
+                  <div class="download-progress" style="margin-top: 12px;">
+                    <div class="download-progress-bar" style="width: {% widthratio item.download_count|default:0 item.max_downloads|default:5 100 %}%;"></div>
+                  </div>
+                  <div class="document-meta" style="margin-top: 4px; font-size: 11px;">
+                    Used {{ item.download_count|default:0 }} of {{ item.max_downloads|default:5 }} downloads
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+              {# ── Uploads pagination ── #}
+              {% if my_uploads.has_other_pages %}
+              <div class="pagination-wrap" style="margin-top:20px; display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
+                {% if my_uploads.has_previous %}
+                  <a href="?upload_page={{ my_uploads.previous_page_number }}&purchase_page={{ request.GET.purchase_page|default:1 }}"
+                    class="btn-download btn-outline btn-sm">‹ Prev</a>
+                {% endif %}
+
+                {% for num in my_uploads.paginator.page_range %}
+                  {% if my_uploads.number == num %}
+                    <span class="btn-download btn-sm" style="background:#163457;">{{ num }}</span>
+                  {% elif num >= my_uploads.number|add:-2 and num <= my_uploads.number|add:2 %}
+                    <a href="?upload_page={{ num }}&purchase_page={{ request.GET.purchase_page|default:1 }}"
+                      class="btn-download btn-outline btn-sm">{{ num }}</a>
+                  {% endif %}
+                {% endfor %}
+
+                {% if my_uploads.has_next %}
+                  <a href="?upload_page={{ my_uploads.next_page_number }}&purchase_page={{ request.GET.purchase_page|default:1 }}"
+                    class="btn-download btn-outline btn-sm">Next ›</a>
+                {% endif %}
+
+                <span style="font-size:12px; color:var(--text-muted); margin-left:8px;">
+                  Page {{ my_uploads.number }} of {{ my_uploads.paginator.num_pages }}
+                </span>
+              </div>
+              {% endif %}
+            {% else %}
+              <div class="text-muted">
+                <div style="font-size: 48px; margin-bottom: 16px;">🛒</div>
+                <p>You haven't purchased any documents yet</p>
+                <a href="{% url 'all_documents' %}" class="btn-download" style="margin-top: 16px;">🔍 Browse Documents</a>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<style>
+  /* Progress bar styles */
+  .download-progress {
+    background: #e2e8f0;
+    border-radius: 4px;
+    height: 4px;
+    overflow: hidden;
+  }
+  
+  .download-progress-bar {
+    height: 100%;
+    border-radius: 4px;
+    background: linear-gradient(90deg, var(--success), var(--info));
+    transition: width 0.3s ease;
+  }
+  
+  /* Additional responsive fixes */
+  @media (max-width: 768px) {
+    .action-buttons {
+      flex-direction: row;
+      justify-content: flex-start;
+    }
+    
+    .dashboard-card {
+      padding: 16px;
+    }
+    
+    .stat-value {
+      font-size: 22px;
+    }
+    
+    .stat-box {
+      padding: 16px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .document-left {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    
+    .document-thumb {
+      margin-bottom: 8px;
+    }
+    
+    .action-buttons {
+      flex-direction: column;
+    }
+    
+    .action-buttons .btn-download {
+      width: 100%;
+      text-align: center;
+    }
+  }
+</style>
+<!-- ✅ Modal is OUTSIDE col-md-3 -->
+<div id="logoutModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:99999; align-items:center; justify-content:center;">
+    <div style="background:#fff; border-radius:12px; padding:2rem; width:300px; text-align:center; font-family:'phetsarath ot', sans-serif; position:relative;">
+        <i class="fi-rs-sign-out" style="font-size:2rem; color:#e74c3c; display:block; margin-bottom:1rem;"></i>
+        <h5 style="margin:0 0 0.5rem; font-size:18px;">ອອກຈາກລະບົບ?</h5>
+        <p style="color:#666; font-size:14px; margin:0 0 1.5rem;">ທ່ານແນ່ໃຈບໍ່ວ່າຕ້ອງການ Logout?</p>
+        <div style="display:flex; gap:10px;">
+            <button onclick="document.getElementById('logoutModal').style.display='none'"
+                style="flex:1; padding:10px; border:1px solid #ccc; border-radius:8px; background:#fff; cursor:pointer; font-family:'phetsarath ot', sans-serif;">
+                ຍົກເລີກ
+            </button>
+            <a href="{% url 'logout' %}"
+                style="flex:1; padding:10px; border-radius:8px; background:#e74c3c; color:#fff; text-decoration:none; display:flex; align-items:center; justify-content:center; cursor:pointer; font-weight:600; font-family:'phetsarath ot', sans-serif;">
+                Logout
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('logoutModal').addEventListener('click', function(e) {
+        if (e.target === this) this.style.display = 'none';
+    });
+</script>
+
+
+
+{# ── Delete confirmation modal ── #}
+<div id="deleteModal"
+     style="display:none; position:fixed; inset:0; z-index:99999;
+            background:rgba(10,20,40,0.55); backdrop-filter:blur(4px);
+            align-items:center; justify-content:center; padding:16px; font-family: phetsarath ot;">
+ 
+    <div id="deleteModalBox"
+         style="background:#fff; border-radius:20px; width:100%; max-width:420px;
+                box-shadow:0 24px 60px rgba(0,0,0,0.25); overflow:hidden;
+                transform:scale(0.92); opacity:0;
+                transition:transform 0.22s cubic-bezier(.34,1.56,.64,1), opacity 0.18s ease;
+                font-family:'Phetsarath OT',sans-serif;">
+ 
+        {# Red header bar #}
+        <div style="background:linear-gradient(135deg,#e74c3c,#c0392b);
+                    padding:24px 24px 20px; text-align:center; color:white;">
+            <div style="width:56px; height:56px; background:rgba(255,255,255,0.2);
+                        border-radius:50%; display:flex; align-items:center;
+                        justify-content:center; margin:0 auto 12px; font-size:1.6rem;">
+                🗑️
+            </div>
+            <h3 style="margin:0; font-size:1.25rem; font-weight:700; font-family:phetsarath ot; ">ຢືນຢັນການລຶບ?</h3>
+            <p style="margin:6px 0 0; font-size:0.85rem; opacity:0.85; color: white;">
+                ການດຳເນີນການນີ້ບໍ່ສາມາດກູ້ຄືນໄດ້
+            </p>
+        </div>
+ 
+        {# Document preview row #}
+        <div style="display:flex; gap:14px; align-items:center;
+                    padding:18px 20px; border-bottom:1px solid #f1f5f9;">
+            <div id="modalDocImage"
+                 style="width:54px; height:54px; border-radius:10px; overflow:hidden;
+                        background:#f1f5f9; flex-shrink:0; display:flex;
+                        align-items:center; justify-content:center; font-size:1.5rem;">
+                📄
+            </div>
+            <div style="min-width:0;">
+                <div id="modalDocTitle"
+                     style="font-weight:700; font-size:0.95rem; color:#1c2023;
+                            white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                </div>
+                <div id="modalDocPrice"
+                     style="font-size:0.82rem; color:#64748b; margin-top:3px;"></div>
+            </div>
+        </div>
+ 
+        {# Buttons #}
+        <div style="display:flex; gap:10px; padding:18px 20px;">
+            <button type="button" id="deleteModalCancel"
+                    style="flex:1; padding:11px; border:1.5px solid #e2e8f0;
+                           border-radius:10px; background:white; color:#1c2023;
+                           font-family:'Phetsarath OT',sans-serif; font-size:0.9rem;
+                           cursor:pointer; font-weight:500; transition:background 0.15s;">
+                ← ຍົກເລີກ
+            </button>
+ 
+            <form id="deleteModalForm" method="POST" style="flex:1; margin:0;">
+                {% csrf_token %}
+                <button type="submit"
+                        style="width:100%; padding:11px; background:#e74c3c; color:white;
+                               border:none; border-radius:10px;
+                               font-family:'Phetsarath OT',sans-serif; font-size:0.9rem;
+                               cursor:pointer; font-weight:700; transition:background 0.15s;">
+                    🗑️ ລຶບດຽວນີ້
+                </button>
+            </form>
+        </div>
+ 
+    </div>
+</div>
+ 
+<script>
+(function () {
+    const modal    = document.getElementById('deleteModal');
+    const box      = document.getElementById('deleteModalBox');
+    const form     = document.getElementById('deleteModalForm');
+    const title    = document.getElementById('modalDocTitle');
+    const price    = document.getElementById('modalDocPrice');
+    const imgWrap  = document.getElementById('modalDocImage');
+    const cancelBtn = document.getElementById('deleteModalCancel');
+ 
+    function openModal(btn) {
+        form.action     = btn.dataset.deleteUrl;
+        title.textContent = btn.dataset.docTitle;
+        price.textContent = '💰 ' + Number(btn.dataset.docPrice).toLocaleString() + ' ₭';
+ 
+        const imgUrl = btn.dataset.docImage;
+        if (imgUrl) {
+            imgWrap.innerHTML =
+                `<img src="${imgUrl}" style="width:100%;height:100%;object-fit:cover;">`;
+        } else {
+            imgWrap.innerHTML = '📄';
+        }
+ 
+        modal.style.display = 'flex';
+        // Trigger animation on next frame
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                box.style.transform = 'scale(1)';
+                box.style.opacity   = '1';
+            });
+        });
+    }
+ 
+    function closeModal() {
+        box.style.transform = 'scale(0.92)';
+        box.style.opacity   = '0';
+        setTimeout(() => { modal.style.display = 'none'; }, 200);
+    }
+ 
+    // Wire every delete button
+    document.querySelectorAll('.btn-delete-trigger').forEach(btn => {
+        btn.addEventListener('click', () => openModal(btn));
+    });
+ 
+    cancelBtn.addEventListener('click', closeModal);
+ 
+    // Click backdrop to close
+    modal.addEventListener('click', function (e) {
+        if (e.target === modal) closeModal();
+    });
+ 
+    // Escape key
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && modal.style.display === 'flex') closeModal();
+    });
+})();
+</script>
+
+{% endblock %}

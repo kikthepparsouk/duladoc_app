@@ -1,0 +1,50 @@
+{% extends 'wallet/base.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3">
+            <div class="dashboard-menu">
+                <ul class="nav flex-column" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link {% if active_tab == 'dashboard' %}active{% endif %}" 
+                           href="{% url 'wallet_home' %}">
+                            <i class="fi-rs-settings-sliders mr-10"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if active_tab == 'transactions' %}active{% endif %}" 
+                           href="">
+                            <i class="fi-rs-shopping-bag mr-10"></i>ประวัติการทำรายการ
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if active_tab == 'topup' %}active{% endif %}" 
+                           href="">
+                            <i class="fi-rs-shopping-cart-check mr-10"></i>เติมเงิน
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if active_tab == 'documents' %}active{% endif %}" 
+                           href="">
+                            <i class="fi-rs-file mr-10"></i>เอกสารของฉัน
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'logout' %}">
+                            <i class="fi-rs-sign-out mr-10"></i>ออกจากระบบ
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-9">
+            {% block dashboard_content %}
+            {% endblock %}
+        </div>
+    </div>
+</div>
+{% endblock %}

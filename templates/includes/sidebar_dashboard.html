@@ -1,0 +1,76 @@
+{% load static %}
+<style>
+@media (max-width: 768px) {
+  .row { flex-direction: column; }
+  .col-md-3, .col-md-9 { width: 100%; padding: 0; }
+  .col-md-3 { margin-bottom: 20px; }
+}
+</style>
+
+<div class="col-md-3" style="font-family: phetsarath ot;">
+    <div class="dashboard-menu">
+        <ul class="nav flex-column" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link {% if active_tab == 'dashboard' %}active{% endif %}" 
+                   href="{% url 'dashboard' %}">
+                    <i class="fi-rs-settings-sliders mr-10"></i>Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if active_tab == 'seller' %}active{% endif %}" 
+                   href="{% url 'seller_dashboard' %}">
+                    <i class="fa-solid fa-dollar-sign mr-10"></i> ລາຍໄດ້
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if active_tab == 'topup' %}active{% endif %}" 
+                   href="{% url 'topup_request' %}">
+                    <i class="fa-solid fa-dollar-sign mr-10"></i> ຕື່ມເງິນ
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if active_tab == 'withdraw_request' %}active{% endif %}" 
+                   href="{% url 'withdraw_request' %}">
+                    <i class="fa-solid fa-money-bill mr-10"></i> ຖອນເງິນ
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if active_tab == 'my-documents' %}active{% endif %}" 
+                   href="{% url 'my-documents' %}">
+                    <i class="fa-solid fa-file mr-10"></i> ເອກະສານຂອງຂ້ອຍ
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" 
+                   onclick="document.getElementById('logoutModal').style.display='flex'; return false;">
+                    <i class="fi-rs-sign-out mr-10"></i>Logout
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<!-- ✅ Modal is OUTSIDE col-md-3 -->
+<div id="logoutModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:99999; align-items:center; justify-content:center;">
+    <div style="background:#fff; border-radius:12px; padding:2rem; width:300px; text-align:center; font-family:'phetsarath ot', sans-serif; position:relative;">
+        <i class="fi-rs-sign-out" style="font-size:2rem; color:#e74c3c; display:block; margin-bottom:1rem;"></i>
+        <h5 style="margin:0 0 0.5rem; font-size:18px;">ອອກຈາກລະບົບ?</h5>
+        <p style="color:#666; font-size:14px; margin:0 0 1.5rem;">ທ່ານແນ່ໃຈບໍ່ວ່າຕ້ອງການ Logout?</p>
+        <div style="display:flex; gap:10px;">
+            <button onclick="document.getElementById('logoutModal').style.display='none'"
+                style="flex:1; padding:10px; border:1px solid #ccc; border-radius:8px; background:#fff; cursor:pointer; font-family:'phetsarath ot', sans-serif;">
+                ຍົກເລີກ
+            </button>
+            <a href="{% url 'logout' %}"
+                style="flex:1; padding:10px; border-radius:8px; background:#e74c3c; color:#fff; text-decoration:none; display:flex; align-items:center; justify-content:center; cursor:pointer; font-weight:600; font-family:'phetsarath ot', sans-serif;">
+                Logout
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('logoutModal').addEventListener('click', function(e) {
+        if (e.target === this) this.style.display = 'none';
+    });
+</script>

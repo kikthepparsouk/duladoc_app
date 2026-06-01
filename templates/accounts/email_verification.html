@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: #1f6feb; color: white; padding: 20px; border-radius: 5px; }
+        .content { padding: 20px; border: 1px solid #ddd; }
+        .button { background: #3fb950; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block; }
+        .footer { font-size: 12px; color: #666; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>ຢືນຢັນອີເມວ - Duladoc</h1>
+        </div>
+        <div class="content">
+            <p>ສະບາຍດີ <strong>{{ username }}</strong>,</p>
+            <p>ກະລຸນາຄລິກປຸ່ມດ້ານລຸ່ມເພື່ອຢືນຢັນອີເມວ ແລະ ເປີດໃຊ້ງານບັນຊີຂອງທ່ານ:</p>
+            <p style="text-align: center; margin: 30px 0;">
+                <a href="{{ activate_url }}" class="button">✅ ຢືນຢັນອີເມວ</a>
+            </p>
+            <p>ຫຼື ຄັດລອກລິ້ງນີ້:</p>
+            <p style="word-break: break-all; background: #f5f5f5; padding: 10px; border-radius: 5px;">
+                {{ activate_url }}
+            </p>
+            <p>ຖ້າທ່ານບໍ່ໄດ້ສ້າງບັນຊີ ກະລຸນາບໍ່ຕ້ອງສົນໃຈອີເມວນີ້.</p>
+        </div>
+        <div class="footer">
+            <p>ຂໍ້ຄວາມນີ້ສົ່ງຈາກ Duladoc ແລະເປັນຂໍ້ຄວາມອັດຕະໂນມັติ ກະລຸນາບໍ່ຕອບກັບອີເມວນີ້</p>
+        </div>
+    </div>
+</body>
+</html>

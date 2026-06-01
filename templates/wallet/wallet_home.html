@@ -1,0 +1,118 @@
+{% extends 'wallet/base.html' %}
+{% block title %}กระเป๋าตังค์ของฉัน{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  <div class="page-title">💰 ກະເປົາເງິນຂອງຂ້ອຍ</div>
+  <div class="page-subtitle">ยอดเงินและประวัติการทำรายการ</div>
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-label">ยอดเงินคงเหลือ</div>
+      <div class="stat-value green">{{ wallet.balance }}฿</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">รายการทั้งหมด</div>
+      <div class="stat-value blue">{{ transactions.count }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">คำขอเติมเงินรอดำเนินการ</div>
+      <div class="stat-value yellow">{{ topup_requests|length }}</div>
+    </div>
+  </div>
+
+  <div style="display:grid; grid-template-columns: 1fr 340px; gap:20px;">
+
+    <!-- Transaction History -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">ประวัติการทำรายการ</div>
+        <a href="{% url 'topup_request' %}" class="btn btn-primary btn-sm">+ เติมเงิน</a>
+      </div>
+      {% if transactions %}
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>ประเภท</th>
+              <th>รายละเอียด</th>
+              <th>จำนวน</th>
+              <th>วันที่</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for tx in transactions %}
+            <tr>
+              <td>
+                {% if tx.transaction_type == 'topup' %}
+                <span class="badge badge-topup">⬆ เติมเงิน</span>
+                {% else %}
+                <span class="badge badge-purchase">⬇ ซื้อเอกสาร</span>
+                {% endif %}
+              </td>
+              <td>{{ tx.description }}</td>
+              <td>
+                {% if tx.transaction_type == 'topup' %}
+                <span class="amount-plus">+{{ tx.amount }}฿</span>
+                {% else %}
+                <span class="amount-minus">-{{ tx.amount }}฿</span>
+                {% endif %}
+              </td>
+              <td class="text-muted">{{ tx.created_at|date:"d/m/Y H:i" }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="empty-state">
+        <div class="icon">📋</div>
+        <p>ยังไม่มีประวัติการทำรายการ</p>
+        <a href="{% url 'topup_request' %}" class="btn btn-primary mt-16">เติมเงินครั้งแรก</a>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Topup Request Status -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">สถานะคำขอเติมเงิน</div>
+      </div>
+      {% if topup_requests %}
+      {% for req in topup_requests %}
+      <div style="padding:14px 0; border-bottom:1px solid var(--border);">
+        <div class="flex justify-between items-center">
+          <span class="text-mono" style="font-size:16px; font-weight:600;">{{ req.amount }}฿</span>
+          {% if req.status == 'pending' %}
+          <span class="badge badge-pending">⏳ รอตรวจสอบ</span>
+          {% elif req.status == 'approved' %}
+          <span class="badge badge-approved">✅ อนุมัติแล้ว</span>
+          {% else %}
+          <span class="badge badge-rejected">❌ ปฏิเสธ</span>
+          {% endif %}
+        </div>
+        <div class="text-muted mt-8" style="font-size:12px;">{{ req.created_at|date:"d/m/Y H:i" }}</div>
+      </div>
+      {% endfor %}
+      <a href="{% url 'topup_request' %}" class="btn btn-outline btn-full mt-16">+ คำขอใหม่</a>
+      {% else %}
+      <div class="empty-state" style="padding:32px 0;">
+        <div class="icon">📤</div>
+        <p>ยังไม่มีคำขอเติมเงิน</p>
+        <a href="{% url 'topup_request' %}" class="btn btn-primary btn-sm mt-16">เติมเงินเลย</a>
+      </div>
+      {% endif %}
+    </div>
+
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="mt-24 flex gap-12">
+    <a href="{% url 'document_list' %}" class="btn btn-outline">📄 ดูเอกสารทั้งหมด</a>
+    <a href="{% url 'topup_request' %}" class="btn btn-primary">+ เติมเงิน</a>
+  </div>
+
+</div>
+{% endblock %}

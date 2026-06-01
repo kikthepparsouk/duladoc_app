@@ -1,0 +1,432 @@
+{% extends 'wallet/base.html' %}
+{% block title %}Admin — ລາຍໄດ້ຂອງລະບົບ{% endblock %}
+
+{% block content %}
+<div class="container" style="font-family: phetsarath ot;">
+
+  <div class="page-title" style="color: #ddd;">⚙️ ລາຍໄດ້ຂອງລະບົບ</div>
+  <div class="page-subtitle" style="color: #ddd;">ພາບລວມຄ່າທຳນຽມ ແລະ ຍອດຂາຍທັງໝົດ</div>
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card" style="border-color:var(--success);">
+      <div class="stat-label">ລາຍໄດ້ລະບົບສະສົມ</div>
+      <div class="stat-value green">{{ total_platform_fee|floatformat:2 }} KIP</div>
+    </div>
+    <div class="stat-card" style="border-color:var(--info);">
+      <div class="stat-label">ຍອດຂາຍລວມ (GMV)</div>
+      <div class="stat-value blue">{{ total_gmv|floatformat:2 }} KIP</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">ຈຳນວນທຸລະກຳ</div>
+      <div class="stat-value" style="color:var(--bg); font-family: phetsarath ot;">{{ total_transactions }} ຄັ້ງ</div>
+    </div>
+    <div class="stat-card" style="border-color:var(--warning);">
+      <div class="stat-label">ເຈົ້າຂອງເອກະສານໄດ້ຮັບລວມ</div>
+      <div class="stat-value yellow">{{ total_seller_payout|floatformat:2 }} KIP</div>
+    </div>
+  </div>
+
+  <!-- Revenue Line Chart -->
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-header">
+      <div class="card-title">📈 ກາຟລາຍໄດ້ລາຍວັນ (ໃນ 30 ວັນ)</div>
+    </div>
+    <div style="padding: 20px; position: relative; height: 400px;">
+      <canvas id="revenueChart"></canvas>
+    </div>
+  </div>
+
+  <!-- Top Documents -->
+  <!-- Top Documents -->
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-header">
+      <div class="card-title">🏆 ເອກະສານຂາຍດີ
+        <span style="font-size: 14px; color: var(--text-muted);">({{ top_documents.paginator.count }} ທັງໝົດ)</span>
+      </div>
+    </div>
+    {% if top_documents %}
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>ເອກະສານ</th>
+            <th>ເຈົ້າຂອງເອກະສານ</th>
+            <th>ລາຄາ</th>
+            <th>ຍອດຂາຍ</th>
+            <th>GMV</th>
+            <th>ລະບົບໄດ້ຮັບ</th>
+            <th>ເຈົ້າຂອງໄດ້ຮັັບ</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in top_documents %}
+          <tr>
+            <td class="text-muted">{{ forloop.counter }}</td>
+            <td><strong>{{ item.document.title }}</strong></td>
+            <td>{{ item.document.seller.username|default:"-" }}</td>
+            <td class="text-mono">{{ item.document.price }}KIP</td>
+            <td><span class="badge badge-approved">{{ item.total_sales }}ຄັ້ງ</span></td>
+            <td class="text-mono text-blue">{{ item.gmv|floatformat:2 }}KIP</td>
+            <td class="amount-plus">+{{ item.platform_fee|floatformat:2 }}KIP</td>
+            <td class="text-mono" style="color:var(--warning);">{{ item.seller_payout|floatformat:2 }}KIP</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    {# ── Documents Pagination ── #}
+    {% if top_documents.has_other_pages %}
+    <div style="margin-top:16px; display:flex; gap:6px; flex-wrap:wrap; align-items:center; justify-content:center;">
+      {% if top_documents.has_previous %}
+      <a href="?doc_page={{ top_documents.previous_page_number }}&tx_page={{ request.GET.tx_page|default:1 }}"
+         style="display:inline-flex; align-items:center; padding:6px 14px; border-radius:8px; border:1px solid #ddd; color:#1c2023; text-decoration:none; font-size:13px; font-family:'phetsarath ot';">
+        ‹ ກ່ອນ
+      </a>
+      {% endif %}
+
+      {% for num in top_documents.paginator.page_range %}
+        {% if top_documents.number == num %}
+        <span style="display:inline-flex; align-items:center; padding:6px 14px; border-radius:8px; background:#1f6feb; color:#fff; font-size:13px; font-family:'phetsarath ot';">
+          {{ num }}
+        </span>
+        {% elif num >= top_documents.number|add:-2 and num <= top_documents.number|add:2 %}
+        <a href="?doc_page={{ num }}&tx_page={{ request.GET.tx_page|default:1 }}"
+           style="display:inline-flex; align-items:center; padding:6px 14px; border-radius:8px; border:1px solid #ddd; color:#1c2023; text-decoration:none; font-size:13px; font-family:'phetsarath ot';">
+          {{ num }}
+        </a>
+        {% endif %}
+      {% endfor %}
+
+      {% if top_documents.has_next %}
+      <a href="?doc_page={{ top_documents.next_page_number }}&tx_page={{ request.GET.tx_page|default:1 }}"
+         style="display:inline-flex; align-items:center; padding:6px 14px; border-radius:8px; border:1px solid #ddd; color:#1c2023; text-decoration:none; font-size:13px; font-family:'phetsarath ot';">
+        ຕໍ່ໄປ ›
+      </a>
+      {% endif %}
+    </div>
+    <div style="text-align:center; margin-top:8px; font-size:12px; color:#999; font-family:'phetsarath ot';">
+      ໜ້າ {{ top_documents.number }} / {{ top_documents.paginator.num_pages }}
+    </div>
+    {% endif %}
+
+    {% else %}
+    <div class="empty-state"><div class="icon">📊</div><p>ຍັງບໍ່ມີຂໍ້ມູນ</p></div>
+    {% endif %}
+  </div>
+
+  <!-- Recent Transactions -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">📋 ທຸລະກຳລ່າສຸດ
+        <span style="font-size: 14px; color: var(--text-muted);">({{ recent_purchases.paginator.count }} ທັງໝົດ)</span>
+      </div>
+    </div>
+    {% if recent_purchases %}
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>ຜູ້ຊື້</th>
+            <th>ເອກະສານ</th>
+            <th>ລາຄາ</th>
+            <th>ລະບົບໄດ້ຮັບ</th>
+            <th>ເຈົ້າຂອງໄດ້ຮັັບ</th>
+            <th>ວັັນທີ</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in recent_purchases %}
+          <tr>
+            <td><strong>{{ p.user.username }}</strong></td>
+            <td>{{ p.document.title|truncatechars:30 }}</td>
+            <td class="text-mono">{{ p.amount_paid }}KIP</td>
+            <td class="amount-plus">+{{ p.platform_received }}฿</td>
+            <td class="text-mono" style="color:var(--warning);">{{ p.seller_received }}KIP</td>
+            <td class="text-muted">{{ p.purchased_at|date:"d/m/Y H:i" }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    {# ── Transactions Pagination ── #}
+    {% if recent_purchases.has_other_pages %}
+    <div style="margin-top:16px; display:flex; gap:6px; flex-wrap:wrap; align-items:center; justify-content:center;">
+      {% if recent_purchases.has_previous %}
+      <a href="?tx_page={{ recent_purchases.previous_page_number }}&doc_page={{ request.GET.doc_page|default:1 }}"
+         style="display:inline-flex; align-items:center; padding:6px 14px; border-radius:8px; border:1px solid #ddd; color:#1c2023; text-decoration:none; font-size:13px; font-family:'phetsarath ot';">
+        ‹ ກ່ອນ
+      </a>
+      {% endif %}
+
+      {% for num in recent_purchases.paginator.page_range %}
+        {% if recent_purchases.number == num %}
+        <span style="display:inline-flex; align-items:center; padding:6px 14px; border-radius:8px; background:#1f6feb; color:#fff; font-size:13px; font-family:'phetsarath ot';">
+          {{ num }}
+        </span>
+        {% elif num >= recent_purchases.number|add:-2 and num <= recent_purchases.number|add:2 %}
+        <a href="?tx_page={{ num }}&doc_page={{ request.GET.doc_page|default:1 }}"
+           style="display:inline-flex; align-items:center; padding:6px 14px; border-radius:8px; border:1px solid #ddd; color:#1c2023; text-decoration:none; font-size:13px; font-family:'phetsarath ot';">
+          {{ num }}
+        </a>
+        {% endif %}
+      {% endfor %}
+
+      {% if recent_purchases.has_next %}
+      <a href="?tx_page={{ recent_purchases.next_page_number }}&doc_page={{ request.GET.doc_page|default:1 }}"
+         style="display:inline-flex; align-items:center; padding:6px 14px; border-radius:8px; border:1px solid #ddd; color:#1c2023; text-decoration:none; font-size:13px; font-family:'phetsarath ot';">
+        ຕໍ່ໄປ ›
+      </a>
+      {% endif %}
+    </div>
+    <div style="text-align:center; margin-top:8px; font-size:12px; color:#999; font-family:'phetsarath ot';">
+      ໜ້າ {{ recent_purchases.number }} / {{ recent_purchases.paginator.num_pages }}
+    </div>
+    {% endif %}
+
+    {% else %}
+    <div class="empty-state"><div class="icon">📋</div><p>ຍັງບໍ່ມີທຸລະກຳ</p></div>
+    {% endif %}
+  </div>
+
+</div>
+
+<!-- Chart.js Library -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+
+<script>
+  // ✅ Daily Revenue Data
+  const chartData = {{ daily_revenue|safe }};
+  
+  const ctx = document.getElementById('revenueChart').getContext('2d');
+  const revenueChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: chartData.labels,
+      datasets: [
+        {
+          label: '📈 ລາຍໄດ້ລະບົບ (KIP)',
+          data: chartData.platform_revenue,
+          borderColor: '#3fb950',
+          backgroundColor: 'rgba(63, 185, 80, 0.1)',
+          borderWidth: 3,
+          fill: true,
+          tension: 0.4,
+          pointRadius: 5,
+          pointHoverRadius: 7,
+          pointBackgroundColor: '#3fb950',
+        },
+        {
+          label: '💰 ລາຍໄດ້ທຸລະກຳ (KIP)',
+          data: chartData.gmv_revenue,
+          borderColor: '#1f6feb',
+          backgroundColor: 'rgba(31, 111, 235, 0.1)',
+          borderWidth: 3,
+          fill: true,
+          tension: 0.4,
+          pointRadius: 5,
+          pointHoverRadius: 7,
+          pointBackgroundColor: '#1f6feb',
+        },
+        {
+          label: '👥 ເຈົ້າຂອງເອກະສານໄດ້ຮັບ (KIP)',
+          data: chartData.seller_payout,
+          borderColor: '#d29922',
+          backgroundColor: 'rgba(210, 153, 34, 0.1)',
+          borderWidth: 3,
+          fill: true,
+          tension: 0.4,
+          pointRadius: 5,
+          pointHoverRadius: 7,
+          pointBackgroundColor: '#d29922',
+        },
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: true,
+          position: 'top',
+          labels: {
+            font: { size: 14, family: "'phetsarath ot', sans-serif" },
+            padding: 15,
+          }
+        },
+        title: {
+          display: true,
+          text: 'ລາຍໄດ້ຮາຍວັນ (ໃນ 30 ວັນ)',
+          font: { size: 16, family: "'phetsarath ot', sans-serif" }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            font: { family: "'phetsarath ot', sans-serif" },
+            callback: function(value) {
+              return value.toLocaleString() + ' KIP';
+            }
+          },
+          title: {
+            display: true,
+            text: 'ລາຍໄດ້ (KIP)',
+            font: { family: "'phetsarath ot', sans-serif" }
+          }
+        },
+        x: {
+          ticks: {
+            font: { family: "'phetsarath ot', sans-serif" }
+          }
+        }
+      }
+    }
+  });
+</script>
+
+<style>
+  body {
+      
+      color: #777373;
+    }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+  }
+
+  .stat-card {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+  }
+
+  .stat-label {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 10px;
+  }
+
+  .stat-value {
+    font-size: 24px;
+    font-weight: bold;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  .stat-value.green { color: #3fb950; }
+  .stat-value.blue { color: #1f6feb; }
+  .stat-value.yellow { color: #d29922; }
+
+  .card {
+    background: rgb(255, 255, 255);
+    border: 1px solid #fefefe;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #3e21b1;
+  }
+
+  .card-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1c2023;
+  }
+
+  .table-wrap {
+    overflow-x: auto;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th {
+    background: #f8f9fa;
+    padding: 12px;
+    text-align: left;
+    font-weight: 600;
+    color: #575656;
+    border-bottom: 2px solid #ddd;
+  }
+
+  td {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+  }
+
+  tr:hover { background: #c7c9cb; }
+
+  .text-muted { color: #393838; }
+  .text-mono { font-family: 'IBM Plex Mono', monospace; }
+  .text-blue { color: #1f6feb; }
+  .amount-plus { color: #3fb950; font-weight: bold; }
+
+  .badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .badge-approved {
+    background: rgba(63, 185, 80, 0.15);
+    color: #3fb950;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px;
+    color: #999;
+  }
+
+  .empty-state .icon {
+    font-size: 48px;
+    margin-bottom: 15px;
+  }
+
+  .page-title {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+
+  .page-subtitle {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 30px;
+  }
+
+  @media (max-width: 768px) {
+    .stats-grid {
+      grid-template-columns: 1fr;
+    }
+
+    table {
+      font-size: 14px;
+    }
+
+    th, td {
+      padding: 8px;
+    }
+  }
+</style>
+
+{% endblock %}

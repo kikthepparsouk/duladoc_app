@@ -1,0 +1,155 @@
+{% extends 'wallet/base.html' %}
+{% block title %}เติมเงิน{% endblock %}
+
+{% block content %}
+<div class="container-sm">
+
+  <div class="page-title">💳 เติมเงินเข้ากระเป๋าตังค์</div>
+  <div class="page-subtitle">กรอกข้อมูลและแนบสลิปการโอนเงินเพื่อส่งให้ Admin ตรวจสอบ</div>
+
+  <!-- Balance Info -->
+  <div class="card" style="margin-bottom:24px; background: linear-gradient(135deg, #1a2540 0%, #161b22 100%); border-color: var(--accent);">
+    <div class="flex justify-between items-center">
+      <div>
+        <div style="font-size:12px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.8px; margin-bottom:6px;">ยอดเงินปัจจุบัน</div>
+        <div style="font-size:32px; font-weight:700; font-family:'IBM Plex Mono',monospace; color:var(--success);">{{ wallet.balance }}฿</div>
+      </div>
+      <div style="font-size:48px; opacity:0.3;">💰</div>
+    </div>
+  </div>
+
+  <!-- Bank Info Box -->
+  <div class="card" style="margin-bottom:24px; border-color:var(--warning);">
+    <div class="flex gap-12 items-center" style="margin-bottom:12px;">
+      <span style="font-size:20px;">🏦</span>
+      <div class="card-title">ข้อมูลบัญชีสำหรับโอนเงิน</div>
+    </div>
+    <div style="background:var(--bg); border-radius:var(--radius); padding:16px; font-family:'IBM Plex Mono',monospace;">
+      <div style="margin-bottom:8px; font-size:14px;">
+        <span style="color:var(--text-muted);">ธนาคาร:</span>
+        <span style="margin-left:12px; color:var(--text);">กสิกรไทย (KBANK)</span>
+      </div>
+      <div style="margin-bottom:8px; font-size:14px;">
+        <span style="color:var(--text-muted);">ชื่อบัญชี:</span>
+        <span style="margin-left:12px; color:var(--text);">บริษัท XXX จำกัด</span>
+      </div>
+      <div style="font-size:14px;">
+        <span style="color:var(--text-muted);">เลขบัญชี:</span>
+        <span style="margin-left:12px; color:var(--warning); font-weight:600; letter-spacing:2px;">XXX-X-XXXXX-X</span>
+      </div>
+    </div>
+    <p style="font-size:12px; color:var(--text-muted); margin-top:10px;">⚠️ กรุณาโอนเงินก่อน แล้วจึงกรอกแบบฟอร์มพร้อมแนบสลิป</p>
+  </div>
+
+  <!-- Form -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">📤 ส่งหลักฐานการโอนเงิน</div>
+    </div>
+
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <!-- Amount -->
+      <div class="form-group">
+        <label class="form-label">{{ form.amount.label }}</label>
+        {{ form.amount }}
+        {% if form.amount.errors %}<ul class="errorlist">{% for e in form.amount.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+        <div class="form-hint">โปรดระบุจำนวนเงินที่โอนมาตรงกับสลิป</div>
+      </div>
+
+      <!-- Slip Image -->
+      <div class="form-group">
+        <label class="form-label">{{ form.slip_image.label }}</label>
+
+        <!-- Upload Area -->
+        <div id="upload-area" style="
+          border: 2px dashed var(--border);
+          border-radius: var(--radius-lg);
+          padding: 32px;
+          text-align: center;
+          cursor: pointer;
+          transition: all 0.2s;
+          background: var(--bg);
+        " onclick="document.getElementById('slip_image_input').click()">
+          <div id="upload-placeholder">
+            <div style="font-size:36px; margin-bottom:8px;">🖼️</div>
+            <div style="font-size:14px; color:var(--text-muted);">คลิกหรือลากไฟล์มาวางที่นี่</div>
+            <div style="font-size:12px; color:var(--text-subtle); margin-top:4px;">รองรับ: JPG, PNG, WEBP (ขนาดไม่เกิน 5MB)</div>
+          </div>
+          <div id="upload-preview" style="display:none;">
+            <img id="preview-img" style="max-height:200px; border-radius:var(--radius); border:1px solid var(--border);" />
+            <div id="preview-name" style="font-size:13px; color:var(--text-muted); margin-top:8px;"></div>
+          </div>
+        </div>
+        <div style="display:none;">{{ form.slip_image }}</div>
+        {% if form.slip_image.errors %}<ul class="errorlist">{% for e in form.slip_image.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+      </div>
+
+      <!-- Note -->
+      <div class="form-group">
+        <label class="form-label">{{ form.note.label }}</label>
+        {{ form.note }}
+        {% if form.note.errors %}<ul class="errorlist">{% for e in form.note.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+      </div>
+
+      <hr class="divider">
+
+      <div class="flex gap-12">
+        <button type="submit" class="btn btn-primary btn-lg" style="flex:1;">📤 ส่งคำขอเติมเงิน</button>
+        <a href="{% url 'wallet_home' %}" class="btn btn-outline btn-lg">ยกเลิก</a>
+      </div>
+    </form>
+  </div>
+
+  <!-- Steps -->
+  <div class="card mt-16" style="border-color:var(--surface2);">
+    <div style="font-size:13px; font-weight:600; color:var(--text-muted); margin-bottom:12px; text-transform:uppercase; letter-spacing:0.5px;">ขั้นตอน</div>
+    <div style="display:flex; flex-direction:column; gap:10px;">
+      {% for step in "123"|make_list %}
+      <div class="flex gap-12 items-center">
+        <div style="width:28px; height:28px; border-radius:50%; background:var(--accent); display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; flex-shrink:0;">{{ step }}</div>
+        <div style="font-size:14px; color:var(--text-muted);">
+          {% if step == "1" %}โอนเงินเข้าบัญชีตามที่แสดงด้านบน
+          {% elif step == "2" %}กรอกจำนวนเงินและแนบสลิปในฟอร์มนี้
+          {% elif step == "3" %}Admin จะตรวจสอบและอนุมัติเงินเข้ากระเป๋าตังค์ของคุณ{% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const input = document.getElementById('slip_image_input');
+  const area = document.getElementById('upload-area');
+  const placeholder = document.getElementById('upload-placeholder');
+  const preview = document.getElementById('upload-preview');
+  const previewImg = document.getElementById('preview-img');
+  const previewName = document.getElementById('preview-name');
+
+  input.addEventListener('change', function() {
+    if (this.files && this.files[0]) {
+      const file = this.files[0];
+      const reader = new FileReader();
+      reader.onload = e => {
+        previewImg.src = e.target.result;
+        previewName.textContent = file.name;
+        placeholder.style.display = 'none';
+        preview.style.display = 'block';
+        area.style.borderColor = 'var(--success)';
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  area.addEventListener('dragover', e => { e.preventDefault(); area.style.borderColor = 'var(--accent-light)'; });
+  area.addEventListener('dragleave', () => { area.style.borderColor = 'var(--border)'; });
+  area.addEventListener('drop', e => {
+    e.preventDefault();
+    input.files = e.dataTransfer.files;
+    input.dispatchEvent(new Event('change'));
+  });
+</script>
+{% endblock %}

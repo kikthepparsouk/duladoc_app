@@ -1,0 +1,178 @@
+{% extends 'wallet/base.html' %}
+{% block title %}Dashboard รายได้ของฉัน{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  <div class="page-title">📊 Dashboard รายได้</div>
+  <div class="page-subtitle">ติดตามยอดขายและรายได้จากเอกสารของคุณ</div>
+
+  <!-- Stats Overview -->
+  <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
+    <div class="stat-card" style="border-color: var(--success); background: linear-gradient(135deg, rgba(63,185,80,.08), var(--surface));">
+      <div class="stat-label">รายได้สะสมทั้งหมด</div>
+      <div class="stat-value green">{{ total_earned|floatformat:2 }}฿</div>
+      <div style="font-size:12px; color:var(--text-muted); margin-top:6px;">ยอดสุทธิหลังหักค่าธรรมเนียม</div>
+    </div>
+    <div class="stat-card" style="border-color: var(--info);">
+      <div class="stat-label">ยอดในกระเป๋าปัจจุบัน</div>
+      <div class="stat-value blue">{{ wallet.balance|floatformat:2 }}฿</div>
+      <div style="font-size:12px; color:var(--text-muted); margin-top:6px;">พร้อมใช้งาน</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">เอกสารที่ขายอยู่</div>
+      <div class="stat-value" style="color:var(--text);">{{ doc_stats|length }}</div>
+      <div style="font-size:12px; color:var(--text-muted); margin-top:6px;">รายการทั้งหมด</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">ยอดขายรวม</div>
+      <div class="stat-value yellow">
+        {% with total=0 %}
+          {% for d in doc_stats %}{% if forloop.first %}{{ d.total_sales }}{% endif %}{% endfor %}
+          {{ doc_stats|length }}
+        {% endwith %}
+      </div>
+      <div style="font-size:12px; color:var(--text-muted); margin-top:6px;">ครั้ง</div>
+    </div>
+  </div>
+
+  <div style="display:grid; grid-template-columns: 1fr 360px; gap:20px;">
+
+    <!-- เอกสารและรายได้ -->
+    <div>
+      <div class="card" style="margin-bottom:20px;">
+        <div class="card-header">
+          <div class="card-title">📄 รายได้แยกตามเอกสาร</div>
+        </div>
+
+        {% if doc_stats %}
+          {% for item in doc_stats %}
+          <div style="padding:16px 0; border-bottom:1px solid var(--border);">
+            <div class="flex justify-between items-center" style="margin-bottom:10px;">
+              <div class="flex gap-12 items-center">
+                <div style="
+                  width:44px; height:44px; flex-shrink:0;
+                  background:linear-gradient(135deg,#1a2540,#21262d);
+                  border-radius:var(--radius);
+                  border:1px solid var(--border);
+                  display:flex; align-items:center; justify-content:center;
+                  font-size:20px;
+                ">
+                  {% if item.document.thumbnail %}
+                    <img src="{{ item.document.thumbnail.url }}" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius);">
+                  {% else %}📄{% endif %}
+                </div>
+                <div>
+                  <div style="font-weight:600; font-size:15px;">{{ item.document.title }}</div>
+                  <div style="font-size:12px; color:var(--text-muted);">
+                    ราคา {{ item.document.price }}฿ · คุณได้ {{ item.document.seller_revenue_rate|floatformat:0 }}%
+                    = <span style="color:var(--success);">{{ item.document.seller_amount }}฿/ชิ้น</span>
+                  </div>
+                </div>
+              </div>
+              <div style="text-align:right;">
+                <div style="font-size:20px; font-weight:700; font-family:'IBM Plex Mono',monospace; color:var(--success);">
+                  +{{ item.total_revenue|floatformat:2 }}฿
+                </div>
+                <div style="font-size:12px; color:var(--text-muted);">{{ item.total_sales }} ครั้ง</div>
+              </div>
+            </div>
+
+            <!-- Progress bar ของยอดขาย -->
+            {% if item.total_sales > 0 %}
+            <div style="background:var(--surface2); border-radius:4px; height:4px; overflow:hidden;">
+              <div style="
+                height:100%;
+                border-radius:4px;
+                background: linear-gradient(90deg, var(--success), var(--info));
+                width: {% widthratio item.total_sales 100 100 %}%;
+                min-width:8px;
+              "></div>
+            </div>
+            {% endif %}
+          </div>
+          {% endfor %}
+        {% else %}
+          <div class="empty-state">
+            <div class="icon">📂</div>
+            <p>คุณยังไม่มีเอกสารที่ขาย</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- ประวัติรายได้ล่าสุด -->
+    <div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">💰 รายได้ล่าสุด</div>
+        </div>
+
+        {% if recent_revenues %}
+          {% for tx in recent_revenues %}
+          <div style="padding:12px 0; border-bottom:1px solid var(--border);">
+            <div class="flex justify-between items-center">
+              <div style="font-size:13px; color:var(--text); flex:1; padding-right:12px;">
+                {{ tx.description|truncatechars:40 }}
+              </div>
+              <span class="amount-plus" style="white-space:nowrap;">+{{ tx.amount }}฿</span>
+            </div>
+            <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">
+              {{ tx.created_at|date:"d/m/Y H:i" }}
+            </div>
+          </div>
+          {% endfor %}
+        {% else %}
+          <div class="empty-state" style="padding:32px 0;">
+            <div class="icon">📋</div>
+            <p>ยังไม่มีรายได้</p>
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Revenue Rate Info -->
+      <div class="card mt-16" style="border-color:var(--warning);">
+        <div style="font-size:13px; font-weight:600; color:var(--warning); margin-bottom:12px;">💡 สัดส่วนรายได้ของคุณ</div>
+        {% for item in doc_stats %}
+        {% if forloop.first %}
+        <div style="display:flex; gap:8px; align-items:center; margin-bottom:12px;">
+          <div style="flex:1;">
+            <div style="font-size:12px; color:var(--text-muted); margin-bottom:4px;">เจ้าของเอกสาร (คุณ)</div>
+            <div style="background:var(--surface2); border-radius:4px; height:12px; overflow:hidden;">
+              <div style="
+                height:100%; border-radius:4px;
+                background:var(--success);
+                width:{{ item.document.seller_revenue_rate|floatformat:0 }}%;
+              "></div>
+            </div>
+          </div>
+          <div style="font-family:'IBM Plex Mono',monospace; font-size:15px; font-weight:700; color:var(--success);">
+            {{ item.document.seller_revenue_rate|floatformat:0 }}%
+          </div>
+        </div>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <div style="flex:1;">
+            <div style="font-size:12px; color:var(--text-muted); margin-bottom:4px;">ค่าธรรมเนียมระบบ</div>
+            <div style="background:var(--surface2); border-radius:4px; height:12px; overflow:hidden;">
+              <div style="
+                height:100%; border-radius:4px;
+                background:var(--text-subtle);
+                width:{% widthratio item.document.seller_revenue_rate 1 100 %}%;
+              "></div>
+            </div>
+          </div>
+          <div style="font-family:'IBM Plex Mono',monospace; font-size:15px; font-weight:700; color:var(--text-muted);">
+            {% widthratio item.document.seller_revenue_rate 1 100 %}%
+          </div>
+        </div>
+        {% endif %}
+        {% empty %}
+        <div style="font-size:13px; color:var(--text-muted);">ไม่มีข้อมูล</div>
+        {% endfor %}
+      </div>
+
+    </div>
+  </div>
+
+</div>
+{% endblock %}

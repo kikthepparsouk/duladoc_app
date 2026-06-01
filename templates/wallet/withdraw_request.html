@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block title %}ຖອນເງິນ — Duladoc{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width:900px; margin:32px auto; padding:0 16px; font-family:'Phetsarath OT',sans-serif;">
+
+  <!-- Header -->
+  <div style="margin-bottom:24px;">
+    <h2 style="font-size:22px; font-weight:700; color:#0a1e3c; margin-bottom:4px;">💸 ຖອນເງິນ</h2>
+    <p style="color:#6b7280; font-size:14px;">ຖອນລາຍໄດ້ຈາກການຂາຍເອກະສານເຂົ້າບັນຊີທະນາຄານຂອງທ່ານ</p>
+  </div>
+
+  <!-- Wallet Balance Card -->
+  <div style="background:linear-gradient(135deg,#1a3a5c,#0f2340); border-radius:16px; padding:24px; margin-bottom:24px; color:white;">
+    <div style="font-size:13px; opacity:0.7; margin-bottom:8px;">ຍອດເງິນທີ່ຖອນໄດ້</div>
+    <div style="font-size:32px; font-weight:700; font-family:monospace;">{{ withdrawable|floatformat:2|intcomma }} ກີບ</div>
+    <div style="font-size:12px; opacity:0.6; margin-top:8px;">ຖອນຂັ້ນຕ່ຳ {{ min_withdraw }} ກີບ</div>
+  </div>
+
+  {% if messages %}
+  {% for message in messages %}
+  <div style="padding:12px 16px; margin-bottom:16px; border-radius:8px;
+    background:{% if 'error' in message.tags %}#fee2e2{% elif 'warning' in message.tags %}#fef3c7{% else %}#d1fae5{% endif %};
+    color:{% if 'error' in message.tags %}#991b1b{% elif 'warning' in message.tags %}#92400e{% else %}#065f46{% endif %};
+    border-left:4px solid {% if 'error' in message.tags %}#ef4444{% elif 'warning' in message.tags %}#f59e0b{% else %}#10b981{% endif %};">
+    {{ message }}
+  </div>
+  {% endfor %}
+  {% endif %}
+
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+
+    <!-- Form -->
+    <div style="background:white; border:1px solid #e5e7eb; border-radius:12px; padding:24px;">
+      <h3 style="font-size:16px; font-weight:600; margin-bottom:20px; color:#111827;">📋 ຂໍ້ມູນການຖອນເງິນ</h3>
+
+      <form method="POST" action="{% url 'withdraw_request' %}">
+        {% csrf_token %}
+
+        <!-- Amount -->
+        <div style="margin-bottom:16px;">
+          <label style="display:block; font-size:13px; font-weight:600; color:#374151; margin-bottom:6px;">
+            ຈຳນວນທີ່ຕ້ອງການຖອນ (ກີບ) <span style="color:#ef4444;">*</span>
+          </label>
+          <input type="number" name="amount"
+  min="{{ min_withdraw }}"
+  max="{{ withdrawable|floatformat:0 }}"
+  step="1000"
+  placeholder="{{ min_withdraw }}"
+  required
+  style="width:100%; padding:10px 12px; border:1px solid #d1d5db; border-radius:8px; font-size:15px; box-sizing:border-box;">
+<div style="font-size:11px; color:#9ca3af; margin-top:4px;">
+  ຂັ້ນຕ່ຳ {{ min_withdraw|intcomma }} ກີບ · ສູງສຸດ {{ withdrawable|intcomma }} ກີບ
+</div>
+        </div>
+
+        <!-- Bank Name -->
+        <div style="margin-bottom:16px;">
+          <label style="display:block; font-size:13px; font-weight:600; color:#374151; margin-bottom:6px;">
+            ຊື່ທະນາຄານ <span style="color:#ef4444;">*</span>
+          </label>
+          <select name="bank_name" required
+            style="width:100%; padding:10px 12px; border:1px solid #d1d5db; border-radius:8px; font-size:14px; box-sizing:border-box; background:white;">
+            <option value="" disabled selected>-- ເລືອກທະນາຄານ --</option>
+            <option value="BCEL">BCEL (ທະນາຄານການຄ້າຕ່າງປະເທດລາວ)</option>
+            <option value="LDB">LDB (ທະນາຄານພັດທະນາລາວ)</option>
+            <option value="APB">APB (ທະນາຄານສົ່ງເສີມກະສິກຳ)</option>
+            <option value="JDB">JDB (ທະນາຄານຮ່ວມພັດທະນາ)</option>
+            <option value="Maruhan">Maruhan Japan Bank Lao</option>
+            <option value="BFL">BFL (ທະນາຄານການເງິນລາວ)</option>
+            <option value="Other">ອື່ນໆ</option>
+          </select>
+        </div>
+
+        <!-- Account Number -->
+        <div style="margin-bottom:16px;">
+          <label style="display:block; font-size:13px; font-weight:600; color:#374151; margin-bottom:6px;">
+            ເລກບັນຊີ <span style="color:#ef4444;">*</span>
+          </label>
+          <input type="text" name="account_number" placeholder="0000-000000-000" required
+            style="width:100%; padding:10px 12px; border:1px solid #d1d5db; border-radius:8px; font-size:15px; font-family:monospace; box-sizing:border-box;">
+        </div>
+
+        <!-- Account Name -->
+        <div style="margin-bottom:16px;">
+          <label style="display:block; font-size:13px; font-weight:600; color:#374151; margin-bottom:6px;">
+            ຊື່ເຈົ້າຂອງບັນຊີ <span style="color:#ef4444;">*</span>
+          </label>
+          <input type="text" name="account_name" placeholder="ຊື່ ນາມສະກຸນ" required
+            style="width:100%; padding:10px 12px; border:1px solid #d1d5db; border-radius:8px; font-size:14px; box-sizing:border-box;">
+        </div>
+
+        <!-- Note -->
+        <div style="margin-bottom:20px;">
+          <label style="display:block; font-size:13px; font-weight:600; color:#374151; margin-bottom:6px;">
+            ໝາຍເຫດ (ບໍ່ບັງຄັບ)
+          </label>
+          <textarea name="note" rows="2" placeholder="ໝາຍເຫດເພີ່ມຕື່ມ..."
+            style="width:100%; padding:10px 12px; border:1px solid #d1d5db; border-radius:8px; font-size:14px; box-sizing:border-box; resize:vertical;"></textarea>
+        </div>
+
+        <!-- Warning -->
+        <div style="background:#fef3c7; border:1px solid #f59e0b; border-radius:8px; padding:12px; margin-bottom:20px; font-size:13px; color:#92400e;">
+          ⚠️ ເງິນຈະຖືກຫັກຈາກກະເປົ໋າທັນທີ ແລະ Admin ຈະໂອນເງິນໃຫ້ພາຍໃນ 1-3 ວັນທຳການ
+        </div>
+
+        <button type="submit"
+          style="width:100%; padding:12px; background:#1a3a5c; color:white; border:none; border-radius:8px; font-size:15px; font-weight:600; cursor:pointer; font-family:'Phetsarath OT',sans-serif;">
+          💸 ສົ່ງຄຳຂໍຖອນເງິນ
+        </button>
+      </form>
+    </div>
+
+    <!-- History -->
+    <div style="background:white; border:1px solid #e5e7eb; border-radius:12px; padding:24px;">
+      <h3 style="font-size:16px; font-weight:600; margin-bottom:20px; color:#111827;">📋 ປະຫວັດການຖອນເງິນ</h3>
+
+      {% if withdraw_history %}
+        {% for w in withdraw_history %}
+        <div style="padding:14px 0; border-bottom:1px solid #f3f4f6;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <span style="font-size:16px; font-weight:700; font-family:monospace; color:#111827;">
+              {{ w.amount|intcomma }} ກີບ
+            </span>
+            {% if w.status == 'pending' %}
+              <span style="background:#fef3c7; color:#92400e; padding:3px 10px; border-radius:20px; font-size:12px; font-weight:600;">⏳ ລໍຖ້າ</span>
+            {% elif w.status == 'approved' %}
+              <span style="background:#d1fae5; color:#065f46; padding:3px 10px; border-radius:20px; font-size:12px; font-weight:600;">✅ ສຳເລັດ</span>
+            {% else %}
+              <span style="background:#fee2e2; color:#991b1b; padding:3px 10px; border-radius:20px; font-size:12px; font-weight:600;">❌ ຖືກປະຕິເສດ</span>
+            {% endif %}
+          </div>
+          <div style="font-size:12px; color:#6b7280;">
+            🏦 {{ w.bank_name }} · {{ w.account_number }}
+          </div>
+          <div style="font-size:11px; color:#9ca3af; margin-top:2px;">
+            {{ w.created_at|date:"d/m/Y H:i" }}
+          </div>
+          {% if w.status == 'rejected' %}
+          <div style="font-size:12px; color:#ef4444; margin-top:4px;">เงินถูกคืนเข้ากระเป๋าแล้ว</div>
+          {% endif %}
+        </div>
+        {% endfor %}
+      {% else %}
+        <div style="text-align:center; padding:40px 0; color:#9ca3af;">
+          <div style="font-size:36px; margin-bottom:8px;">📭</div>
+          <div style="font-size:14px;">ຍັງບໍ່ມີປະຫວັດການຖອນເງິນ</div>
+        </div>
+      {% endif %}
+    </div>
+    <p>withdrawable: {{ withdrawable }}</p>
+<p>wallet: {{ wallet.balance }}</p>
+<p>revenue: {{ revenue_total }}</p>
+<p>withdrawn: {{ withdrawn_total }}</p>
+
+  </div>
+</div>
+{% endblock %}

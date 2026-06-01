@@ -1,0 +1,90 @@
+{% extends 'wallet/base.html' %}
+{% block title %}ยืนยันการซื้อ{% endblock %}
+
+{% block content %}
+<div class="container-sm">
+
+  <div class="page-title">🛒 ยืนยันการซื้อเอกสาร</div>
+  <div class="page-subtitle">กรุณาตรวจสอบรายละเอียดก่อนยืนยัน</div>
+
+  <!-- Document Info -->
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-header">
+      <div class="card-title">รายละเอียดเอกสาร</div>
+    </div>
+    <div class="flex gap-12" style="align-items:flex-start;">
+      <div style="
+        width:80px; height:80px; flex-shrink:0;
+        background:linear-gradient(135deg,#1a2540,#21262d);
+        border-radius:var(--radius);
+        border:1px solid var(--border);
+        display:flex; align-items:center; justify-content:center;
+        font-size:32px;
+      ">
+        {% if document.thumbnail %}
+          <img src="{{ document.thumbnail.url }}" style="width:100%; height:100%; object-fit:cover; border-radius:var(--radius);">
+        {% else %}📄{% endif %}
+      </div>
+      <div style="flex:1;">
+        <div style="font-size:18px; font-weight:600; margin-bottom:6px;">{{ document.title }}</div>
+        {% if document.description %}
+        <div style="font-size:14px; color:var(--text-muted);">{{ document.description }}</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+ 
+
+  <!-- Payment Summary -->
+  <div class="card" style="margin-bottom:20px; border-color:var(--accent);">
+    <div class="card-header">
+      <div class="card-title">สรุปการชำระเงิน</div>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:12px;">
+      <div class="flex justify-between">
+        <span style="color:var(--text-muted);">ราคาเอกสาร</span>
+        <span class="text-mono" style="font-weight:600;">{{ document.price }}฿</span>
+      </div>
+      <hr class="divider" style="margin:0;">
+      <div class="flex justify-between">
+        <span style="color:var(--text-muted);">ยอดเงินปัจจุบัน</span>
+        <span class="text-mono amount-plus">{{ wallet.balance }}฿</span>
+      </div>
+      <div class="flex justify-between">
+        <span style="color:var(--text-muted);">ยอดหลังชำระ</span>
+        <span class="text-mono" style="font-weight:700; font-size:18px; color:var(--info);">
+          {{ wallet.balance|add:"-"|add:document.price }}฿
+        </span>
+      </div>
+    </div>
+  </div>
+
+  {% if wallet.balance >= document.price %}
+  <!-- Confirm -->
+  <div class="card" style="border-color:var(--success); text-align:center; padding:28px;">
+    <div style="font-size:36px; margin-bottom:8px;">✅</div>
+    <div style="font-size:15px; color:var(--text-muted); margin-bottom:20px;">ยอดเงินเพียงพอ พร้อมดาวน์โหลดทันทีหลังชำระ</div>
+    <form method="post" style="display:inline-flex; gap:12px;">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-success btn-lg">💳 ยืนยันชำระเงิน {{ document.price }}฿</button>
+      <a href="{% url 'document_list' %}" class="btn btn-outline btn-lg">ยกเลิก</a>
+    </form>
+  </div>
+
+  {% else %}
+  <!-- Insufficient -->
+  <div class="card" style="border-color:var(--danger); text-align:center; padding:28px;">
+    <div style="font-size:36px; margin-bottom:8px;">❌</div>
+    <div style="font-size:15px; color:var(--danger); margin-bottom:6px; font-weight:600;">ยอดเงินไม่เพียงพอ</div>
+    <div style="font-size:14px; color:var(--text-muted); margin-bottom:20px;">
+      ต้องการเพิ่มอีก <strong style="color:var(--warning);">{{ document.price|add:"-"|add:wallet.balance }}฿</strong>
+    </div>
+    <div class="flex gap-12" style="justify-content:center;">
+      <a href="{% url 'topup_request' %}" class="btn btn-primary btn-lg">💳 เติมเงิน</a>
+      <a href="{% url 'document_list' %}" class="btn btn-outline btn-lg">กลับ</a>
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

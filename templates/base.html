@@ -1,0 +1,1315 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+{% load static %}
+
+<head>
+    <meta charset="utf-8">
+    <title>{% block title %}Duladoc - Document Management Platform{% endblock %}</title>
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content="{% block meta_description %}Duladoc is a professional document management and wallet system platform.{% endblock %}">
+    <meta name="keywords" content="{% block meta_keywords %}documents, management, wallet, platform{% endblock %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#6C757D">
+    
+    <!-- Open Graph Meta Tags for Social Sharing -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="{% block og_title %}Duladoc - Document Management Platform{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Duladoc is a professional document management and wallet system platform.{% endblock %}">
+    <meta property="og:url" content="{% block og_url %}https://duladoc.com{% endblock %}">
+    <meta property="og:image" content="{% block og_image %}https://duladoc.com/static/imgs/theme/logo.png{% endblock %}">
+    <meta property="og:site_name" content="Duladoc">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{% block twitter_title %}Duladoc - Document Management Platform{% endblock %}">
+    <meta name="twitter:description" content="{% block twitter_description %}Duladoc is a professional document management and wallet system platform.{% endblock %}">
+    <meta name="twitter:image" content="{% block twitter_image %}https://duladoc.com/static/imgs/theme/logo.png{% endblock %}">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="{% block canonical_url %}https://duladoc.com{% endblock %}">
+    
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'imgs/theme/favicon.ico' %}">
+    <link rel="icon" type="image/x-icon" href="{% static 'imgs/theme/favicon.ico' %}">
+    <link rel="apple-touch-icon" href="{% static 'imgs/theme/favicon.ico' %}">
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="{% static 'imgs/theme/favicon.ico' %}" as="image">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- SEO: Sitemap & Robots -->
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml">
+    <style>
+        /* Fix sidebar width on desktop */
+
+
+        .product-grid-4 .col-lg-3,
+        .product-grid-4 .col-md-4,
+        .product-grid-4 .col-sm-6,
+        .product-grid-4 .col-6 {
+            display: flex;
+        }
+
+
+        .product-content-wrap {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+
+
+        /* ── Mega Menu Layout ── */
+.has-children { position: relative; }
+
+.has-children > .dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 600px;
+  background: white;
+  border: 1px solid #eee;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  border-radius: 4px;
+  z-index: 9999;
+  padding: 0;
+  overflow: hidden;
+
+
+}
+
+.has-children:hover > .dropdown-menu {
+  display: block;
+  
+}
+
+/* Two-column layout inside dropdown */
+.mega-menu-layout {
+  display: flex;
+  min-height: 200px;
+}
+
+/* ── Level : Left column ── */
+.level1-list {
+  list-style: none;
+  padding: 0px 0;
+  margin: 0;
+  width: 370px;
+  flex-shrink: 0;
+  border-right: 1px solid #f0f0f0;
+  background: #fafafa;
+}
+
+.level1-item {
+  position: relative;
+}
+/* ── Level 2: Left column ── */
+.level2-list {
+  list-style: none;
+  padding: 8px 0;
+  margin: 0;
+  width: 370px;
+  flex-shrink: 0;
+  border-right: 1px solid #f0f0f0;
+  background: #fafafa;
+}
+
+.level2-item {
+  position: relative;
+}
+
+.level2-item > a {
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  padding: 9px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #333;
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+  gap: 8px;
+}
+
+.level2-item > a i {
+  font-size: 10px;
+  color: #aaa;
+  transition: color 0.15s;
+}
+
+.level2-item:hover > a,
+.level2-item.active > a {
+  background: #fff5f0;
+  color: #F15412;
+}
+
+.level2-item:hover > a i,
+.level2-item.active > a i {
+  color: #F15412;
+}
+
+/* ── Level 3: Right panel ── */
+.level3-panels {
+  flex: 1;
+  padding: 8px 0;
+  background: white;
+}
+
+.level3-panel {
+  display: none;   /* hidden by default, shown by JS */
+  list-style: none;
+  padding: 8px 12px;
+  margin: 0;
+  animation: fadeIn 0.15s ease;
+}
+
+.level3-panel.active {
+  display: block;
+}
+
+.level3-panel li a {
+  display: block;
+  padding: 7px 10px;
+  font-size: 13px;
+  color: #555;
+  text-decoration: none;
+  border-radius: 4px;
+  transition: background 0.15s, color 0.15s;
+}
+
+.level3-panel li a:hover {
+  background: #fff5f0;
+  color: #F15412;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateX(6px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+        /* ── Category Dropdown ── */
+        /* .has-children .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            min-width: 600px;
+            background: white;
+            border: 1px solid #eee;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+            z-index: 9999;
+            padding: 16px;
+            border-radius: 4px;
+        } */
+
+        /* .has-children:hover>.dropdown-menu {
+            display: block;
+        } */
+
+        .level-2-item a {
+            display: block;
+            padding: 6px 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 13px;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+
+        .level-2-item a:hover {
+            color: #F15412;
+            background: #fff5f0;
+        }
+
+        .level-3-item ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .level-3-item ul li a {
+            display: block;
+            padding: 6px 8px;
+            font-size: 13px;
+            color: #555;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+
+        .level-3-item ul li a:hover {
+            color: #F15412;
+            background: #fff5f0;
+        }
+
+        .mega-menu-col {
+            margin-bottom: 8px;
+            border-bottom: 1px solid #f5f5f5;
+            padding-bottom: 8px;
+        }
+
+        .mega-menu-col:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        /* ── ส่วนอื่นๆ ── */
+        .btn-primary.active {
+            background-color: #F15412 !important;
+            color: white !important;
+            border-color: #F15412 !important;
+        }
+
+        .btn-primary.active {
+            background-color: #F15412 !important;
+            color: white !important;
+            border-color: #F15412 !important;
+        }
+
+        .font-all {
+            font-family: phetsarath ot;
+        }
+
+        .level-3-list {
+            display: none;
+        }
+
+        .level-2-item.active {
+            background: #f2f2f2;
+            font-weight: bold;
+        }
+
+
+        /* Custom colors - match 123doc */
+        .bg-primary-123doc {
+            background-color: #1e88e5 !important;
+        }
+
+        .text-primary-123doc {
+            color: #F15412 !important;
+        }
+
+        .border-primary-123doc {
+            border-color: #F15412 !important;
+        }
+
+        .btn-primary-123doc {
+            background-color: #F15412;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            transition: all 0.2s;
+        }
+
+        .btn-primary-123doc:hover {
+            background-color: #F15412;
+            color: white;
+        }
+
+        /* Modal backdrop */
+        .modal-backdrop-123doc {
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+        }
+
+        /* Payment method item */
+        .payment-item {
+            border: 1px solid #F15412;
+            border-radius: 0.5rem;
+            text-align: center;
+            padding: 0.75rem 0.5rem;
+            min-width: 100px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .payment-item:hover,
+        .payment-item.active {
+            background-color: #F15412 !important;
+        }
+
+        .payment-item:hover i,
+        .payment-item.active i,
+        .payment-item:hover span,
+        .payment-item.active span {
+            color: white !important;
+        }
+
+        .payment-item i {
+            font-size: 1.875rem;
+            margin-bottom: 0.25rem;
+            color: #F15412;
+        }
+
+        .payment-item span {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #F15412;
+            display: block;
+        }
+
+        /* Arrow popover */
+        .arrow-bottom-popover.active:after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-top: 8px solid #F15412;
+        }
+
+        /* Hot badge */
+        .item-hot {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 20px;
+            height: 20px;
+            background: #ff4444;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.1);
+                opacity: 0.8;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Custom input */
+        .custom-input {
+            border: 1px solid #e2e8f0;
+            border-radius: 0.375rem;
+            padding: 0.5rem 0.75rem;
+            width: 100%;
+            background: white;
+        }
+
+        .custom-input:focus {
+            outline: none;
+            border-color: #F15412;
+            box-shadow: 0 0 0 3px rgba(241, 84, 18, 0.1);
+        }
+
+        /* Animation */
+        @keyframes slideInUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .animate-slideInUp {
+            animation: slideInUp 0.3s ease-out;
+        }
+
+        .bg-blue-50 {
+            background-color: #eff6ff;
+        }
+
+        .bg-pink-50 {
+            background-color: #fdf2f8;
+        }
+
+        .text-pink-600 {
+            color: #db2777;
+        }
+
+        .text-4xl {
+            font-size: 2.25rem;
+            line-height: 2.5rem;
+        }
+
+        .text-6xl {
+            font-size: 3.75rem;
+            line-height: 1;
+        }
+
+        .text-8xl {
+            font-size: 6rem;
+            line-height: 1;
+        }
+
+        .tracking-wider {
+            letter-spacing: 0.05em;
+        }
+
+        .overflow-auto-custom {
+            overflow-y: auto;
+            max-height: 60vh;
+        }
+
+        .hover-border-primary:hover {
+            border-color: #1e88e5 !important;
+        }
+    </style>
+
+</head>
+
+<body style="font-family: phetsarath ot;">
+    <header class="header-area header-style-1 header-height-2">
+        <div class="header-top header-top-ptb-1 d-none d-lg-block" style="background-color: #f8f7f6;">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-xl-3 col-lg-4">
+                        <div class="header-info">
+                            <ul>
+                                <li>
+                                    <a class="language-dropdown-active" href="#"> <i class="fi-rs-world"></i> EN <i
+                                            class="fi-rs-angle-small-down"></i></a>
+                                    <ul class="language-dropdown">
+                                        <li><a href="#"><img src="{% static 'imgs/theme/flag-fr.png' %}" alt="">LA</a>
+                                        </li>
+                                        <li><a href="#"><img src="{% static 'imgs/theme/flag-dt.png' %}" alt="">VN</a>
+                                        </li>
+                                        <li><a href="#"><img src="{% static 'imgs/theme/flag-ru.png' %}" alt="">CN</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-xl-6 col-lg-4">
+                        <div class="text-center">
+                            <div id="news-flash" class="d-inline-block">
+                                <ul>
+                                    {% for news in news_list %}
+                                    <li>
+                                        {{ news.message }}
+                                        {% if news.link_url %}
+                                        <a href="{{ news.link_url }}">
+                                            {{ news.link_text }}
+                                        </a>
+                                        {% endif %}
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-lg-4">
+                        <div class="header-info header-info-right">
+                            <ul>
+                                {% if user.is_authenticated %}
+                                
+                                <li><i class="fi-rs-user"></i><a href=""onclick="document.getElementById('logoutModal').style.display='flex'; return false;">ອອກຈາກລະບົບ</a>
+
+                                </li>
+                                {% else %}
+                                <li><i class="fi-rs-key"></i><a href="{% url 'login_view' %}">ເຂົ້າລະບົບ</a> /
+                                    <a href="{% url 'register_user' %}">ລົງທະບຽນ</a>
+                                </li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="header-middle header-middle-ptb-1 d-none d-lg-block">
+            <div class="container">
+                <div class="header-wrap">
+                    <div class=" ">
+                        <a href="/"><img src="{% static 'imgs/logo/logo.png' %}" alt="logo"
+                                style="height: 64px; width: 70px; margin-right: 250px;"></a>
+                    </div>
+                    <div class="header-right">
+                        <div class="search-style-1 ">
+                            <form action="{% url 'search_documents' %}" method="GET">
+                                <input type="text" name="q" placeholder="ຄົ້ນຫາປຶ້ມ..." value="{{ request.GET.q }}"
+                                    style="font-family: phetsarath ot;">
+                                <button type="submit"><i class="fi-rs-search"></i></button>
+
+                            </form>
+                        </div>
+                        <div class="header-action-right">
+                            <div class="header-action-2" style="display: flex; align-items: center; gap: 10px; ">
+                                <!-- Deposit Button -->
+                                <a href="{% url 'workdocument_create' %}" class="btn btn-primary d-inline-flex align-items-center justify-content-center
+                                    {% if request.resolver_match.url_name == 'workdocument_create' %}active{% endif %}"
+                                    style="white-space: nowrap;
+                                            padding: 8px 20px;
+                                            width: 145px;
+                                            height: 42px;
+                                            background: transparent;
+                                            border: 1px solid #F15412;
+                                            color: #F15412;
+                                            
+                                            border-radius: 4px;
+                                            gap: 7px;">
+                                    <i class="fas fa-file-alt " style="color: #8bcac8 !important; "></i>
+                                    ຝາກເຮັດເອກະສານ
+                                </a>
+                              
+                                <a href="{% url 'upload_document' %}" class="btn btn-primary d-inline-flex align-items-center justify-content-center
+                                    {% if request.resolver_match.url_name == 'upload_document' %}active{% endif %}"
+                                    style="white-space: nowrap;
+                                            padding: 8px 20px;
+                                            width: 125px;
+                                            height: 42px;
+                                            background: transparent;
+                                            border: 1px solid #F15412;
+                                            color: #F15412;
+                                            border-radius: 4px;
+                                            gap: 7px;">
+                                    <i class="fas fa-file-upload " style="color: #7dbc87;"></i>
+                                    ຝາກເອກະສານ
+                                </a>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="header-bottom header-bottom-bg-color sticky-bar">
+            <div class="container">
+                <div class="header-wrap header-space-between position-relative">
+                    <div class=" d-block d-lg-none">
+                        <a href="{% url 'home' %}"><img src="{% static 'imgs/logo/logo.png' %}" alt="logo"
+                                style="height: 45px; width: 50px; margin-left: 20px;"></a>
+                    </div>
+                    <div class="header-nav d-none d-lg-flex">
+                        <div class="main-categori-wrap d-none d-lg-block">
+    <a class="categori-button-active" href="#">
+        <span class="fi-rs-apps"></span> ໝວດໝູ່ທັງໝົດ
+    </a>
+    <div class="categori-dropdown-wrap categori-dropdown-active-large">
+        <ul>
+            {% for parent in categories %}
+            <li class="has-children">
+
+                <ul class="level1-list">
+                    <li class="level1-item">
+                        <a href="{% url 'doc_by_category' parent.id %}">
+                            {% if parent.photo %}
+                                <img src="{{ parent.photo.url }}" alt="{{ parent.name }}"
+                                     style="width:24px; height:24px; object-fit:cover; border-radius:4px; margin-right:8px;">
+                            {% endif %}
+                            {{ parent.name|truncatechars:32 }}
+                        </a>
+                    </li>
+                </ul>
+
+                {% if parent.children.exists %}
+                <div class="dropdown-menu">
+                    <div class="mega-menu-layout">
+
+                        <ul class="level2-list">
+                            {% for sub in parent.children.all %}
+                            <li class="level2-item" data-sub-id="{{ sub.id }}">
+                                <a href="{% url 'doc_by_category' sub.id %}">
+                                    {% if sub.photo %}
+                                        <img src="{{ sub.photo.url }}" alt="{{ sub.name }}"
+                                             style="width:20px; height:20px; object-fit:cover; border-radius:3px; margin-right:6px;">
+                                    {% endif %}
+                                    {{ sub.name|truncatechars:35 }}
+                                </a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+
+                        <div class="level3-panels">
+                            {% for sub in parent.children.all %}
+                            {% if sub.children.exists %}
+                            <ul class="level3-panel" data-panel-id="{{ sub.id }}">
+                                {% for child in sub.children.all %}
+                                <li>
+                                    <a href="{% url 'doc_by_category' child.id %}">
+                                        {% if child.photo %}
+                                            <img src="{{ child.photo.url }}" alt="{{ child.name }}"
+                                                 style="width:18px; height:18px; object-fit:cover; border-radius:3px; margin-right:6px;">
+                                        {% endif %}
+                                        {{ child.name|truncatechars:35 }}
+                                    </a>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+
+                    </div>
+                </div>
+                {% endif %}
+
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+                    
+                        <div class="main-menu main-menu-padding-1 main-menu-lh-2 d-none d-lg-block">
+                            <nav>
+                                <ul>
+                                    <li><a class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}"
+                                            href="/">Home </a></li>
+                                    <li><a class="{% if request.resolver_match.url_name == 'all_documents' %}active{% endif %}"
+                                            href="{% url 'all_documents' %}">ເອກະສານທັງໝັດ</a></li>
+                                    <li><a class="{% if request.resolver_match.url_name == 'all_jobs_documents' %}active{% endif %}"
+                                            href="{% url 'all_jobs_documents' %}">ວຽກເອກະສານ</a></li>
+
+                                    <li><a href="{% url 'contact'%}">ຕິດຕໍ່ພວກເຮົາ</a></li>
+                                    <li><a href="#">My Account <i class="fi-rs-angle-down"></i></a>
+                                        <ul class="sub-menu">
+                                            {% if user.is_authenticated %}
+                                            <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                                            <li><a href="{% url 'upload_document' %}">ອັບໂຫຼດເອກະສານ</a></li>
+                                            <li><a href="{% url 'seller_dashboard' %}">Seller Dashboard</a></li>
+                                            <li>
+                                                <form method="POST" action="{% url 'logout' %}" style="display:inline;">
+                                                    {% csrf_token %}
+                                                    <button type="submit"
+                                                        style="background:none; border: 1px; border-color: #F15412; cursor:pointer; padding:5px 15px;">
+                                                        Logout
+                                                    </button>
+                                                </form>
+                                            </li>
+                                            {% else %}
+                                            <li><a href="{% url 'login_view' %}">Login</a></li>
+                                            <li><a href="{% url 'register_user' %}">Register</a></li>
+                                            {% endif %}
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                    <div class="hotline d-none d-lg-block">
+                        <p><i class="fi-rs-smartphone"></i><span>ສອບຖາມໂທ</span> (+856) 20-9788-2691 </p>
+                    </div>
+                    <p class="mobile-promotion">Happy <span class="text-brand">Mother's Day</span>. Big Sale Up to 40%
+                    </p>
+                    <div class="header-action-right d-block d-lg-none">
+                        <div class="header-action-2">
+                            <div class="header-action-2"
+                                style="display: flex; align-items: center; gap: 15px; margin-right: 20px;">
+                                <!-- Deposit Button -->
+                                <a href="http://" target="_blank" rel="noopener noreferrer">
+                                    <span style="font-size: 1.2em; font-size: 16px;">💰</span>
+                                </a>
+
+                            </div>
+                            <div class="header-action-2"
+                                style="display: flex; align-items: center; gap: 15px; margin-right: 30px;">
+                                <!-- Document Button -->
+                                <a href="{% url 'upload_document' %}" target="_blank" rel="noopener noreferrer">
+
+                                    <i class="fas fa-file-upload " style="color: #F15412; font-size: 15px;"></i>
+                                </a>
+                                <i class="fas fa-user-hard-hat"></i>
+                            </div>
+                            <div class="header-action-2"
+                                style="display: flex; align-items: center; gap: 15px; margin-right: 30px;">
+                                <!-- Document Button -->
+                                <a href="{% url 'upload_document' %}" target="_blank" rel="noopener noreferrer">
+
+                                    <i class="fa-solid fa-people-carry-box"
+                                        style="color: #F15412; font-size: 15px;"></i>
+                                </a>
+                            </div>
+
+                            <div class="header-action-icon-2 d-block d-lg-none">
+                                <div class="burger-icon burger-icon-white">
+                                    <span class="burger-icon-top"></span>
+                                    <span class="burger-icon-mid"></span>
+                                    <span class="burger-icon-bottom"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <div class="mobile-header-active mobile-header-wrapper-style">
+        <div class="mobile-header-wrapper-inner">
+            <div class="mobile-header-top">
+                <div class="mobile-header-logo">
+                    <a href="{% url 'home' %}"><img src="{% static 'imgs/logo/logo.png' %}" alt="logo" style="width: 50px; height:50px; object-fit:cover;"></a>
+                </div>
+                <div class="mobile-menu-close close-style-wrap close-style-position-inherit">
+                    <button class="close-style search-close">
+                        <i class="icon-top"></i>
+                        <i class="icon-bottom"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="mobile-header-content-area">
+                <div class="mobile-search search-style-3 mobile-header-border">
+                    <form action="{% url 'search_documents' %}" method="GET">
+                                <input type="text" name="q" placeholder="ຄົ້ນຫາປຶ້ມ..." value="{{ request.GET.q }}"
+                                style="font-family: phetsarath ot;">
+                                <button type="submit"><i class="fi-rs-search"></i></button>
+                            </form>
+                    <!-- <form action="{% url 'search_documents' %}">
+                        <input type="text" placeholder="ຄົ້ນຫາປຶ້ມ...">
+                    </form> -->
+                </div>
+                <div class="mobile-menu-wrap mobile-header-border">
+                    <div class="main-categori-wrap mobile-header-border">
+                        <a class="categori-button-active-2" href="#">
+                            <span class="fi-rs-apps"></span> ໝວດໝູ່ທັງໝົດ
+                        </a>
+                        <div class="categori-dropdown-wrap categori-dropdown-active-small">
+                            <!-- mobile menu start -->
+                            <nav>
+                                <ul class="mobile-menu">
+                                    {% for parent in categories %}
+                                    <li class="menu-item-has-children"> <a href="{% url 'doc_by_category' parent.id %}"></span>
+                                        {% if parent.photo %}
+                                            <img src="{{ parent.photo.url }}" alt="{{ parent.name }}"
+                                                style="width: 20px; height:20px; object-fit:cover; border-radius:4px; margin-right:8px;">
+                                        {% endif %}{{ parent.name|truncatechars:22 }}</a>
+                                        <ul class="dropdown">
+                                            {% for sub in parent.children.all %}
+                                            <li class="menu-item-has-children"><span class="menu-expand"></span>
+                                                <a href="{% url 'doc_by_category' sub.id %}">
+                                                    {% if sub.photo %}
+                                                        <img src="{{ sub.photo.url }}" alt="{{ sub.name }}"
+                                                            style="width: 18px; height:18px; object-fit:cover; border-radius:3px; margin-right:6px;">
+                                                    {% endif %} {{ sub.name|truncatechars:22 }}</a>
+                                                {% if sub.children.exists %}
+                                                <ul class="dropdown" data-id="cat-{{ sub.id }}">
+                                                    {% for child in sub.children.all %}
+                                                    <li><a href="{% url 'doc_by_category' child.id %}">
+                                                        {% if child.photo %}
+                                                            <img src="{{ child.photo.url }}" alt="{{ child.name }}"
+                                                                style="width:16px; height:16px; object-fit:cover; border-radius:3px; margin-right:4px;">
+                                                        {% endif %}{{ child.name|truncatechars:22 }}</a></li>
+                                                    {% endfor %}
+
+                                                </ul>
+                                                {% endif %}
+                                            </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </li>
+                                    {% endfor %}
+                                    <li class="menu-item-has-children"><span class="menu-expand"></span><a
+                                            href="/home">Home</a></li>
+                                    <li class="menu-item-has-children"><span class="menu-expand"></span><a
+                                            href="shop.html">shop</a></li>
+                                    <li class="menu-item-has-children"><span class="menu-expand"></span><a
+                                            href="blog.html">Blog</a></li>
+                                    <li class="menu-item-has-children"><span class="menu-expand"></span><a
+                                            href="#">Language</a>
+                                        <ul class="dropdown">
+                                            <li><a href="#">English</a></li>
+                                            <li><a href="#">French</a></li>
+                                            <li><a href="#">German</a></li>
+                                            <li><a href="#">Spanish</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </nav>
+
+                        </div>
+                    </div>
+
+                    <!-- mobile menu end -->
+                </div>
+                <div class="mobile-header-info-wrap mobile-header-border">
+                    <div class="single-mobile-header-info mt-30">
+                        <a href="contact.html"> Our location </a>
+                    </div>
+                    <div class="single-mobile-header-info">
+                        <a href="login.html">Log In </a>
+                    </div>
+                    <div class="single-mobile-header-info">
+                        <a href="register.html">Sign Up</a>
+                    </div>
+                    <div class="single-mobile-header-info">
+                        <a href="#">(+1) 0000-000-000 </a>
+                    </div>
+                </div>
+                <div class="mobile-social-icon">
+                    <h5 class="mb-15 text-grey-4">Follow Us</h5>
+                    <a href="#"><img src="{% static 'imgs/theme/icons/icon-facebook.svg' %}" alt=""></a>
+                    <a href="#"><img src="{% static 'imgs/theme/icons/icon-twitter.svg' %}" alt=""></a>
+                    <a href="#"><img src="{% static 'imgs/theme/icons/icon-instagram.svg' %}" alt=""></a>
+                    <a href="#"><img src="{% static 'imgs/theme/icons/icon-pinterest.svg' %}" alt=""></a>
+                    <a href="#"><img src="{% static 'imgs/theme/icons/icon-youtube.svg' %}" alt=""></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    {% block content %}
+    {% endblock %}
+
+    <footer class="main">
+        <section class="newsletter p-30 text-white wow fadeIn animated " style="background-color: #ff4d00;">
+            <div class="container ">
+                <div class="row align-items-center ">
+                    <div class="col-lg-7 mb-md-3 mb-lg-0 ">
+                        <div class="row align-items-center">
+                            <div class="col flex-horizontal-center ">
+                                <img class="icon-email " src="{% static 'imgs/theme/icons/icon-email.svg' %}" alt="" >
+                                <h4 class="font-size-20 mb-0 ml-3 font-all text-white">ຕິດຕາມຂ່າວສານຂອງພວກເຮົາ</h4>
+                            </div>
+                            <div class="col my-4 my-md-0 des">
+                                <h5 class="font-size-15 ml-4 mb-0 font-all text-white">...and receive <strong>$25 coupon for first
+                                        shopping.</strong></h5>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-5">
+                        <!-- Subscribe Form -->
+                        <form class="form-subcriber d-flex wow fadeIn animated">
+                            <input type="email" class="form-control bg-white font-small" placeholder="Enter your email">
+                            <button class="btn bg-dark text-white" type="submit">Subscribe</button>
+                        </form>
+                        <!-- End Subscribe Form -->
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="section-padding footer-mid">
+            <div class="container pt-15 pb-20">
+                <div class="row">
+                    <div class="col-lg-4 col-md-6">
+                        <div class="widget-about font-md mb-md-5 mb-lg-0">
+                            <div class="logo logo-width-1 wow fadeIn animated">
+                                <a href="/"><img src="{% static 'imgs/logo/logo.png' %}" alt="logo"></a>
+                            </div>
+                            <h5 class="mt-20 mb-10 fw-600 text-grey-4 wow fadeIn animated font-all">ຕິດຕໍ່ພວກເຮົາ</h5>
+                            <p class="wow fadeIn animated">
+                                <strong>Address: </strong>ບ້ານ ດົງສະຫວາດ, ເມືອງ ສີສັດຕະນາກ, ແຂວງ ນະຄອນຫຼວງວຽງຈັນ.
+                            </p>
+                            <p class="wow fadeIn animated">
+                                <strong>Phone: </strong>+856 20-978-826-91
+                            </p>
+                            <p class="wow fadeIn animated">
+                                <strong>Email: </strong>doulakhomtps11@gmail.com
+                            </p>
+                            <h5 class="mb-10 mt-30 fw-600 text-grey-4 wow fadeIn animated">Follow Us</h5>
+                            <div class="mobile-social-icon wow fadeIn animated mb-sm-5 mb-md-0">
+                                <a href="#"><img src="{% static 'imgs/theme/icons/icon-facebook.svg' %}" alt=""></a>
+                                <a href="#"><img src="{% static 'imgs/theme/icons/icon-twitter.svg' %}" alt=""></a>
+                                <a href="#"><img src="{% static 'imgs/theme/icons/icon-instagram.svg' %}" alt=""></a>
+                                <a href="#"><img src="{% static 'imgs/theme/icons/icon-pinterest.svg' %}" alt=""></a>
+                                <a href="#"><img src="{% static 'imgs/theme/icons/icon-youtube.svg' %}" alt=""></a>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- ກ່ຽວກັບເຮົາ -->
+                    <div class="col-lg-2 col-md-3">
+                        <h5 class="widget-title wow fadeIn animated font-all">ກ່ຽວກັບເຮົາ</h5>
+                        <ul class="footer-list wow fadeIn animated mb-sm-5 mb-md-0 font-all">
+                            <li><a href="#">ກ່ຽວກັບ Duladoc</a></li>
+                            <li><a href="#">ນະໂຍບາຍຄວາມເປັນສ່ວນຕົວ</a></li>
+                            <li><a href="#">ເງື່ອນໄຂການໃຊ້ງານ</a></li>
+                            <li><a href="#">ຕິດຕໍ່ພວກເຮົາ</a></li>
+                            <li><a href="#">ຊ່ວຍເຫຼືອ / FAQ</a></li>
+                        </ul>
+                    </div>
+                    <!-- My Account -->
+                    <div class="col-lg-2 col-md-3">
+                        <h5 class="widget-title wow fadeIn animated font-all">ບັນຊີຂອງຂ້ອຍ</h5>
+                        <ul class="footer-list wow fadeIn animated font-all">
+                            {% if user.is_authenticated %}
+                            <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                            <li><a href="{% url 'upload_document' %}">ອັບໂຫຼດເອກະສານ</a></li>
+                            <li><a href="{% url 'seller_dashboard' %}">Seller Dashboard</a></li>
+                            <li><a href="{% url 'topup_request' %}">ຕື່ມເງິນ</a></li>
+                            <!-- <li>
+                                <form method="POST" action="{% url 'logout' %}" style="display:inline;">
+                                    {% csrf_token %}
+                                    <button type="submit"
+                                        style="background:none; border:none; cursor:pointer; padding:0; color:inherit; font-family: phetsarath ot;">
+                                        ອອກຈາກລະບົບ
+                                    </button>
+                                </form>
+                            </li> -->
+                            {% else %}
+                            <li><a href="{% url 'login_view' %}">ເຂົ້າລະບົບ</a></li>
+                            <li><a href="{% url 'register_user' %}">ລົງທະບຽນ</a></li>
+                            {% endif %}
+                            <li><a href="{% url 'all_documents' %}">ເອກະສານທັງໝົດ</a></li>
+                            <li><a href="{% url 'all_jobs_documents' %}">ວຽກເອກະສານ</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-4 mob-center">
+                        <h5 class="widget-title wow fadeIn animated">Install App</h5>
+                        <div class="row">
+                            <div class="col-md-8 col-lg-12">
+                                <p class="wow fadeIn animated">From App Store or Google Play</p>
+                                <div class="download-app wow fadeIn animated mob-app">
+                                    <a href="#" class="hover-up mb-sm-4 mb-lg-0"><img class="active"
+                                            src="{% static 'imgs/theme/app-store.jpg' %}" alt=""></a>
+                                    <a href="#" class="hover-up"><img src="{% static 'imgs/theme/google-play.jpg' %}"
+                                            alt=""></a>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-lg-12 mt-md-3 mt-lg-0">
+                                <p class="mb-20 wow fadeIn animated">Secured Payment Gateways</p>
+                                <img class="wow fadeIn animated" src="{% static 'imgs/theme/payment-method.png' %}"
+                                    alt="">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <div class="container pb-20 wow fadeIn animated mob-center">
+            <div class="row">
+                <div class="col-12 mb-20">
+                    <div class="footer-bottom"></div>
+                </div>
+                <div class="col-lg-6">
+                    <p class="float-md-left font-sm text-muted mb-0">
+                        <a href="privacy-policy.html">Privacy Policy</a> | <a href="terms-conditions.html">Terms &
+                            Conditions</a>
+                    </p>
+                </div>
+                <div class="col-lg-6">
+                    <p class="text-lg-end text-start font-sm text-muted mb-0">
+                        &copy; <strong class="text-brand">@duladoc</strong> All rights reserved
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- Vendor JS-->
+    <script src="{% static 'js/vendor/modernizr-3.6.0.min.js' %}"></script>
+    <script src="{% static 'js/vendor/jquery-3.6.0.min.js' %}"></script>
+    <script src="{% static 'js/vendor/jquery-migrate-3.3.0.min.js' %}"></script>
+    <script src="{% static 'js/vendor/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'js/plugins/slick.js' %}"></script>
+    <script src="{% static 'js/plugins/jquery.syotimer.min.js' %}"></script>
+    <script src="{% static 'js/plugins/wow.js' %}"></script>
+    <script src="{% static 'js/plugins/jquery-ui.js' %}"></script>
+    <script src="{% static 'js/plugins/perfect-scrollbar.js' %}"></script>
+    <script src="{% static 'js/plugins/magnific-popup.js' %}"></script>
+    <script src="{% static 'js/plugins/select2.min.js' %}"></script>
+    <script src="{% static 'js/plugins/waypoints.js' %}"></script>
+    <script src="{% static 'js/plugins/counterup.js' %}"></script>
+    <script src="{% static 'js/plugins/jquery.countdown.min.js' %}"></script>
+    <script src="{% static 'js/plugins/images-loaded.js' %}"></script>
+    <script src="{% static 'js/plugins/isotope.js' %}"></script>
+    <script src="{% static 'js/plugins/scrollup.js' %}"></script>
+    <script src="{% static 'js/plugins/jquery.vticker-min.js' %}"></script>
+    <script src="{% static 'js/plugins/jquery.theia.sticky.js' %}"></script>
+    <script src="{% static 'js/plugins/jquery.elevatezoom.js' %}"></script>
+    <!-- Template  JS -->
+    <script src="{% static 'js/main.js' %}"></script>
+    <script src="{% static 'js/shop.js' %}"></script>
+
+
+
+<script>
+    /**
+     * handleDownload(docId, price)
+     *  1. ถ้า user ไม่ได้ login → redirect ไปหน้า login
+     *  2. เรียก API ตรวจสอบสถานะ
+     *  3. ถ้าซื้อแล้ว / ฟรี → ไปดาวน์โหลดทันที
+     *  4. ถ้าเงินพอ → confirm แล้วดาวน์โหลด
+     *  5. ถ้าเงินไม่พอ → redirect ไปเติมเงิน
+     */
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return decodeURIComponent(parts.pop().split(';').shift());
+        return '';
+    }
+
+    function submitDownloadPost(docId) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/wallet/buy/${docId}/`;
+        form.style.display = 'none';
+
+        const csrf = document.createElement('input');
+        csrf.type = 'hidden';
+        csrf.name = 'csrfmiddlewaretoken';
+        csrf.value = getCookie('csrftoken') || '{{ csrf_token }}';
+        form.appendChild(csrf);
+
+        document.body.appendChild(form);
+        form.submit();
+    }
+
+    function handleDownload(docId, btn) {
+        // Step 1: เช็ค login (Django inject ตัวแปร isAuthenticated ไว้ด้านล่าง)
+        if (!SITE_CONFIG.isAuthenticated) {
+            window.location.href = SITE_CONFIG.loginUrl + '?next=' + window.location.pathname;
+            return;
+        }
+
+        // แสดง loading state
+        const originalHtml = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+        // Step 2: เรียก API ตรวจสอบ
+        fetch(`/wallet/check/${docId}/`, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+            .then(r => r.json())
+            .then(data => {
+                btn.disabled = false;
+                btn.innerHTML = originalHtml;
+
+                // Step 3: ซื้อแล้ว หรือ ฟรี → ดาวน์โหลดทันที
+                if (data.already_purchased || data.is_free) {
+                    submitDownloadPost(docId);
+                    return;
+                }
+
+                // Step 5: เงินไม่พอ → แจ้งและ redirect เติมเงิน
+                if (!data.can_afford) {
+                    const shortage = new Intl.NumberFormat().format(data.shortage);
+                    if (confirm(`💰 ຍອດເງິນໃນກະເປົ໋າບໍ່ພໍ\nຕ້ອງຕື່ມເງິນອີກ ${shortage} ກີບ\n\nໄປຕື່ມເງິນຕອນນີ້ເລີຍ?`)) {
+                        window.location.href = `/wallet/topup/?next=/document/${docId}/`;
+                    }
+                    return;
+                }
+
+                // Step 4: เงินพอ → confirm ซื้อ
+                const price = new Intl.NumberFormat().format(data.price);
+                if (confirm(`🛒 ຢືນຢັນຊື້ເອກະສານ\nລາຄາ: ${price} ກີບ\nຍອດໃນກະເປົ໋າ: ${new Intl.NumberFormat().format(data.balance)} ກີບ`)) {
+                    submitDownloadPost(docId);
+                }
+            })
+            .catch(() => {
+                btn.disabled = false;
+                btn.innerHTML = originalHtml;
+                alert('ເກີດຂໍ້ຜິດພາດ ກະລຸນາລອງໃໝ່');
+            });
+    }
+</script>
+
+
+<script>
+    const SITE_CONFIG = {
+        isAuthenticated: {% if user.is_authenticated %}true{% else %} false{% endif %},
+    loginUrl: "{% url 'login_view' %}",
+  };
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        const level2Items = document.querySelectorAll('.level-2-item');
+        const level3Lists = document.querySelectorAll('.level-3-list');
+
+        function hideAll() {
+            level3Lists.forEach(list => list.style.display = 'none');
+            level2Items.forEach(item => item.classList.remove('active'));
+        }
+
+        level2Items.forEach(item => {
+            item.addEventListener('mouseenter', function () {
+
+                const id = this.dataset.id;
+                hideAll();
+
+                const target = document.querySelector(
+                    '.level-3-list[data-id="' + id + '"]'
+                );
+
+                if (target) {
+                    target.style.display = 'block';
+                    this.classList.add('active');
+                }
+            });
+        });
+
+        // เมื่อเอาเมาส์ออกจากเมนู → ซ่อนทั้งหมด
+        document.querySelectorAll('.mega-menu').forEach(menu => {
+            menu.addEventListener('mouseleave', hideAll);
+        });
+
+    });
+
+    // Alpine.js component - FIXED: return object correctly
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('paymentPanel', () => ({
+            showTransferPayment: true,
+            showQrPayment: false,
+            showMomoPayment: false,
+            showAtmPayment: false,
+            showMobilePayment: false,
+
+            showMethodPayment(method) {
+                this.showTransferPayment = false;
+                this.showQrPayment = false;
+                this.showMomoPayment = false;
+                this.showAtmPayment = false;
+                this.showMobilePayment = false;
+
+                switch (method) {
+                    case 'Transfer':
+                        this.showTransferPayment = true;
+                        break;
+                    case 'Qr':
+                        this.showQrPayment = true;
+                        break;
+                    case 'Momo':
+                        this.showMomoPayment = true;
+                        break;
+                    case 'Atm':
+                        this.showAtmPayment = true;
+                        break;
+                    case 'Mobile':
+                        this.showMobilePayment = true;
+                        break;
+                }
+            }
+        }));
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+
+        const modal = document.getElementById('paymentModal');
+
+        const openBtn = document.getElementById('openModalBtn');
+
+        const closeBtn = document.getElementById('closeModalBtn');
+
+        console.log('Modal:', modal);
+        console.log('OpenBtn:', openBtn);
+        console.log('CloseBtn:', closeBtn);
+
+        if (openBtn) {
+            openBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+
+                console.log('Open button clicked');
+
+                modal.classList.remove('d-none');
+
+                document.body.style.overflow = 'hidden';
+            });
+        }
+
+        if (closeBtn) {
+            closeBtn.addEventListener('click', function () {
+
+                console.log('Close button clicked');
+
+                modal.classList.add('d-none');
+
+                document.body.style.overflow = 'auto';
+            });
+        }
+
+        window.addEventListener('click', function (e) {
+
+            if (e.target === modal) {
+
+                modal.classList.add('d-none');
+
+                document.body.style.overflow = 'auto';
+            }
+        });
+
+    });
+
+
+document.addEventListener('DOMContentLoaded', function () {
+
+  document.querySelectorAll('.has-children').forEach(function (parentItem) {
+
+    const level2Items  = parentItem.querySelectorAll('.level2-item');
+    const level3Panels = parentItem.querySelectorAll('.level3-panel');
+
+    // Show first level3 panel by default when dropdown opens
+    parentItem.addEventListener('mouseenter', function () {
+      const firstL2 = level2Items[0];
+      if (firstL2) activateLevel2(firstL2, level2Items, level3Panels);
+    });
+
+    // Hover on each level2 item → show matching level3 panel
+    level2Items.forEach(function (item) {
+      item.addEventListener('mouseenter', function () {
+        activateLevel2(item, level2Items, level3Panels);
+      });
+    });
+  });
+
+  function activateLevel2(item, allL2, allL3) {
+    const subId = item.dataset.subId;
+
+    // Highlight level2
+    allL2.forEach(i => i.classList.remove('active'));
+    item.classList.add('active');
+
+    // Show matching level3 panel
+    allL3.forEach(function (panel) {
+      panel.classList.remove('active');
+      if (panel.dataset.panelId === subId) {
+        panel.classList.add('active');
+      }
+    });
+  }
+
+});
+</script>
+
+<!-- Alpine.js x-cloak to prevent flickering -->
+<style>
+    [x-cloak] {
+        display: none !important;
+    }
+</style>
+
+<!-- Bootstrap 5 JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- ✅ Modal is OUTSIDE col-md-3 -->
+<div id="logoutModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:99999; align-items:center; justify-content:center;">
+    <div style="background:#fff; border-radius:12px; padding:2rem; width:300px; text-align:center; font-family:'phetsarath ot', sans-serif; position:relative;">
+        <i class="fi-rs-sign-out" style="font-size:2rem; color:#e74c3c; display:block; margin-bottom:1rem;"></i>
+        <h5 style="margin:0 0 0.5rem; font-size:18px;">ອອກຈາກລະບົບ?</h5>
+        <p style="color:#666; font-size:14px; margin:0 0 1.5rem;">ທ່ານແນ່ໃຈບໍ່ວ່າຕ້ອງການ Logout?</p>
+        <div style="display:flex; gap:10px;">
+            <button onclick="document.getElementById('logoutModal').style.display='none'"
+                style="flex:1; padding:10px; border:1px solid #ccc; border-radius:8px; background:#fff; cursor:pointer; font-family:'phetsarath ot', sans-serif;">
+                ຍົກເລີກ
+            </button>
+            <a href="{% url 'logout' %}"
+                style="flex:1; padding:10px; border-radius:8px; background:#e74c3c; color:#fff; text-decoration:none; display:flex; align-items:center; justify-content:center; cursor:pointer; font-weight:600; font-family:'phetsarath ot', sans-serif;">
+                Logout
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('logoutModal').addEventListener('click', function(e) {
+        if (e.target === this) this.style.display = 'none';
+    });
+</script>
+</body>
+
+</html>

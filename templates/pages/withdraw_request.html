@@ -1,0 +1,926 @@
+{% extends 'base.html' %}
+
+{% block title %}Duladoc{% endblock %}
+{% block meta_description %}
+Duladoc - Your Trusted Document Management Solution
+{% endblock %}
+{% load humanize %}
+
+{% block content %}
+
+{% load static %}
+<main class="main">
+  <style>
+    :root {
+
+      /* --bg: #789ed7; */
+      /* --surface: #466487; */
+      /* --surface2: #426c9a; */
+      --border: #87929f;
+      --accent: #1f6feb;
+      --accent-light: #388bfd;
+      --success: #3fb950;
+      --warning: #d29922;
+      --danger: #f85149;
+      --info: #58a6ff;
+      --text: #1c2023;
+      --text-muted: #8b949e;
+      --text-subtle: #484f58;
+      --radius: 8px;
+      --radius-lg: 12px;
+      --shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* LAYOUT */
+    .container-sm {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 32px 24px;
+    }
+
+    /* CARDS */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      font-family: phetsarath ot;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+      font-family: phetsarath ot;
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      font-family: phetsarath ot;
+    }
+
+    /* STAT CARDS */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px 24px;
+      font-family: phetsarath ot;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 8px;
+    }
+
+    .stat-value {
+      font-size: 28px;
+      font-weight: 700;
+      font-family: 'IBM Plex Mono', monospace;
+    }
+
+    .stat-value.green {
+      color: var(--success);
+    }
+
+    .stat-value.blue {
+      color: var(--info);
+    }
+
+    .stat-value.yellow {
+      color: var(--warning);
+    }
+
+    /* BUTTONS */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 18px;
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-weight: 600;
+      font-family: 'phetsarath ot', 'Sarabun', sans-serif;
+      border: none;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-decoration: none;
+    }
+
+    .btn:hover {
+      text-decoration: none;
+      filter: brightness(1.1);
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: #000;
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: #fff;
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-outline:hover {
+      background: var(--surface2);
+    }
+
+    .btn-sm {
+      padding: 5px 12px;
+      font-size: 13px;
+    }
+
+    .btn-lg {
+      padding: 12px 24px;
+      font-size: 16px;
+    }
+
+    .btn-full {
+      width: 100%;
+      justify-content: center;
+    }
+
+    /* FORMS */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .form-input {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px 14px;
+      font-size: 15px;
+      color: var(--text);
+      font-family: 'Sarabun', sans-serif;
+      transition: border-color 0.15s;
+      font-family: phetsarath ot;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--accent-light);
+      box-shadow: 0 0 0 3px rgba(31, 111, 235, 0.2);
+    }
+
+    .form-input::placeholder {
+      color: var(--text-subtle);
+    }
+
+    .form-hint {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    .errorlist {
+      list-style: none;
+      color: var(--danger);
+      font-size: 13px;
+      margin-top: 6px;
+    }
+
+    /* ALERTS */
+    .messages {
+      margin-bottom: 20px;
+    }
+
+    .alert {
+      padding: 12px 16px;
+      border-radius: var(--radius);
+      font-size: 14px;
+      margin-bottom: 10px;
+      border-left: 4px solid;
+      font-family: phetsarath ot;
+    }
+
+    .alert-success {
+      background: rgba(63, 185, 80, .1);
+      border-color: var(--success);
+      color: #7ee787;
+    }
+
+    .alert-error {
+      background: rgba(248, 81, 73, .1);
+      border-color: var(--danger);
+      color: #ff7b72;
+    }
+
+    .alert-warning {
+      background: rgba(210, 153, 34, .1);
+      border-color: var(--warning);
+      color: #f0c060;
+    }
+
+    .alert-info {
+      background: rgba(88, 166, 255, .1);
+      border-color: var(--info);
+      color: var(--info);
+    }
+
+    /* BADGES */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      font-family: phetsarath ot;
+    }
+
+    .badge-pending {
+      background: rgba(210, 153, 34, .15);
+      color: var(--warning);
+      border: 1px solid rgba(210, 153, 34, .3);
+    }
+
+    .badge-approved {
+      background: rgba(63, 185, 80, .15);
+      color: var(--success);
+      border: 1px solid rgba(63, 185, 80, .3);
+    }
+
+    .badge-rejected {
+      background: rgba(248, 81, 73, .15);
+      color: var(--danger);
+      border: 1px solid rgba(248, 81, 73, .3);
+    }
+
+    .badge-topup {
+      background: rgba(88, 166, 255, .15);
+      color: var(--info);
+      border: 1px solid rgba(88, 166, 255, .3);
+    }
+
+    .badge-purchase {
+      background: rgba(210, 153, 34, .15);
+      color: var(--warning);
+      border: 1px solid rgba(210, 153, 34, .3);
+    }
+
+    /* TABLE */
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th {
+      text-align: left;
+      padding: 10px 16px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+      font-family: phetsarath ot;
+    }
+
+    td {
+      padding: 12px 16px;
+      font-size: 14px;
+      border-bottom: 1px solid var(--surface2);
+      font-family: phetsarath ot;
+      vertical-align: middle;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: rgba(255, 255, 255, .02);
+    }
+
+    /* MISC */
+    .text-muted {
+      color: var(--text-muted);
+    }
+
+    .text-mono {
+      font-family: 'IBM Plex Mono', monospace;
+    }
+
+    .text-green {
+      color: var(--success);
+    }
+
+    .text-red {
+      color: var(--danger);
+    }
+
+    .text-blue {
+      color: var(--info);
+    }
+
+    .page-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .page-subtitle {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-bottom: 28px;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 24px 0;
+    }
+
+    .flex {
+      display: flex;
+    }
+
+    .items-center {
+      align-items: center;
+    }
+
+    .justify-between {
+      justify-content: space-between;
+    }
+
+    .gap-8 {
+      gap: 8px;
+    }
+
+    .gap-12 {
+      gap: 12px;
+    }
+
+    .mt-8 {
+      margin-top: 8px;
+    }
+
+    .mt-16 {
+      margin-top: 16px;
+    }
+
+    .mt-24 {
+      margin-top: 24px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 48px 24px;
+      color: var(--text-muted);
+    }
+
+    .empty-state .icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+    }
+
+    .empty-state p {
+      font-size: 14px;
+    }
+
+    /* Amount display */
+    .amount-plus {
+      color: var(--success);
+      font-family: 'IBM Plex Mono', monospace;
+      font-weight: 600;
+    }
+
+    .amount-minus {
+      color: var(--danger);
+      font-family: 'IBM Plex Mono', monospace;
+      font-weight: 600;
+    }
+  </style>
+  <div class="page-header breadcrumb-wrap">
+    <div class="container">
+      <div class="breadcrumb" style="font-family: phetsarath ot;">
+        <a href="index.html" rel="nofollow">Home</a>
+        <span></span> ຖອນເງິນ
+      </div>
+    </div>
+  </div>
+  <section class="pt-50 pb-150">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12 m-auto">
+          <div class="row">
+            {% include "includes/sidebar_dashboard.html" %}
+            <div class="col-md-9">
+              <div class="tab-content dashboard-content">
+
+                <div class="tab-pane show active" role="tabpanel" aria-labelledby="withdraw_request">
+                  <div class="tab-pane show active" role="tabpanel">
+                    <div class="card">
+                      <!-- Header -->
+                      <!-- Header -->
+                      <div style="margin-bottom:24px;">
+                        <h2
+                          style="font-size:22px; font-weight:700; color:#0a1e3c; margin-bottom:4px; font-family: phetsarath ot;">
+                          💸 ຖອນເງິນ</h2>
+                        <p style="color:#6b7280; font-size:14px;">ຖອນລາຍໄດ້ຈາກການຂາຍເອກະສານເຂົ້າບັນຊີທະນາຄານຂອງທ່ານ</p>
+                      </div>
+
+                      <!-- Wallet Balance Card -->
+                      <div
+                        style="background:linear-gradient(135deg,#1a3a5c,#0f2340); border-radius:16px; padding:24px; margin-bottom:24px; color:white;">
+                        <div style="font-size:13px; opacity:0.7; margin-bottom:8px;">ຍອດເງິນທີ່ຖອນໄດ້</div>
+                        <div style="font-size:32px; font-weight:700; font-family:monospace;">
+                          {{withdrawable|floatformat:2|intcomma }} ກີບ</div>
+                        <div style="font-size:12px; opacity:0.6; margin-top:8px;">ຖອນຂັ້ນຕ່ຳ {{ min_withdraw }} ກີບ
+                        </div>
+                      </div>
+
+                      {% if messages %}
+                      {% for message in messages %}
+                      <div
+                        style="padding:12px 16px; margin-bottom:16px; border-radius:8px;
+    background:{% if 'error' in message.tags %}#fee2e2{% elif 'warning' in message.tags %}#fef3c7{% else %}#d1fae5{% endif %};
+    color:{% if 'error' in message.tags %}#991b1b{% elif 'warning' in message.tags %}#92400e{% else %}#065f46{% endif %};
+    border-left:4px solid {% if 'error' in message.tags %}#ef4444{% elif 'warning' in message.tags %}#f59e0b{% else %}#10b981{% endif %};">
+                        {{ message }}
+                      </div>
+                      {% endfor %}
+                      {% endif %}
+
+                      <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+
+                        <!-- Form -->
+                        <div style="background:white; border:1px solid #e5e7eb; border-radius:12px; padding:24px;">
+                          <h3
+                            style="font-size:16px; font-weight:600; margin-bottom:20px; color:#111827; font-family: phetsarath ot;">
+                            📋 ຂໍ້ມູນການຖອນເງິນ</h3>
+
+                          <form method="POST" action="{% url 'withdraw_request' %}" enctype="multipart/form-data">
+                            {% csrf_token %}
+
+                            <!-- Amount -->
+                            <div style="margin-bottom:16px;">
+                              <label
+                                style="display:block; font-size:13px; font-weight:600; color:#374151; margin-bottom:6px;">
+                                ຈຳນວນທີ່ຕ້ອງການຖອນ (ກີບ) <span style="color:#ef4444;">*</span>
+                              </label>
+                              <input type="number" name="amount" min="{{ min_withdraw }}"
+                                max="{{ withdrawable|floatformat:0 }}" step="1000" placeholder="{{ min_withdraw }}"
+                                required
+                                style="width:100%; padding:10px 12px; border:1px solid #d1d5db; border-radius:8px; font-size:15px; box-sizing:border-box;">
+                              <div style="font-size:11px; color:#9ca3af; margin-top:4px;">
+                                ຂັ້ນຕ່ຳ {{ min_withdraw|intcomma }} ກີບ · ສູງສຸດ {{ withdrawable|intcomma }} ກີບ
+                              </div>
+                            </div>
+
+                            <!-- Bank Name -->
+                            <div style="margin-bottom:16px;">
+                              <label
+                                style="display:block; font-size:13px; font-weight:600; color:#374151; margin-bottom:6px;">
+                                ຊື່ທະນາຄານ <span style="color:#ef4444;">*</span>
+                              </label>
+                              <select name="bank_name" required
+                                style="width:100%; padding:10px 12px; border:1px solid #d1d5db; border-radius:8px; font-size:14px; box-sizing:border-box; background:white;">
+                                <option value="" disabled selected>-- ເລືອກທະນາຄານ --</option>
+                                <option value="BCEL">BCEL (ທະນາຄານການຄ້າຕ່າງປະເທດລາວ)</option>
+                                <option value="LDB">LDB (ທະນາຄານພັດທະນາລາວ)</option>
+                                <option value="APB">APB (ທະນາຄານສົ່ງເສີມກະສິກຳ)</option>
+                                <option value="JDB">JDB (ທະນາຄານຮ່ວມພັດທະນາ)</option>
+                                <option value="Maruhan">Maruhan Japan Bank Lao</option>
+                                <option value="BFL">BFL (ທະນາຄານການເງິນລາວ)</option>
+                                <option value="Other">ອື່ນໆ</option>
+                              </select>
+                            </div>
+
+                            <!-- Account Number -->
+                            <div style="margin-bottom:16px;">
+                              <label
+                                style="display:block; font-size:13px; font-weight:600; color:#374151; margin-bottom:6px;">
+                                ເລກບັນຊີ <span style="color:#ef4444;">*</span>
+                              </label>
+                              <input type="text" name="account_number" placeholder="0000-000000-000" required
+                                style="width:100%; padding:10px 12px; border:1px solid #d1d5db; border-radius:8px; font-size:15px; font-family:monospace; box-sizing:border-box;">
+                            </div>
+
+                            <!-- Account Name -->
+                            <div style="margin-bottom:16px;">
+                              <label
+                                style="display:block; font-size:13px; font-weight:600; color:#374151; margin-bottom:6px;">
+                                ຊື່ເຈົ້າຂອງບັນຊີ <span style="color:#ef4444;">*</span>
+                              </label>
+                              <input type="text" name="account_name" placeholder="ຊື່ ນາມສະກຸນ" required
+                                style="width:100%; padding:10px 12px; border:1px solid #d1d5db; border-radius:8px; font-size:14px; box-sizing:border-box;">
+                            </div>
+
+                            <!-- ── ໃໝ່: QR Code Upload ── -->
+                            <div style="margin-bottom:16px;">
+                              <label
+                                style="display:block; font-size:13px; font-weight:600; color:#374151; margin-bottom:6px;">
+                                QR Code ບັນຊີທະນາຄານ
+                                <span style="font-weight:400; color:#9ca3af;">(ບໍ່ບັງຄັບ)</span>
+                              </label>
+
+                              <!-- Drop zone -->
+                              <div id="qr-drop-zone" onclick="document.getElementById('qrcode_image_input').click()"
+                                style="border:2px dashed #d1d5db; border-radius:10px; padding:20px; text-align:center;
+             cursor:pointer; transition:border-color 0.2s, background 0.2s;">
+
+                                <!-- Placeholder -->
+                                <div id="qr-placeholder">
+                                  <div style="font-size:32px; margin-bottom:6px;">📷</div>
+                                  <div style="font-size:13px; color:#6b7280;">ກົດເພື່ອອັບໂຫລດ ຫຼື ລາກໄຟລ໌ມາວາງ</div>
+                                  <div style="font-size:11px; color:#9ca3af; margin-top:4px;">PNG, JPG ສູງສຸດ 5MB</div>
+                                </div>
+
+                                <!-- Preview (hidden until file chosen) -->
+                                <div id="qr-preview" style="display:none;">
+                                  <img id="qr-preview-img"
+                                    style="max-width:160px; max-height:160px; border-radius:8px; border:1px solid #e5e7eb; margin:0 auto 8px; display:block;">
+                                  <div id="qr-preview-name" style="font-size:12px; color:#6b7280;"></div>
+                                  <button type="button" onclick="clearQrImage(event)"
+                                    style="margin-top:8px; font-size:12px; color:#ef4444; background:none; border:none; cursor:pointer;">
+                                    ✕ ລຶບຮູບ
+                                  </button>
+                                </div>
+                              </div>
+
+                              <input type="file" id="qrcode_image_input" name="qrcode_image" accept="image/*"
+                                style="display:none;">
+                            </div>
+
+                            <!-- Note -->
+                            <div style="margin-bottom:20px;">
+                              <label
+                                style="display:block; font-size:13px; font-weight:600; color:#374151; margin-bottom:6px;">
+                                ໝາຍເຫດ (ບໍ່ບັງຄັບ)
+                              </label>
+                              <textarea name="note" rows="2" placeholder="ໝາຍເຫດເພີ່ມຕື່ມ..."
+                                style="width:100%; padding:10px 12px; border:1px solid #d1d5db; border-radius:8px; font-size:14px; box-sizing:border-box; resize:vertical;"></textarea>
+                            </div>
+
+                            <!-- Warning -->
+                            <div
+                              style="background:#fef3c7; border:1px solid #f59e0b; border-radius:8px; padding:12px; margin-bottom:20px; font-size:13px; color:#92400e;">
+                              ⚠️ ເງິນຈະຖືກຫັກຈາກກະເປົ໋າທັນທີ ແລະ Admin ຈະໂອນເງິນໃຫ້ພາຍໃນ 1-3 ວັນທຳການ
+                            </div>
+
+                            <button type="submit"
+                              style="width:100%; padding:12px; background:#1a3a5c; color:white; border:none; border-radius:8px; font-size:15px; font-weight:600; cursor:pointer; font-family:'Phetsarath OT',sans-serif;">
+                              💸 ສົ່ງຄຳຂໍຖອນເງິນ
+                            </button>
+                          </form>
+                        </div>
+
+                        <!-- History -->
+                        <div style="background:white; border:1px solid #e5e7eb; border-radius:12px; padding:24px;">
+                          <h3
+                            style="font-size:16px; font-weight:600; margin-bottom:20px; color:#111827; font-family: phetsarath ot;">
+                            📋 ປະຫວັດການຖອນເງິນ</h3>
+
+                          {% if withdraw_history %}
+                          {% for w in withdraw_history %}
+                          <div style="padding:10px 0; border-bottom:1px solid #f3f4f6;">
+                            <div
+                              style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                              <span style="font-size:16px; font-weight:700; font-family:monospace; color:#111827;">
+                                {{ w.amount|intcomma }} ກີບ
+                              </span>
+                              {% if w.status == 'pending' %}
+                              <span
+                                style="background:#fef3c7; color:#92400e; padding:3px 10px; border-radius:20px; font-size:12px; font-weight:600;">⏳
+                                ລໍຖ້າ</span>
+                              {% elif w.status == 'approved' %}
+                              <span
+                                style="background:#d1fae5; color:#065f46; padding:3px 10px; border-radius:20px; font-size:12px; font-weight:600;">✅
+                                ສຳເລັດ</span>
+                              {% else %}
+                              <span
+                                style="background:#fee2e2; color:#991b1b; padding:3px 10px; border-radius:20px; font-size:12px; font-weight:600;">❌
+                                ຖືກປະຕິເສດ</span>
+                              {% endif %}
+                            </div>
+
+                            <div style="font-size:12px; color:#6b7280;">
+                              🏦 {{ w.bank_name }} · {{ w.account_number }}
+                            </div>
+                            <div style="font-size:11px; color:#9ca3af; margin-top:2px;">
+                              {{ w.created_at|date:"d/m/Y H:i" }}
+                            </div>
+
+                            <!-- ── ໃໝ່: QR Code preview in history ── -->
+                           {% if w.slip_image %}
+                          <div style="margin-top:0px;">
+                            <div style="font-size:11px; color:#9ca3af; margin-bottom:4px;">📷 Slip ການໂອນ:</div>
+                            
+                            <img src="{{ w.slip_image.url }}" alt="Slip" id="qr-thumb-{{ w.id }}"
+                              onclick="toggleQrFull('{{ w.id }}')"
+                              style="width:64px; height:64px; object-fit:cover; border-radius:6px;
+                                    border:1px solid #e5e7eb; cursor:pointer; transition:transform 0.2s;"
+                              title="ກົດເພື່ອຂະຫຍາຍ">
+
+                            <!-- Full-size overlay -->
+                            <div id="qr-full-{{ w.id }}"
+                              onclick="toggleQrFull('{{ w.id }}')"
+                              style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7);
+                                    z-index:9999; cursor:zoom-out;">
+                              <img src="{{ w.slip_image.url }}"
+                                style="max-width:90vw; max-height:90vh; border-radius:12px; border:3px solid white;
+                                      position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);">
+                            </div>
+
+                          </div>
+                          {% endif %}
+
+                            {% if w.status == 'rejected' %}
+                            <div style="font-size:12px; color:#ef4444; margin-top:4px;">
+                              ⚠️ ເງິນຖືກຄືນເຂົ້າກະເປົ໋າແລ້ວ
+                            </div>
+                            {% endif %}
+                          </div>
+                          {% endfor %}
+
+                          <!-- Pagination -->
+                          {% if withdraw_history.has_other_pages %}
+                          <div style="display:flex; justify-content:center; align-items:center; gap:6px; margin-top:20px; flex-wrap:wrap;">
+
+                            {% if withdraw_history.has_previous %}
+                            <a href="?page={{ withdraw_history.previous_page_number }}"
+                              style="padding:6px 12px; border:1px solid #d1d5db; border-radius:6px; font-size:13px;
+                                    color:#374151; text-decoration:none; background:white; transition:background 0.15s;"
+                              onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='white'">
+                              ← ກ່ອນໜ້າ
+                            </a>
+                            {% else %}
+                            <span style="padding:6px 12px; border:1px solid #e5e7eb; border-radius:6px; font-size:13px;
+                                        color:#9ca3af; background:#f9fafb; cursor:not-allowed;">
+                              ← ກ່ອນໜ້າ
+                            </span>
+                            {% endif %}
+
+                            {% for num in withdraw_history.paginator.page_range %}
+                              {% if withdraw_history.number == num %}
+                              <span style="padding:6px 12px; border:1px solid #1a3a5c; border-radius:6px; font-size:13px;
+                                          color:white; background:#1a3a5c; font-weight:600;">
+                                {{ num }}
+                              </span>
+                              {% elif num >= withdraw_history.number|add:"-2" and num <= withdraw_history.number|add:"2" %}
+                              <a href="?page={{ num }}"
+                                style="padding:6px 12px; border:1px solid #d1d5db; border-radius:6px; font-size:13px;
+                                      color:#374151; text-decoration:none; background:white; transition:background 0.15s;"
+                                onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='white'">
+                                {{ num }}
+                              </a>
+                              {% endif %}
+                            {% endfor %}
+
+                            {% if withdraw_history.has_next %}
+                            <a href="?page={{ withdraw_history.next_page_number }}"
+                              style="padding:6px 12px; border:1px solid #d1d5db; border-radius:6px; font-size:13px;
+                                    color:#374151; text-decoration:none; background:white; transition:background 0.15s;"
+                              onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='white'">
+                              ຕໍ່ໄປ →
+                            </a>
+                            {% else %}
+                            <span style="padding:6px 12px; border:1px solid #e5e7eb; border-radius:6px; font-size:13px;
+                                        color:#9ca3af; background:#f9fafb; cursor:not-allowed;">
+                              ຕໍ່ໄປ →
+                            </span>
+                            {% endif %}
+
+                          </div>
+
+                          <!-- Page info -->
+                          <div style="text-align:center; font-size:12px; color:#9ca3af; margin-top:8px; font-family:'Phetsarath OT',sans-serif;">
+                            ໜ້າ {{ withdraw_history.number }} / {{ withdraw_history.paginator.num_pages }}
+                            · ທັງໝົດ {{ withdraw_history.paginator.count }} ລາຍການ
+                          </div>
+                          {% endif %}
+                          {% endif %}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+  </section>
+  <script>
+document.addEventListener('DOMContentLoaded', function () {
+
+  // ── QR image upload preview ──
+  const qrInput = document.getElementById('qrcode_image_input');
+  const qrDropZone = document.getElementById('qr-drop-zone');
+  const qrPlaceholder = document.getElementById('qr-placeholder');
+  const qrPreview = document.getElementById('qr-preview');
+  const qrPreviewImg = document.getElementById('qr-preview-img');
+  const qrPreviewName = document.getElementById('qr-preview-name');
+
+  if (!qrInput) return;
+
+  qrInput.addEventListener('change', function () {
+    if (this.files && this.files[0]) {
+      showQrPreview(this.files[0]);
+    }
+  });
+
+  qrDropZone.addEventListener('dragover', e => {
+    e.preventDefault();
+    qrDropZone.style.borderColor = '#1a3a5c';
+    qrDropZone.style.background = '#f0f7ff';
+  });
+
+  qrDropZone.addEventListener('dragleave', () => {
+    qrDropZone.style.borderColor = '#d1d5db';
+    qrDropZone.style.background = '';
+  });
+
+  qrDropZone.addEventListener('drop', e => {
+    e.preventDefault();
+
+    qrDropZone.style.borderColor = '#d1d5db';
+    qrDropZone.style.background = '';
+
+    if (e.dataTransfer.files.length > 0) {
+      qrInput.files = e.dataTransfer.files;
+      showQrPreview(e.dataTransfer.files[0]);
+    }
+  });
+
+  function showQrPreview(file) {
+
+    // validate image
+    if (!file.type.startsWith('image/')) {
+      alert('Please select image file');
+      return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = function (e) {
+
+      qrPreviewImg.src = e.target.result;
+      qrPreviewName.textContent = file.name;
+
+      qrPlaceholder.style.display = 'none';
+      qrPreview.style.display = 'block';
+
+      qrDropZone.style.borderColor = '#10b981';
+    };
+
+    reader.readAsDataURL(file);
+  }
+
+  function toggleQrFull(id) {
+      const overlay = document.getElementById('qr-full-' + id);
+      const isOpen = overlay.style.display === 'flex';
+      overlay.style.display = isOpen ? 'none' : 'flex';
+      document.body.style.overflow = isOpen ? '' : 'hidden';
+    }
+
+  window.clearQrImage = function (e) {
+    e.stopPropagation();
+
+    qrInput.value = '';
+
+    qrPreview.style.display = 'none';
+    qrPlaceholder.style.display = 'block';
+
+    qrDropZone.style.borderColor = '#d1d5db';
+  };
+
+});
+</script>
+  <!-- <script>
+    // ── QR image upload preview ──
+    const qrInput = document.getElementById('qrcode_image_input');
+    const qrDropZone = document.getElementById('qr-drop-zone');
+    const qrPlaceholder = document.getElementById('qr-placeholder');
+    const qrPreview = document.getElementById('qr-preview');
+    const qrPreviewImg = document.getElementById('qr-preview-img');
+    const qrPreviewName = document.getElementById('qr-preview-name');
+
+    qrInput.addEventListener('change', function () {
+      if (this.files && this.files[0]) showQrPreview(this.files[0]);
+    });
+
+    qrDropZone.addEventListener('dragover', e => {
+      e.preventDefault();
+      qrDropZone.style.borderColor = '#1a3a5c';
+      qrDropZone.style.background = '#f0f7ff';
+    });
+    qrDropZone.addEventListener('dragleave', () => {
+      qrDropZone.style.borderColor = '#d1d5db';
+      qrDropZone.style.background = '';
+    });
+    qrDropZone.addEventListener('drop', e => {
+      e.preventDefault();
+      qrDropZone.style.borderColor = '#d1d5db';
+      qrDropZone.style.background = '';
+      if (e.dataTransfer.files[0]) {
+        qrInput.files = e.dataTransfer.files;
+        showQrPreview(e.dataTransfer.files[0]);
+      }
+    });
+
+    function showQrPreview(file) {
+      const reader = new FileReader();
+      reader.onload = e => {
+        qrPreviewImg.src = e.target.result;
+        qrPreviewName.textContent = file.name;
+        qrPlaceholder.style.display = 'none';
+        qrPreview.style.display = 'block';
+        qrDropZone.style.borderColor = '#10b981';
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function clearQrImage(e) {
+      e.stopPropagation();
+      qrInput.value = '';
+      qrPreview.style.display = 'none';
+      qrPlaceholder.style.display = 'block';
+      qrDropZone.style.borderColor = '#d1d5db';
+    }
+
+    // ── QR full-size toggle in history ──
+    function toggleQrFull(id) {
+      const overlay = document.getElementById('qr-full-' + id);
+      const isOpen = overlay.style.display === 'flex';
+      overlay.style.display = isOpen ? 'none' : 'flex';
+      document.body.style.overflow = isOpen ? '' : 'hidden';
+    }
+
+    // ── Amount cap ──
+    const amountInput = document.querySelector('input[name="amount"]');
+    const maxAmount = Number("{{ withdrawable|floatformat:0 }}");
+    amountInput.addEventListener('input', function () {
+      if (Number(this.value) > maxAmount) this.value = maxAmount;
+    });
+
+    // ── Submit loading state ──
+    const form = document.querySelector('form');
+    const submitBtn = form.querySelector('button[type="submit"]');
+    form.addEventListener('submit', function () {
+      submitBtn.disabled = true;
+      submitBtn.innerText = '⏳ ກຳລັງດຳເນີນການ...';
+    });
+  </script> -->
+</main>
+
+{% endblock %}

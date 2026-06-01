@@ -1,0 +1,404 @@
+﻿{% extends 'base.html' %}
+
+{% block title %}Duladoc{% endblock %}
+{% block meta_description %}
+Duladoc - Your Trusted Document Management Solution
+{% endblock %}
+{% load humanize %}
+
+{% block content %}
+
+{% load static %}
+<main class="main" style="font-family: 'phetsarath ot', sans-serif;">
+     <style>
+        .font-all {
+            font-family: 'Phetsarath OT', sans-serif;
+        }
+
+        .product-img {
+            width: 100%;
+            aspect-ratio: 4 / 3;
+            overflow: hidden;
+        }
+
+        .product-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Category height in top of home page */
+        .category-image {
+            width: 100%;
+            height: 160px;
+            /* ความสูงเดียวกันทุก device */
+            overflow: hidden;
+        }
+
+        .category-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            /* ครอบรูปให้เต็มกล่อง */
+            display: block;
+        }
+    </style>
+    <div class="page-header breadcrumb-wrap">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="{% url 'home' %}" rel="nofollow">Home</a>
+                <span></span> ເອກສານທັງໝົດ
+            </div>
+        </div>
+    </div>
+    <section class="mt-50 mb-50">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-9">
+                    <div class="shop-product-fillter">
+    <div class="totall-product">
+        <p>ພົບທັງໝົດ <strong class="text-brand">{{ documents.paginator.count }}</strong> ລາຍການ</p>
+    </div>
+    <div class="sort-by-product-area">
+
+        <!-- Show per page -->
+        <div class="sort-by-cover mr-10">
+            <div class="sort-by-product-wrap">
+                <div class="sort-by">
+                    <span><i class="fi-rs-apps"></i> ສະແດງ:</span>
+                </div>
+                <div class="sort-by-dropdown-wrap">
+                    <span>{{ current_per_page }} <i class="fi-rs-angle-small-down"></i></span>
+                </div>
+            </div>
+            <div class="sort-by-dropdown">
+                <ul>
+                    <li><a href="?page=1&per_page=12&sort={{ current_sort }}&price_filter={{ price_filter }}{% for ft in selected_file_types %}&file_type={{ ft }}{% endfor %}" {% if current_per_page == 12 %}class="active"{% endif %}>12</a></li>
+                    <li><a href="?page=1&per_page=24&sort={{ current_sort }}&price_filter={{ price_filter }}{% for ft in selected_file_types %}&file_type={{ ft }}{% endfor %}" {% if current_per_page == 24 %}class="active"{% endif %}>24</a></li>
+                    <li><a href="?page=1&per_page=48&sort={{ current_sort }}&price_filter={{ price_filter }}{% for ft in selected_file_types %}&file_type={{ ft }}{% endfor %}" {% if current_per_page == 48 %}class="active"{% endif %}>48</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Sort by -->
+        <div class="sort-by-cover">
+            <div class="sort-by-product-wrap">
+                <div class="sort-by">
+                    <span><i class="fi-rs-apps-sort"></i> ຈັດລຽງ:</span>
+                </div>
+                <div class="sort-by-dropdown-wrap">
+                    <span>
+                        {% if current_sort == 'price' %}ລາຄາ ຕ່ຳ → ສູງ
+                        {% elif current_sort == '-price' %}ລາຄາ ສູງ → ຕ່ຳ
+                        {% elif current_sort == '-downloads' %}ດາວໂຫຼດຫຼາຍສຸດ
+                        {% elif current_sort == '-preview_count' %}ເບິ່ງຫຼາຍສຸດ
+                        {% else %}ໃໝ່ສຸດ{% endif %}
+                        <i class="fi-rs-angle-small-down"></i>
+                    </span>
+                </div>
+            </div>
+            <div class="sort-by-dropdown">
+                <ul>
+                    <li><a href="?sort=-created_at&price_filter={{ price_filter }}&per_page={{ current_per_page }}{% for ft in selected_file_types %}&file_type={{ ft }}{% endfor %}" {% if current_sort == '-created_at' %}class="active"{% endif %}>ໃໝ່ສຸດ</a></li>
+                    <li><a href="?sort=price&price_filter={{ price_filter }}&per_page={{ current_per_page }}{% for ft in selected_file_types %}&file_type={{ ft }}{% endfor %}" {% if current_sort == 'price' %}class="active"{% endif %}>ລາຄາ ຕ່ຳ → ສູງ</a></li>
+                    <li><a href="?sort=-price&price_filter={{ price_filter }}&per_page={{ current_per_page }}{% for ft in selected_file_types %}&file_type={{ ft }}{% endfor %}" {% if current_sort == '-price' %}class="active"{% endif %}>ລາຄາ ສູງ → ຕ່ຳ</a></li>
+                    <li><a href="?sort=-downloads&price_filter={{ price_filter }}&per_page={{ current_per_page }}{% for ft in selected_file_types %}&file_type={{ ft }}{% endfor %}" {% if current_sort == '-downloads' %}class="active"{% endif %}>ດາວໂຫຼດຫຼາຍສຸດ</a></li>
+                    <li><a href="?sort=-preview_count&price_filter={{ price_filter }}&per_page={{ current_per_page }}{% for ft in selected_file_types %}&file_type={{ ft }}{% endfor %}" {% if current_sort == '-preview_count' %}class="active"{% endif %}>ເບິ່ງຫຼາຍສຸດ</a></li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+</div>
+                    <div class="row product-grid-4">
+                        {% if documents %}
+                        {% for doc in documents %}
+                        <div class="col-lg-4 col-md-4 col-6 col-sm-6">
+                            <div class="product-cart-wrap mb-30">
+
+                                <!-- DOCUMENT IMAGE -->
+                                <div class="product-img-action-wrap">
+                                    <div class="product-img product-img-zoom">
+                                        <a href="{% url 'document_detail' doc.id %}">
+
+                                            {% if doc.preview_image %}
+                                            <img class="default-img" src="{{ doc.preview_image.url }}"
+                                                alt="{{ doc.title }}">
+                                            {% else %}
+                                            <img class="default-img"
+                                                src="{% static 'imgs/logo/' %}{{ doc.get_file_icon }}"
+                                                alt="{{ doc.title }}">
+                                            {% endif %}
+
+                                        </a>
+                                    </div>
+
+                                    <!-- ACTION ICONS -->
+                                    <div class="product-action-1">
+                                        <a aria-label="View" class="action-btn hover-up"
+                                            href="{% url 'document_detail' doc.id %}">
+                                            <i class="fi-rs-eye"></i>
+                                        </a>
+                                    </div>
+
+                                     {% if doc.is_new_book %}
+                            <div class="product-badges product-badges-position product-badges-mrg d-flex justify-content-between align-items-center">
+                                <span class="hot">Hot</span>
+                                <span>
+                                    <img class="default-img"
+                                        src="{% static 'imgs/logo/' %}{{ doc.get_file_icon }}"
+                                        alt="{{ doc.title }}"
+                                        style="width:15px;">
+                                </span>
+                            </div>
+
+                            {% elif doc.is_popular_book %}
+                            <div class="product-badges product-badges-position product-badges-mrg d-flex justify-content-between align-items-center">
+                                <span class="new">New</span>
+                                <span>
+                                    <img class="default-img"
+                                        src="{% static 'imgs/logo/' %}{{ doc.get_file_icon }}"
+                                        alt="{{ doc.title }}"
+                                        style="width:15px;">
+                                </span>
+
+                            </div>
+                            {% elif doc.is_featured_book %}
+                            <div class="product-badges product-badges-position product-badges-mrg d-flex justify-content-between align-items-center">
+                                <span class="sale">Sale</span>
+                                <span>
+                                    <img class="default-img"
+                                        src="{% static 'imgs/logo/' %}{{ doc.get_file_icon }}"
+                                        alt="{{ doc.title }}"
+                                        style="width:15px;">
+                                </span>
+                            </div>
+                            {% else %}
+                            <div class="product-badges product-badges-position product-badges-mrg d-flex justify-content-between align-items-center">
+                                <span class="hot">-25%</span>
+                                <span>
+                                    <img class="default-img"
+                                        src="{% static 'imgs/logo/' %}{{ doc.get_file_icon }}"
+                                        alt="{{ doc.title }}"
+                                        style="width:15px;">
+                                </span>
+                            </div>
+                            {% endif %}
+                                </div>
+                            
+
+                                <!-- DOCUMENT CONTENT -->
+                                <div class="product-content-wrap">
+
+                                    <!-- CATEGORY -->
+                                    {% if doc.category %}
+                                    <div class="product-category d-flex">
+                                        <a href="">{{ doc.category.name |truncatechars:15 }}</a>
+                                        <span class="ms-auto" style="font-size: 10px;">{{ doc.created_at|date:"M d, Y"}}</span>
+                                    </div>
+                                    {% endif %}
+
+                                    <!-- TITLE -->
+                                    <h2 style="font-family: phetsarath ot;">
+                                        <a href="{% url 'document_detail' doc.id %}">
+                                            {{ doc.title|truncatechars:15 }} <span><img class="default-img"
+                                                    src="{% static 'imgs/logo/' %}{{ doc.get_file_icon }}"
+                                                    alt="{{ doc.title }}" style="width: 15px;"></span>
+                                        </a>
+                                    </h2>
+
+                                    <!-- DOWNLOAD / RATING (แทน rating เดิม) -->
+                                    <div class="justify-content-between d-flex mt-10 ">
+                                        <span>
+                                            <span><i class="fas fa-file-alt"></i> {{ doc.pages|intcomma }} ໜ້າ</span>
+                                            <span><i class="fas fa-download"></i> {{ doc.downloads|floatformat:0|intcomma }}ຄັ້ງ</span>
+                                            <span><i class="fas fa-eye"></i> {{ doc.preview_count|intcomma }}ຄັ້ງ</span>
+                                        </span>
+                                    </div>
+
+                                    <!-- PRICE -->
+                                    <div class="product-price">
+                                        {% if doc.is_free %}
+                                        <span class="text-success">Free</span>
+                                        {% else %}
+                                        <span>{{ doc.price |intcomma}} ກີບ</span>
+                                        {% endif %}
+                                    </div>
+
+                                    <!-- ACTION -->
+                                    <!-- <div class="product-action-1 show">
+                                        <a aria-label="Download" class="action-btn hover-up" href="">
+                                            <i class="fas fa-download"></i>
+                                        </a>
+                                    </div> -->
+                                    <!-- ACTION -->
+                                    <div class="product-action-1 show">
+                                        <button aria-label="Download"
+                                                class="action-btn hover-up"
+                                                
+                                                onclick="handleDownload({{ doc.id }}, this)">
+                                            <i class="fas fa-download"></i>
+                                        </button>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        {% else %}
+                        <div class="col-12 text-center">
+                            <h4>No documents available</h4>
+                        </div>
+                        {% endif %}
+                        
+
+                    </div>
+                    <!--pagination-->
+                    <!-- <div class="pagination-area mt-15 mb-sm-5 mb-lg-0">
+                        <nav aria-label="Page navigation example">
+                            <ul class="pagination justify-content-start">
+                                <li class="page-item active"><a class="page-link" href="#">01</a></li>
+                                <li class="page-item"><a class="page-link" href="#">02</a></li>
+                                <li class="page-item"><a class="page-link" href="#">03</a></li>
+                                <li class="page-item"><a class="page-link dot" href="#">...</a></li>
+                                <li class="page-item"><a class="page-link" href="#">16</a></li>
+                                <li class="page-item"><a class="page-link" href="#"><i
+                                            class="fi-rs-angle-double-small-right"></i></a></li>
+                            </ul>
+                        </nav>
+                    </div> -->
+
+                    <div class="pagination-area mt-15 mb-sm-5 mb-lg-0">
+                        <nav aria-label="Page navigation example">
+                            <ul class="pagination justify-content-start">
+
+                                {% if documents.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ documents.previous_page_number }}&price_filter={{ price_filter }}&sort={{ current_sort }}{% for ft in selected_file_types %}&file_type={{ ft }}{% endfor %}">
+                                        <i class="fi-rs-angle-double-small-left"></i>
+                                    </a>
+                                </li>
+                                {% endif %}
+
+                                {% for num in documents.paginator.page_range %}
+                                    {% if documents.number == num %}
+                                        <li class="page-item active">
+                                            <a class="page-link">{{ num }}</a>
+                                        </li>
+                                    {% else %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ num }}&price_filter={{ price_filter }}&sort={{ current_sort }}{% for ft in selected_file_types %}&file_type={{ ft }}{% endfor %}">{{ num }}</a>
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+
+                                {% if documents.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ documents.next_page_number }}&price_filter={{ price_filter }}&sort={{ current_sort }}{% for ft in selected_file_types %}&file_type={{ ft }}{% endfor %}">
+                                        <i class="fi-rs-angle-double-small-right"></i>
+                                    </a>
+                                </li>
+                                {% endif %}
+
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+                <div class="col-lg-3 primary-sidebar sticky-sidebar">
+                    <div class="row">
+                        <div class="col-lg-12 col-mg-6"></div>
+                        <div class="col-lg-12 col-mg-6"></div>
+                    </div>
+                    <div class="widget-category mb-30">
+                        <h4 class="section-title style-1 mb-30 wow fadeIn animated"
+                            style="font-family: 'phetsarath ot', sans-serif;">ໝວດໝູ່ຍອດນິຍົມ</h4>
+                        <ul class="categories">
+                            {% for category in popular_categories %}
+                            <li>
+                                <a href="{% url 'doc_by_category' category.id %}"
+                                {% if request.resolver_match.url_name == 'doc_by_category' and request.resolver_match.kwargs.id == category.id %}
+                                class="active"
+                                {% endif %}>
+                                    {{ category.name }}
+                                    <span style="float:right; font-size:0.8rem; color:#999;">
+                                        ({{ category.documents.count }})
+                                    </span>
+                                </a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <div class="sidebar-widget price_range range mb-30">
+                    <div class="widget-header position-relative mb-20 pb-10">
+                        <h4 class="widget-title mb-10 font-all">ຄົ້ນຫາ / ກັ່ນຕອງ</h4>
+                        <div class="bt-1 border-color-1"></div>
+                    </div>
+
+                    <form method="GET" action="{% url 'all_documents' %}">
+
+                        <!-- Filter ราคา -->
+                       <div class="mt-5">
+                            <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+                                <input type="radio" name="price_filter" id="price_all" value=""
+                                    {% if not price_filter %}checked{% endif %}
+                                    style="width:16px; height:16px; cursor:pointer; accent-color:#020a06;">
+                                <label for="price_all" style="cursor:pointer; margin:0;">ທັງໝົດ</label>
+                            </div>
+
+                            <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+                                <input type="radio" name="price_filter" id="price_free" value="free"
+                                    {% if price_filter == 'free' %}checked{% endif %}
+                                    style="width:16px; height:16px; cursor:pointer; accent-color:#010b06;">
+                                <label for="price_free" style="cursor:pointer; margin:0;">ຟຣີ</label>
+                            </div>
+                        </div>
+
+                        <!-- Filter ประเภทไฟล์ -->
+                            <div class="mb-15">
+                                <label class="fw-900 mb-5">ປະເພດໄຟລ໌</label>
+                                <div class="custome-checkbox mt-5">
+                                    <input class="form-check-input" type="checkbox" name="file_type" id="ft_pdf" value="pdf"
+                                        {% if 'pdf' in selected_file_types %}checked{% endif %}>
+                                    <label class="form-check-label" for="ft_pdf"><span>PDF</span></label><br>
+
+                                    <input class="form-check-input" type="checkbox" name="file_type" id="ft_word" value="docx"
+                                        {% if 'docx' in selected_file_types %}checked{% endif %}>
+                                    <label class="form-check-label" for="ft_word"><span>Word</span></label><br>
+
+                                    <input class="form-check-input" type="checkbox" name="file_type" id="ft_ppt" value="pptx"
+                                        {% if 'pptx' in selected_file_types %}checked{% endif %}>
+                                    <label class="form-check-label" for="ft_ppt"><span>PowerPoint</span></label><br>
+
+                                    <input class="form-check-input" type="checkbox" name="file_type" id="ft_excel" value="xlsx"
+                                        {% if 'xlsx' in selected_file_types %}checked{% endif %}>
+                                    <label class="form-check-label" for="ft_excel"><span>Excel</span></label><br>
+                                </div>
+                            </div>
+
+                        <!-- Sort -->
+                            <!-- <div class="mb-15">
+                                <label class="fw-900 mb-5">ຈັດລຽງຕາມ</label>
+                                <select name="sort" class="form-control form-control-sm mt-5">
+                                    <option value="-created_at" {% if current_sort == '-created_at' %}selected{% endif %}>ໃໝ່ສຸດ</option>
+                                    <option value="price"       {% if current_sort == 'price' %}selected{% endif %}>ລາຄາ ຕ່ຳ → ສູງ</option>
+                                    <option value="-price"      {% if current_sort == '-price' %}selected{% endif %}>ລາຄາ ສູງ → ຕ່ຳ</option>
+                                    <option value="-downloads"  {% if current_sort == '-downloads' %}selected{% endif %}>ດາວໂຫຼດຫຼາຍສຸດ</option>
+                                    <option value="-preview_count" {% if current_sort == '-preview_count' %}selected{% endif %}>ເບິ່ງຫຼາຍສຸດ</option>
+                                </select>
+                            </div> -->
+
+                        <button type="submit" class="btn btn-sm btn-default w-100">
+                            <i class="fi-rs-filter mr-5"></i> ກັ່ນຕອງ
+                        </button>
+                        <a href="{% url 'all_documents' %}" class="btn btn-sm btn-outline-secondary w-100 mt-5">
+                        ລ້າງການກັ່ນຕອງ</a>
+
+                    </form>
+                </div>
+                   
+                
+            </div>
+        </div>
+    </section>
+</main>
+{% endblock %}

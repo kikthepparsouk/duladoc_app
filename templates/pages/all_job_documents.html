@@ -1,0 +1,174 @@
+﻿{% extends 'base.html' %}
+
+{% block title %}Duladoc{% endblock %}
+{% block meta_description %}
+Duladoc - Your Trusted Document Management Solution
+{% endblock %}
+{% load humanize %}
+
+{% block content %}
+
+{% load static %}
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao&display=swap" rel="stylesheet">
+<main class="main" style="font-family: 'Noto Sans Lao', 'Phetsarath', 'Saysettha OT', 'Lao Sans', sans-serif;">
+    <div class="page-header breadcrumb-wrap">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="index.html" rel="nofollow">Home</a>
+
+                <span></span> ວຽກເອກະສານ
+            </div>
+        </div>
+    </div>
+    <section class="mt-50 mb-50">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="shop-product-fillter">
+                        <div class="totall-product">
+                            <p> We found <strong class="text-brand">{{ documents|length }}</strong> items for you!</p>
+                        </div>
+                        <div class="sort-by-product-area">
+                            <div class="sort-by-cover mr-10">
+                                <div class="sort-by-product-wrap">
+                                    <div class="sort-by">
+                                        <span><i class="fi-rs-apps"></i>ໝວດໝູ່:</span>
+                                    </div>
+                                    <div class="sort-by-dropdown-wrap">
+                                        <span> work <i class="fi-rs-angle-small-down"></i></span>
+                                    </div>
+                                </div>
+                                <div class="sort-by-dropdown">
+                                    <ul>
+                                        {% for cat in categories %}
+                                        <li>
+                                            <a href="?category={{ cat.slug }}"
+                                            {% if selected_category == cat.slug %}class="active"{% endif %}>
+                                            {{ cat.name|truncatechars:15  }}
+                                            </a>
+
+                                            {# แสดง subcategory ถ้ามี #}
+                                            {% if cat.get_children %}
+                                            <ul>
+                                            {% for child in cat.get_children %}
+                                            <li>
+                                                <a href="?category={{ child.slug }}"
+                                                {% if selected_category == child.slug %}class="active"{% endif %}>
+                                                {{ child.name|truncatechars:15  }}
+                                                </a>
+                                            </li>
+                                            {% endfor %}
+                                            </ul>
+                                            {% endif %}
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="sort-by-cover">
+    <div class="sort-by-product-wrap">
+        <div class="sort-by">
+            <span><i class="fi-rs-apps-sort"></i> ລັກສະນະຈ້າງ:</span>
+        </div>
+        <div class="sort-by-dropdown-wrap">
+            <span>
+                {% if selected_job_type == 'full_time' %}ວຽກເຕັມເວລາ
+                {% elif selected_job_type == 'part_time' %}ວຽກພາດທາມ
+                {% elif selected_job_type == 'freelance' %}ວຽກສັນຍາຈ້າງ
+                {% else %}ທັງໝົດ{% endif %}
+                <i class="fi-rs-angle-small-down"></i>
+            </span>
+        </div>
+    </div>
+    <div class="sort-by-dropdown">
+        <ul>
+            <li>
+                <a href="?{% if selected_category %}category={{ selected_category }}&{% endif %}job_type="
+                   {% if not selected_job_type %}class="active"{% endif %}>
+                    ທັງໝົດ
+                </a>
+            </li>
+            <li>
+                <a href="?{% if selected_category %}category={{ selected_category }}&{% endif %}job_type=full_time"
+                   {% if selected_job_type == 'full_time' %}class="active"{% endif %}>
+                    ວຽກເຕັມເວລາ
+                </a>
+            </li>
+            <li>
+                <a href="?{% if selected_category %}category={{ selected_category }}&{% endif %}job_type=part_time"
+                   {% if selected_job_type == 'part_time' %}class="active"{% endif %}>
+                    ວຽກພາດທາມ
+                </a>
+            </li>
+            <li>
+                <a href="?{% if selected_category %}category={{ selected_category }}&{% endif %}job_type=freelance"
+                   {% if selected_job_type == 'freelance' %}class="active"{% endif %}>
+                    ວຽກສັນຍາຈ້າງ
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table shopping-summery text-center clean">
+                            <thead>
+                                <tr class="main-heading">
+
+                                    <th scope="col">No.</th>
+                                    <!-- <th scope="col">Image</th> -->
+                                    <th scope="col">ຊື່ວຽກ</th>
+                                    <th scope="col">ໝວດໝູ່</th>
+                                    <th scope="col">ລັກສະນະຈ້າງ</th>
+                                    <th scope="col">ງົບປະມານ(ກີບ)</th>
+                                    <th scope="col">ມື້ລົງປະກາດ</th>
+                                    <th scope="col">ສົ່ງວຽກພາຍໃນ</th>
+                                    <th scope="col">ຕິດຕໍ່ເຈົ້າຂອງວຽກ</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for doc in all_jobs_documents %}
+                                <tr>
+                                    <td class="price" data-title="No."><span>{{ forloop.counter }} </span></td>
+
+                                    <!-- <td class="image product-thumbnail"><img src="{% static 'imgs/shop/product-1-2.jpg' %}" alt="#"></td> -->
+                                    <td class="product-des product-name" data-title="ຊື່ວຽກ">
+                                        <p class="font-xs">{{ doc.title }}<br></p>
+                                    </td>
+                                    <td class="price" data-title="ໝວດໝູ່"><span>{{ doc.category.name }}</span></td>
+                                    <td class="text-center" data-title="ລັກສະນະຈ້າງ">
+                                        <span class="qty-val">{{ doc.get_job_type_display }}</span>
+                                    </td>
+                                    <td class="text-right" data-title="ງົບປະມານ(ກີບ)">
+                                        <span>{{ doc.budget|intcomma }} ກີບ</span>
+                                    </td>
+                                    <td class="text-right" data-title="ມື້ລົງປະກາດ">
+                                        <span>{{ doc.posted_date|date:"d/m/Y" }}</span>
+                                    </td>
+                                    <td class="action" data-title="ສົ່ງວຽກພາຍໃນ">
+                                         <span>{{ doc.deadline|date:"d/m/Y" }}</span>
+                                    </td>
+                                    <td class="text-right" data-title="ຕິດຕໍ່ເຈົ້າຂອງວຽກ">
+                                        <span>{{ doc.contact_info }}</span>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="8" class="text-center">
+                                        <a href="#" class="text-muted">No job documents found.</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="divider center_icon mt-50 mb-50"><i class="fi-rs-fingerprint"></i></div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+{% endblock %}

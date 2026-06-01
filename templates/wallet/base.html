@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}ระบบเอกสาร{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #1e293b;
+      --surface: #ebebeb;
+      --surface2: #1e293b;
+      --border: #215999;
+      --accent: #1f6feb;
+      --accent-light: #388bfd;
+      --success: #3fb950;
+      --warning: #d29922;
+      --danger: #f85149;
+      --info: #58a6ff;
+      --text: #f5f5f5;
+      --text2: #333030;
+      --text-muted: #717982;
+      --text-subtle: #484f58;
+      --radius: 8px;
+      --radius-lg: 12px;
+      --shadow: 0 4px 24px rgba(0,0,0,0.4);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Sarabun', sans-serif;
+      background: var(--bg);
+      color: var(--text2);
+      min-height: 100vh;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    a { color: var(--accent-light); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* NAV */
+    nav {
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      height: 56px;
+      gap: 24px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .nav-brand {
+      font-weight: 700;
+      font-size: 17px;
+      color: var(--text);
+      letter-spacing: -0.3px;
+    }
+    .nav-brand span { color: var(--accent-light); }
+
+    .nav-links { display: flex; gap: 4px; flex: 1; }
+    .nav-links a {
+      color: var(--text-muted);
+      padding: 6px 12px;
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+    .nav-links a:hover, .nav-links a.active {
+      color: whitesmoke;
+      background: var(--surface2);
+      text-decoration: none;
+    }
+
+    .nav-wallet {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 14px;
+      color: var(--text);
+    }
+    .nav-wallet .bal { font-family: 'IBM Plex Mono', monospace; font-weight: 600; color: var(--success); }
+    .nav-user { font-size: 13px; color: var(--text-muted); margin-left: 4px; }
+
+    /* LAYOUT */
+    .container { max-width: 1100px; margin: 0 auto; padding: 32px 24px; }
+    .container-sm { max-width: 680px; margin: 0 auto; padding: 32px 24px; }
+
+    /* CARDS */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+    }
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .card-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text2);
+    }
+
+    /* STAT CARDS */
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 28px; }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px 24px;
+    }
+    .stat-label { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; }
+    .stat-value { font-size: 28px; font-weight: 700; font-family: 'IBM Plex Mono', monospace; }
+    .stat-value.green { color: var(--success); }
+    .stat-value.blue { color: var(--info); }
+    .stat-value.yellow { color: var(--warning); }
+
+    /* BUTTONS */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 18px;
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-weight: 600;
+      font-family: 'Sarabun', sans-serif;
+      border: none;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-decoration: none;
+    }
+    .btn:hover { text-decoration: none; filter: brightness(1.1); }
+    .btn:active { transform: scale(0.98); }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-success { background: var(--success); color: #000; }
+    .btn-danger { background: var(--danger); color: #fff; }
+    .btn-outline {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-outline:hover { background: var(--surface2); }
+    .btn-sm { padding: 5px 12px; font-size: 13px; }
+    .btn-lg { padding: 12px 24px; font-size: 16px; }
+    .btn-full { width: 100%; justify-content: center; }
+
+    /* FORMS */
+    .form-group { margin-bottom: 20px; }
+    .form-label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    .form-input {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px 14px;
+      font-size: 15px;
+      color: var(--text);
+      font-family: 'Sarabun', sans-serif;
+      transition: border-color 0.15s;
+    }
+    .form-input:focus {
+      outline: none;
+      border-color: var(--accent-light);
+      box-shadow: 0 0 0 3px rgba(31, 111, 235, 0.2);
+    }
+    .form-input::placeholder { color: var(--text-subtle); }
+    .form-hint { font-size: 12px; color: var(--text-muted); margin-top: 6px; }
+    .errorlist { list-style: none; color: var(--danger); font-size: 13px; margin-top: 6px; }
+
+    /* ALERTS */
+    .messages { margin-bottom: 20px; }
+    .alert {
+      padding: 12px 16px;
+      border-radius: var(--radius);
+      font-size: 14px;
+      margin-bottom: 10px;
+      border-left: 4px solid;
+    }
+    .alert-success { background: rgba(63,185,80,.1); border-color: var(--success); color: #7ee787; }
+    .alert-error   { background: rgba(248,81,73,.1);  border-color: var(--danger);  color: #ff7b72; }
+    .alert-warning { background: rgba(210,153,34,.1); border-color: var(--warning); color: #f0c060; }
+    .alert-info    { background: rgba(88,166,255,.1); border-color: var(--info);    color: var(--info); }
+
+    /* BADGES */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .badge-pending  { background: rgba(210,153,34,.15); color: var(--warning); border: 1px solid rgba(210,153,34,.3); }
+    .badge-approved { background: rgba(63,185,80,.15);  color: var(--success); border: 1px solid rgba(63,185,80,.3); }
+    .badge-rejected { background: rgba(248,81,73,.15);  color: var(--danger);  border: 1px solid rgba(248,81,73,.3); }
+    .badge-topup    { background: rgba(88,166,255,.15); color: var(--info);    border: 1px solid rgba(88,166,255,.3); }
+    .badge-purchase { background: rgba(210,153,34,.15); color: var(--warning); border: 1px solid rgba(210,153,34,.3); }
+
+    /* TABLE */
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; }
+    th {
+      text-align: left;
+      padding: 10px 16px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    td {
+      padding: 12px 16px;
+      font-size: 14px;
+      border-bottom: 1px solid var(--surface2);
+      vertical-align: middle;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255,255,255,.02); }
+
+    /* MISC */
+    .text-muted { color: var(--text-muted); }
+    .text-mono  { font-family: 'IBM Plex Mono', monospace; }
+    .text-green { color: var(--success); }
+    .text-red   { color: var(--danger); }
+    .text-blue  { color: var(--info); }
+    .page-title { font-size: 24px; font-weight: 700; margin-bottom: 6px; }
+    .page-subtitle { color: var(--text-muted); font-size: 14px; margin-bottom: 28px; }
+    .divider { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+    .flex { display: flex; }
+    .items-center { align-items: center; }
+    .justify-between { justify-content: space-between; }
+    .gap-8 { gap: 8px; }
+    .gap-12 { gap: 12px; }
+    .mt-8 { margin-top: 8px; }
+    .mt-16 { margin-top: 16px; }
+    .mt-24 { margin-top: 24px; }
+    .empty-state {
+      text-align: center;
+      padding: 48px 24px;
+      color: var(--text-muted);
+    }
+    .empty-state .icon { font-size: 48px; margin-bottom: 12px; }
+    .empty-state p { font-size: 14px; }
+
+    /* Amount display */
+    .amount-plus  { color: var(--success); font-family: 'IBM Plex Mono', monospace; font-weight: 600; }
+    .amount-minus { color: var(--danger);  font-family: 'IBM Plex Mono', monospace; font-weight: 600; }
+  </style>
+  {% block extra_head %}{% endblock %}
+</head>
+<body style="font-family: phetsarath ot;">
+
+<nav>
+  <div class="nav-brand">📁 <span>Duladoc Admin</span></div>
+  <div class="nav-links">
+    {% if user.is_staff %}
+
+    <a href="{% url 'admin_revenue' %}"
+       {% if request.resolver_match.url_name == 'admin_revenue' %}class="active"{% endif %}>
+       ⚙️ Dashboard
+    </a>
+
+    <a href="{% url 'admin_topup_list' %}"
+       {% if request.resolver_match.url_name == 'admin_topup_list' %}class="active"{% endif %}>
+       ຕື່ມເງິນ
+    </a>
+
+    <a href="{% url 'admin_withdraw_list' %}"
+       {% if request.resolver_match.url_name == 'admin_withdraw_list' %}class="active"{% endif %}>
+       ຖອນເງິນ
+    </a>
+    {% endif %}
+</div>
+  {% if user.is_authenticated %}
+  <div class="nav-wallet">
+    <span>💰</span>
+    <span class="bal">{{ user.wallet.balance|default:"0" }} k</span>
+    <span class="nav-user">{{ user.username }}</span>
+  </div>
+  {% endif %}
+</nav>
+
+<div class="messages container" style="padding-bottom:0; padding-top:16px;">
+  {% for message in messages %}
+  <div class="alert alert-{{ message.tags|default:'info' }}">{{ message }}</div>
+  {% endfor %}
+</div>
+
+{% block content %}{% endblock %}
+
+</body>
+</html>

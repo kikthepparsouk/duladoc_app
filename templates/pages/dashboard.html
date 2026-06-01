@@ -1,0 +1,687 @@
+﻿{% extends 'base.html' %}
+
+{% block title %}Duladoc{% endblock %}
+{% block meta_description %}
+Duladoc - Your Trusted Document Management Solution
+{% endblock %}
+{% load humanize %}
+
+{% block content %}
+
+{% load static %}
+<main class="main">
+    <style>
+        :root {
+
+            /* --bg: #789ed7; */
+            /* --surface: #466487; */
+            /* --surface2: #426c9a; */
+            --border: #87929f;
+            --accent: #1f6feb;
+            --accent-light: #388bfd;
+            --success: #3fb950;
+            --warning: #d29922;
+            --danger: #f85149;
+            --info: #58a6ff;
+            --text: #1c2023;
+            --text-muted: #8b949e;
+            --text-subtle: #484f58;
+            --radius: 8px;
+            --radius-lg: 12px;
+            --shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+
+
+
+
+
+        /* LAYOUT */
+        .container-sm {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 32px 24px;
+        }
+
+        /* CARDS */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            font-family: phetsarath ot;
+        }
+
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+            font-family: phetsarath ot;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text);
+            font-family: phetsarath ot;
+        }
+
+        /* STAT CARDS */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 20px 24px;
+            font-family: phetsarath ot;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            font-family: 'IBM Plex Mono', monospace;
+        }
+
+        .stat-value.green {
+            color: var(--success);
+        }
+
+        .stat-value.blue {
+            color: var(--info);
+        }
+
+        .stat-value.yellow {
+            color: var(--warning);
+        }
+
+        /* BUTTONS */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 18px;
+            border-radius: var(--radius);
+            font-size: 14px;
+            font-weight: 600;
+            font-family: 'phetsarath ot', 'Sarabun', sans-serif;
+            border: none;
+            cursor: pointer;
+            transition: all 0.15s;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            text-decoration: none;
+            filter: brightness(1.1);
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: #000;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: #fff;
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-outline:hover {
+            background: var(--surface2);
+        }
+
+        .btn-sm {
+            padding: 5px 12px;
+            font-size: 13px;
+        }
+
+        .btn-lg {
+            padding: 12px 24px;
+            font-size: 16px;
+        }
+
+        .btn-full {
+            width: 100%;
+            justify-content: center;
+        }
+
+        /* FORMS */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 10px 14px;
+            font-size: 15px;
+            color: var(--text);
+            font-family: 'Sarabun', sans-serif;
+            transition: border-color 0.15s;
+            font-family: phetsarath ot;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent-light);
+            box-shadow: 0 0 0 3px rgba(31, 111, 235, 0.2);
+        }
+
+        .form-input::placeholder {
+            color: var(--text-subtle);
+        }
+
+        .form-hint {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 6px;
+        }
+
+        .errorlist {
+            list-style: none;
+            color: var(--danger);
+            font-size: 13px;
+            margin-top: 6px;
+        }
+
+        /* ALERTS */
+        .messages {
+            margin-bottom: 20px;
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: var(--radius);
+            font-size: 14px;
+            margin-bottom: 10px;
+            border-left: 4px solid;
+            font-family: phetsarath ot;
+        }
+
+        .alert-success {
+            background: rgba(63, 185, 80, .1);
+            border-color: var(--success);
+            color: #7ee787;
+        }
+
+        .alert-error {
+            background: rgba(248, 81, 73, .1);
+            border-color: var(--danger);
+            color: #ff7b72;
+        }
+
+        .alert-warning {
+            background: rgba(210, 153, 34, .1);
+            border-color: var(--warning);
+            color: #f0c060;
+        }
+
+        .alert-info {
+            background: rgba(88, 166, 255, .1);
+            border-color: var(--info);
+            color: var(--info);
+        }
+
+        /* BADGES */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            font-family: phetsarath ot;
+        }
+
+        .badge-pending {
+            background: rgba(210, 153, 34, .15);
+            color: var(--warning);
+            border: 1px solid rgba(210, 153, 34, .3);
+        }
+
+        .badge-approved {
+            background: rgba(63, 185, 80, .15);
+            color: var(--success);
+            border: 1px solid rgba(63, 185, 80, .3);
+        }
+
+        .badge-rejected {
+            background: rgba(248, 81, 73, .15);
+            color: var(--danger);
+            border: 1px solid rgba(248, 81, 73, .3);
+        }
+
+        .badge-topup {
+            background: rgba(88, 166, 255, .15);
+            color: var(--info);
+            border: 1px solid rgba(88, 166, 255, .3);
+        }
+
+        .badge-purchase {
+            background: rgba(210, 153, 34, .15);
+            color: var(--warning);
+            border: 1px solid rgba(210, 153, 34, .3);
+        }
+
+        /* TABLE */
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 10px 16px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+            font-family: phetsarath ot;
+        }
+
+        td {
+            padding: 12px 16px;
+            font-size: 14px;
+            border-bottom: 1px solid var(--surface2);
+            font-family: phetsarath ot;
+            vertical-align: middle;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: rgba(255, 255, 255, .02);
+        }
+
+        /* MISC */
+        .text-muted {
+            color: var(--text-muted);
+        }
+
+        .text-mono {
+            font-family: 'IBM Plex Mono', monospace;
+        }
+
+        .text-green {
+            color: var(--success);
+        }
+
+        .text-red {
+            color: var(--danger);
+        }
+
+        .text-blue {
+            color: var(--info);
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .page-subtitle {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 28px;
+        }
+
+        .divider {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 24px 0;
+        }
+
+        .flex {
+            display: flex;
+        }
+
+        .items-center {
+            align-items: center;
+        }
+
+        .justify-between {
+            justify-content: space-between;
+        }
+
+        .gap-8 {
+            gap: 8px;
+        }
+
+        .gap-12 {
+            gap: 12px;
+        }
+
+        .mt-8 {
+            margin-top: 8px;
+        }
+
+        .mt-16 {
+            margin-top: 16px;
+        }
+
+        .mt-24 {
+            margin-top: 24px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 48px 24px;
+            color: var(--text-muted);
+        }
+
+        .empty-state .icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        .empty-state p {
+            font-size: 14px;
+        }
+
+        /* Amount display */
+        .amount-plus {
+            color: var(--success);
+            font-family: 'IBM Plex Mono', monospace;
+            font-weight: 600;
+        }
+
+        .amount-minus {
+            color: var(--danger);
+            font-family: 'IBM Plex Mono', monospace;
+            font-weight: 600;
+        }
+
+
+
+        @media (max-width: 768px) {
+    #dashboard-grid {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr 1fr !important;
+    }
+    
+    /* Make table scroll on mobile */
+    #dashboard-grid .table-wrap,
+    #dashboard-grid > .card > div[style*="overflow-x"] {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+@media (max-width: 480px) {
+    .stats-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+
+@media (max-width: 768px) {
+    td[style*="max-width:180px"] {
+        max-width: 100px !important;
+    }
+    
+    .stat-value {
+        font-size: 20px !important;
+    }
+    
+    .stat-label {
+        font-size: 10px !important;
+    }
+}
+    </style>
+    <div class="page-header breadcrumb-wrap">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="index.html" rel="nofollow">Home</a>
+                <span></span> Dashboard
+            </div>
+        </div>
+    </div>
+    <section class="pt-50 pb-150">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 m-auto">
+                    <div class="row">
+                        {% include "includes/sidebar_dashboard.html" %}
+                        <div class="col-md-9">
+                            <div class="tab-content dashboard-content">
+                                {% if messages %}
+                                {% for message in messages %}
+                                <div
+                                    style="padding:10px; margin-bottom:15px; border-radius:8px; background-color:{% if message.tags == 'error' %}#ffdddd{% else %}#ddffdd{% endif %};">
+                                    {{ message }}
+                                </div>
+                                {% endfor %}
+                                {% endif %}
+                                <div class="tab-pane fade active show" id="dashboard" role="tabpanel"
+                                    aria-labelledby="dashboard-tab">
+                                    <!-- <div class="card"> -->
+                                    <!-- Stats -->
+                                    <div class="stats-grid">
+                                        <div class="stat-card fw-blow" style="background:linear-gradient(135deg,#1a3a5c,#0f2340); border-radius:16px; padding:30px; margin-bottom:0px; color:white;">
+                                            <div class="stat-label " style="color: white;">ຍອດເງິນຄົງເຫຼືອ</div>
+                                            <div class="stat-value green" style=" font-family: phetsarath ot;">{{wallet.balance| intcomma }}ກີບ</div>
+                                        </div>
+                                        <div class="stat-card" style="background:linear-gradient(135deg,#1a3a5c,#0f2340); border-radius:16px; padding:24px; margin-bottom:0px; color:white; border-color: #20985e;">
+                                            <div class="stat-label text-warning">ລາຍການທັງໝົດ</div>
+                                            {# ✅ was: {{ transactions.count|intcomma }} #}
+<div class="stat-value blue" style="font-family: phetsarath ot;">{{ transactions.paginator.count|intcomma }}</div>
+                                        </div>
+                                        <div class="stat-card" style="background:linear-gradient(135deg,#1a3a5c,#0f2340); border-radius:16px; padding:24px; margin-bottom:0px; color:white;">
+                                            <div class="stat-label text-success">ຄຳຂໍຕື່ມເງິນທີ່ກຳລັງດຳເນີນການ</div>
+                                            <div class="stat-value yellow" style=" font-family: phetsarath ot;">{{topup_requests|length| intcomma }}</div>
+                                        </div>
+                                    </div>
+                                    <div style="display:grid; grid-template-columns: 1fr 340px; gap:20px;" id="dashboard-grid">
+
+
+                                        <!-- Transaction History -->
+                                        <div class="card">
+                                            <div class="card-header" style="background:linear-gradient(135deg,#1a3a5c,#0f2340); border-radius:10px; padding:24px; margin-bottom:24px; color:white;">
+                                                <div class="card-title text-right" style="color: whitesmoke;">ປະຫວັດການໃຊ້ຈ່າຍ</div>
+                                                <a href="{% url 'topup_request' %}" class="btn btn-primary btn-sm">+
+                                                    ຕື່ມເງິນ</a>
+                                            </div>
+
+                                            {% if transactions %}
+                                                <div style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
+                                                    <table style="width:100%; border-collapse:collapse; min-width: 420px;">
+                                                        <thead>
+                                                            <tr>
+                                                                <th style="padding:10px 12px; font-size:12px; color:var(--text-muted); border-bottom:1px solid var(--border); white-space:nowrap;">ປະເພດ</th>
+                                                                <th style="padding:10px 12px; font-size:12px; color:var(--text-muted); border-bottom:1px solid var(--border);">ລາຍລະອຽດ</th>
+                                                                <th style="padding:10px 12px; font-size:12px; color:var(--text-muted); border-bottom:1px solid var(--border); white-space:nowrap;">ຈຳນວນ</th>
+                                                                <th style="padding:10px 12px; font-size:12px; color:var(--text-muted); border-bottom:1px solid var(--border); white-space:nowrap;">ວັນທີ</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {% for tx in transactions %}
+                                                            <tr>
+                                                                <td style="padding:12px; border-bottom:1px solid var(--border); white-space:nowrap;">
+                                                                    {% if tx.transaction_type == 'topup' %}
+                                                                    <span class="badge badge-topup">⬆ ຕື່ມເງິນ</span>
+                                                                    {% elif tx.transaction_type == 'purchase' %}
+                                                                    <span class="badge badge-topup">⬇ ຊື້ເອກະສານ</span>
+                                                                    {% elif tx.transaction_type == 'revenue' %}
+                                                                    <span class="badge badge-topup">⬆ ລາຍໄດ້ຈາກການຂາຍ</span>
+                                                                    {% elif tx.transaction_type == 'withdraw' %}
+                                                                    <span class="badge badge-topup">⬇ ຖອນເງິນ</span>
+                                                                    {% else %}
+                                                                    <span class="badge badge-purchase">⬇ ຄ່າທຳນຽມລະບົບ</span>
+                                                                    {% endif %}
+                                                                </td>
+                                                                <td style="padding:12px; border-bottom:1px solid var(--border); font-size:13px; max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                                                                    {{ tx.description }}
+                                                                </td>
+                                                                <td style="padding:12px; border-bottom:1px solid var(--border); white-space:nowrap;">
+                                                                    {% if tx.transaction_type == 'topup' or tx.transaction_type == 'revenue' %}
+                                                                    <span class="amount-plus" style="font-family:'phetsarath ot';">+{{ tx.amount|intcomma }}ກິບ</span>
+                                                                    {% else %}
+                                                                    <span class="amount-minus" style="font-family:'phetsarath ot';">-{{ tx.amount|intcomma }}ກິບ</span>
+                                                                    {% endif %}
+                                                                </td>
+                                                                <td style="padding:12px; border-bottom:1px solid var(--border); white-space:nowrap; font-size:12px; color:var(--text-muted);">
+                                                                    {{ tx.created_at|date:"d/m/Y H:i" }}
+                                                                </td>
+                                                            </tr>
+                                                            {% endfor %}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+
+                                                {# ── Transactions pagination ── #}
+                                                {% if transactions.has_other_pages %}
+                                                <div style="margin-top:16px; display:flex; gap:6px; flex-wrap:wrap; align-items:center; justify-content:center;">
+                                                    {% if transactions.has_previous %}
+                                                    <a href="?tx_page={{ transactions.previous_page_number }}"
+                                                    style="display:inline-flex; align-items:center; padding:6px 14px; border-radius:8px; border:1px solid var(--border); color:var(--text); text-decoration:none; font-size:13px; font-family:'phetsarath ot';">
+                                                        ‹ ກ່ອນ
+                                                    </a>
+                                                    {% endif %}
+
+                                                    {% for num in transactions.paginator.page_range %}
+                                                        {% if transactions.number == num %}
+                                                        <span style="display:inline-flex; align-items:center; padding:6px 14px; border-radius:8px; background:var(--accent); color:#fff; font-size:13px; font-family:'phetsarath ot';">
+                                                            {{ num }}
+                                                        </span>
+                                                        {% elif num >= transactions.number|add:-2 and num <= transactions.number|add:2 %}
+                                                        <a href="?tx_page={{ num }}"
+                                                        style="display:inline-flex; align-items:center; padding:6px 14px; border-radius:8px; border:1px solid var(--border); color:var(--text); text-decoration:none; font-size:13px; font-family:'phetsarath ot';">
+                                                            {{ num }}
+                                                        </a>
+                                                        {% endif %}
+                                                    {% endfor %}
+
+                                                    {% if transactions.has_next %}
+                                                    <a href="?tx_page={{ transactions.next_page_number }}"
+                                                    style="display:inline-flex; align-items:center; padding:6px 14px; border-radius:8px; border:1px solid var(--border); color:var(--text); text-decoration:none; font-size:13px; font-family:'phetsarath ot';">
+                                                        ຕໍ່ໄປ ›
+                                                    </a>
+                                                    {% endif %}
+                                                </div>
+
+                                                <div style="text-align:center; margin-top:8px; font-size:12px; color:var(--text-muted); font-family:'phetsarath ot';">
+                                                    ໜ້າ {{ transactions.number }} / {{ transactions.paginator.num_pages }}
+                                                    &nbsp;·&nbsp; ທັງໝົດ {{ transactions.paginator.count|intcomma }} ລາຍການ
+                                                </div>
+                                                {% endif %}
+
+                                                {% else %}
+                                                <div class="empty-state">
+                                                    <div class="icon">📋</div>
+                                                    <p>ຍັງບໍ່ມີການໃຊ້ຈ່າຍ</p>
+                                                    <a href="{% url 'topup_request' %}" class="btn btn-primary mt-16">ຕື່ມເງິນ</a>
+                                                </div>
+                                                {% endif %}
+                                        </div>
+
+                                        <!-- Topup Request Status -->
+                                        <div class="card">
+                                            <div class="card-header" style="background:linear-gradient(135deg,#1a3a5c,#0f2340); border-radius:10px; padding:24px; margin-bottom:24px; color:white;">
+                                                <div class="card-title text-right" style="color: whitesmoke;">ສະຖານະຄຳຂໍຕື່ມເງິນ</div>
+                                            </div>
+                                            {% if topup_requests %}
+                                            {% for req in topup_requests %}
+                                            <div style="padding:14px 0; border-bottom:1px solid var(--border);">
+                                                <div class="flex justify-between items-center">
+                                                    <span class="text-mono" style="font-size:16px; font-weight:600;">{{req.amount | intcomma }}฿</span>
+                                                    {% if req.status == 'pending' %}
+                                                    <span class="badge badge-pending">⏳ ລໍຖ້າກວດສອບ</span>
+                                                    {% elif req.status == 'approved' %}
+                                                    <span class="badge badge-approved">✅ ອະນຸມັດ</span>
+                                                    {% else %}
+                                                    <span class="badge badge-rejected">❌ ປະຕິເສດ</span>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="text-muted mt-8" style="font-size:12px;">{{req.created_at|date:"d/m/Y H:i" }}</div>
+                                            </div>
+                                            {% endfor %}
+                                            <a href="{% url 'topup_request' %}"
+                                                class="btn btn-primary-outline btn-full mt-16">+ ຄຳຂໍໃໝ່</a>
+                                            {% else %}
+                                            <div class="empty-state" style="padding:32px 0;">
+                                                <div class="icon">📤</div>
+                                                <p>ຍັງບໍ່ມີຄຳຂໍຕື່ມເງິນ</p>
+                                                <a href="{% url 'topup_request' %}"
+                                                    class="btn btn-primary btn-sm mt-16">ຕື່ມເງິນເລີຍ</a>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </section>
+</main>
+
+{% endblock %}

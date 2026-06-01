@@ -1,0 +1,880 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}Dashboard | Duladoc{% endblock %}
+
+{% block meta_description %}
+Dashboard - Manage your documents and purchases
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=Noto+Sans+Lao:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+    /* ============================================================
+       DASHBOARD SPECIFIC STYLES (Overriding base.html)
+    ============================================================ */
+    
+    /* Force light mode - override any dark styles from base */
+    :root {
+        --bg: #f0f4f8;
+        --surface: #ffffff;
+        --surface2: #f8fafc;
+        --border: rgba(14,165,233,0.14);
+        --border2: rgba(14,165,233,0.28);
+        --accent: #0ea5e9;
+        --accent-light: #e0f2fe;
+        --accent-dark: #0369a1;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+        --info: #0ea5e9;
+        --text: #0f172a;
+        --text-muted: #64748b;
+        --text-subtle: #94a3b8;
+        --radius: 14px;
+        --radius-lg: 14px;
+        --radius-sm: 8px;
+        --shadow: 0 2px 16px rgba(14,165,233,0.09);
+        --shadow-hover: 0 8px 32px rgba(14,165,233,0.18);
+    }
+
+    /* Force override any base.html dark mode styles */
+    body, .main, .container, .container-fluid, .tab-content, .dashboard-content {
+        background-color: #f0f4f8 !important;
+    }
+
+    .card, .stat-card, .doc-table-wrap, .topbar, .tab-bar {
+        background-color: #ffffff !important;
+        color: #0f172a !important;
+    }
+
+    /* Override base.html card styles */
+    .card {
+        background: #ffffff !important;
+        border: 1px solid rgba(14,165,233,0.14) !important;
+        border-radius: 14px !important;
+        padding: 24px !important;
+    }
+
+    /* DASHBOARD SHELL */
+    .dash-shell {
+        display: flex;
+        min-height: 100vh;
+    }
+
+    .sidebar {
+        width: 250px;
+        position: fixed;
+        top: 0; left: 0; bottom: 0;
+        z-index: 100;
+        transition: transform 0.2s ease;
+        background: #ffffff;
+        border-right: 1px solid rgba(14,165,233,0.14);
+    }
+
+    .dash-main {
+        margin-left: 250px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
+
+    /* Top Bar */
+    .topbar {
+        background: #ffffff;
+        border-bottom: 1px solid rgba(14,165,233,0.14);
+        padding: 0.9rem 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: sticky;
+        top: 0;
+        z-index: 50;
+    }
+
+    .topbar-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #0f172a;
+    }
+
+    .topbar-title span {
+        color: #0ea5e9;
+    }
+
+    /* Custom Upload Button */
+    .btn-upload {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        background: #0ea5e9;
+        color: #fff;
+        padding: 0.5rem 1.1rem;
+        border-radius: 8px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        transition: background 0.2s ease, transform 0.2s ease;
+        text-decoration: none;
+    }
+
+    .btn-upload:hover {
+        background: #0369a1;
+        transform: translateY(-1px);
+        color: #fff;
+    }
+
+    /* Content Area */
+    .content {
+        padding: 2rem;
+        flex: 1;
+    }
+
+    /* STAT CARDS */
+    .stat-row {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        border: 1px solid rgba(14,165,233,0.14);
+        border-radius: 14px;
+        padding: 1.2rem 1.3rem;
+        box-shadow: 0 2px 16px rgba(14,165,233,0.09);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        animation: fadeUp 0.4s ease both;
+    }
+
+    .stat-card:nth-child(2) { animation-delay: 0.06s; }
+    .stat-card:nth-child(3) { animation-delay: 0.12s; }
+    .stat-card:nth-child(4) { animation-delay: 0.18s; }
+
+    @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(12px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .stat-icon-wrap {
+        width: 46px;
+        height: 46px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+
+    .si-blue  { background: #e0f2fe; color: #0369a1; }
+    .si-green { background: #d1fae5; color: #065f46; }
+    .si-amber { background: #fef3c7; color: #92400e; }
+    .si-red   { background: #fee2e2; color: #991b1b; }
+
+    .stat-val {
+        font-size: 1.5rem;
+        font-weight: 700;
+        line-height: 1;
+        color: #0f172a;
+    }
+
+    .stat-lbl {
+        font-size: 0.73rem;
+        color: #94a3b8;
+        margin-top: 3px;
+    }
+
+    /* TAB BAR */
+    .tab-bar {
+        display: flex;
+        gap: 0.25rem;
+        background: #ffffff;
+        border: 1px solid rgba(14,165,233,0.14);
+        border-radius: 14px;
+        padding: 5px;
+        margin-bottom: 1.5rem;
+        width: fit-content;
+    }
+
+    .tab-btn {
+        padding: 0.5rem 1.2rem;
+        border-radius: 10px;
+        border: none;
+        background: transparent;
+        font-family: inherit;
+        font-size: 0.84rem;
+        font-weight: 500;
+        color: #64748b;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    .tab-btn:hover {
+        background: #e0f2fe;
+        color: #0369a1;
+    }
+
+    .tab-btn.active {
+        background: #0ea5e9;
+        color: #fff;
+        box-shadow: 0 2px 8px rgba(14,165,233,0.3);
+    }
+
+    .tab-count {
+        font-size: 0.68rem;
+        padding: 1px 6px;
+        border-radius: 20px;
+        background: rgba(255,255,255,0.25);
+    }
+
+    .tab-btn:not(.active) .tab-count {
+        background: rgba(14,165,233,0.12);
+        color: #0ea5e9;
+    }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; animation: fadeUp 0.3s ease; }
+
+    /* DOCUMENT TABLE */
+    .doc-table-wrap {
+        background: #ffffff;
+        border: 1px solid rgba(14,165,233,0.14);
+        border-radius: 14px;
+        box-shadow: 0 2px 16px rgba(14,165,233,0.09);
+        overflow: hidden;
+    }
+
+    .doc-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 0;
+    }
+
+    .doc-table thead th {
+        background: #f8fafc;
+        padding: 0.85rem 1.1rem;
+        text-align: left;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        color: #94a3b8;
+        border-bottom: 1px solid rgba(14,165,233,0.14);
+        white-space: nowrap;
+    }
+
+    .doc-table tbody tr {
+        border-bottom: 1px solid rgba(14,165,233,0.14);
+        transition: background 0.2s ease;
+    }
+
+    .doc-table tbody tr:last-child { border-bottom: none; }
+    .doc-table tbody tr:hover { background: #f8fbff; }
+    .doc-table td { padding: 0.9rem 1.1rem; vertical-align: middle; }
+
+    /* File identity */
+    .file-identity {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .file-icon-box {
+        width: 38px;
+        height: 38px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .fi-pdf   { background: #fee2e2; }
+    .fi-word  { background: #dbeafe; }
+    .fi-excel { background: #dcfce7; }
+    .fi-ppt   { background: #fef3c7; }
+    .fi-other { background: #f1f5f9; }
+
+    .file-icon-box img {
+        width: 22px;
+        height: 22px;
+        object-fit: contain;
+    }
+
+    .file-name {
+        font-weight: 600;
+        color: #0f172a;
+        line-height: 1.3;
+        max-width: 220px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .file-sub {
+        font-size: 0.72rem;
+        color: #94a3b8;
+        margin-top: 1px;
+    }
+
+    /* Badges */
+    .badge {
+        display: inline-block;
+        font-size: 0.68rem;
+        font-weight: 600;
+        padding: 3px 9px;
+        border-radius: 20px;
+        white-space: nowrap;
+    }
+
+    .badge-free     { background: #f1f5f9; color: #475569; }
+    .badge-paid     { background: #e0f2fe; color: #0369a1; }
+    .badge-active   { background: #d1fae5; color: #065f46; }
+    .badge-inactive { background: #fee2e2; color: #991b1b; }
+
+    /* Action Buttons */
+    .action-group {
+        display: flex;
+        gap: 0.4rem;
+        align-items: center;
+    }
+
+    .act-btn {
+        width: 32px;
+        height: 32px;
+        border: 1px solid rgba(14,165,233,0.28);
+        background: #fff;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.82rem;
+        color: #64748b;
+        text-decoration: none;
+        cursor: pointer;
+        transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    }
+
+    .act-btn:hover {
+        background: #e0f2fe;
+        color: #0369a1;
+        border-color: #0ea5e9;
+    }
+
+    .act-btn.download { color: #10b981; }
+    .act-btn.download:hover {
+        background: #d1fae5;
+        color: #065f46;
+        border-color: #10b981;
+    }
+
+    .act-btn.danger:hover {
+        background: #fee2e2;
+        color: #ef4444;
+        border-color: #ef4444;
+    }
+
+    /* Download Button */
+    .btn-dl {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        background: #10b981;
+        color: #fff;
+        text-decoration: none;
+        padding: 0.4rem 0.9rem;
+        border-radius: 8px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        transition: background 0.2s ease, transform 0.2s ease;
+    }
+
+    .btn-dl:hover {
+        background: #059669;
+        transform: translateY(-1px);
+        color: #fff;
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+    }
+
+    .empty-circle {
+        width: 64px;
+        height: 64px;
+        background: #e0f2fe;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.2rem;
+        font-size: 1.5rem;
+        color: #0ea5e9;
+    }
+
+    /* Modal */
+    .modal-backdrop {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(15,23,42,0.5);
+        z-index: 999;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-backdrop.open { display: flex; }
+
+    .modal-box {
+        background: #fff;
+        border-radius: 14px;
+        padding: 2rem;
+        max-width: 360px;
+        width: 90%;
+        text-align: center;
+        animation: fadeUp 0.25s ease;
+    }
+
+    .modal-box h3 { font-size: 1rem; font-weight: 600; margin: 1rem 0 0.4rem; }
+    .modal-box p  { font-size: 0.84rem; color: #64748b; margin-bottom: 1.5rem; }
+
+    .modal-actions {
+        display: flex;
+        gap: 0.75rem;
+        justify-content: center;
+    }
+
+    .btn-cancel {
+        padding: 0.5rem 1.2rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        background: #fff;
+        font-family: inherit;
+        font-size: 0.84rem;
+        cursor: pointer;
+        color: #64748b;
+        transition: background 0.2s ease;
+    }
+
+    .btn-cancel:hover { background: #f8fafc; }
+
+    .btn-confirm-del {
+        padding: 0.5rem 1.2rem;
+        border: none;
+        border-radius: 8px;
+        background: #ef4444;
+        color: #fff;
+        font-family: inherit;
+        font-size: 0.84rem;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        transition: background 0.2s ease;
+    }
+
+    .btn-confirm-del:hover { background: #dc2626; color: #fff; }
+
+    /* Hamburger */
+    .hamburger {
+        display: none;
+        background: none;
+        border: none;
+        font-size: 1.2rem;
+        color: #0f172a;
+        cursor: pointer;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+        .stat-row { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 768px) {
+        .sidebar {
+            transform: translateX(-100%);
+        }
+        .sidebar.open {
+            transform: translateX(0);
+        }
+        .dash-main { margin-left: 0; }
+        .hamburger { display: block; }
+        .content { padding: 1.25rem; }
+        .stat-row { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+        .doc-table { font-size: 0.78rem; }
+        
+        .doc-table thead th:nth-child(3),
+        .doc-table thead th:nth-child(4),
+        .doc-table tbody td:nth-child(3),
+        .doc-table tbody td:nth-child(4) {
+            display: none;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .stat-row { grid-template-columns: 1fr 1fr; }
+        .tab-bar { width: 100%; }
+        .tab-btn {
+            flex: 1;
+            justify-content: center;
+            font-size: 0.76rem;
+            padding: 0.5rem 0.6rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="main">
+    <div class="page-header breadcrumb-wrap">
+        <div class="container">
+            <div class="breadcrumb" style="font-family: phetsarath ot;">
+                <a href="{% url 'home' %}">Home</a>
+                <span></span> Dashboard
+            </div>
+        </div>
+    </div>
+    
+    <section class="pt-50 pb-150">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 m-auto">
+                    <div class="row">
+                        <!-- Sidebar -->
+                        {% include "includes/sidebar_dashboard.html" %}
+                        
+                        <!-- Main Content -->
+                        <div class="col-md-9">
+                            <div class="tab-content dashboard-content">
+                                <div class="tab-pane show active" role="tabpanel">
+                                    <!-- DASHBOARD CONTENT STARTS HERE -->
+                                    <div class="dash-shell">
+                                        <div class="dash-main">
+                                            <!-- Top bar -->
+                                            <div class="topbar">
+                                                <div style="display:flex;align-items:center;gap:0.75rem;">
+                                                    <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+                                                        <i class="fa-solid fa-bars"></i>
+                                                    </button>
+                                                    <span class="topbar-title">
+                                                        ສະບາຍດີ, <span>{{ request.user.first_name|default:request.user.username }}</span> 👋
+                                                    </span>
+                                                </div>
+                                                <div class="topbar-actions">
+                                                    <a href="{% url 'upload_document' %}" class="btn-upload">
+                                                        <i class="fa-solid fa-plus"></i> ອັບໂຫລດໃໝ່
+                                                    </a>
+                                                </div>
+                                            </div>
+
+                                            <!-- Content -->
+                                            <div class="content">
+                                                <!-- Stat row -->
+                                                <div class="stat-row">
+                                                    <div class="stat-card">
+                                                        <div class="stat-icon-wrap si-blue"><i class="fa-solid fa-file-lines"></i></div>
+                                                        <div>
+                                                            <div class="stat-val">{{ total_uploads }}</div>
+                                                            <div class="stat-lbl">ທັງໝົດທີ່ອັບໂຫລດ</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="stat-card">
+                                                        <div class="stat-icon-wrap si-green"><i class="fa-solid fa-download"></i></div>
+                                                        <div>
+                                                            <div class="stat-val">{{ total_downloads }}</div>
+                                                            <div class="stat-lbl">ດາວໂຫລດທັງໝົດ</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="stat-card">
+                                                        <div class="stat-icon-wrap si-amber"><i class="fa-solid fa-basket-shopping"></i></div>
+                                                        <div>
+                                                            <div class="stat-val">{{ total_purchased }}</div>
+                                                            <div class="stat-lbl">ທີ່ຊື້ແລ້ວ</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="stat-card">
+                                                        <div class="stat-icon-wrap si-red"><i class="fa-solid fa-wallet"></i></div>
+                                                        <div>
+                                                            <div class="stat-val">{{ total_earned|floatformat:0 }}</div>
+                                                            <div class="stat-lbl">ລາຍຮັບ (ກີບ)</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Tab bar -->
+                                                <div class="tab-bar">
+                                                    <button class="tab-btn {% if active_tab == 'uploads' %}active{% endif %}"
+                                                            onclick="switchTab('uploads', this)">
+                                                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                                                        ເອກກະສານຂອງຂ້ອຍ
+                                                        <span class="tab-count">{{ total_uploads }}</span>
+                                                    </button>
+                                                    <button class="tab-btn {% if active_tab == 'purchased' %}active{% endif %}"
+                                                            onclick="switchTab('purchased', this)">
+                                                        <i class="fa-solid fa-basket-shopping"></i>
+                                                        ທີ່ຊື້ແລ້ວ
+                                                        <span class="tab-count">{{ total_purchased }}</span>
+                                                    </button>
+                                                </div>
+
+                                                <!-- TAB: MY UPLOADS -->
+                                                <div class="tab-panel {% if active_tab == 'uploads' %}active{% endif %}" id="panel-uploads">
+                                                    <div class="doc-table-wrap">
+                                                        {% if my_uploads %}
+                                                        <table class="doc-table">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>ເອກກະສານ</th>
+                                                                    <th>ລາຄາ</th>
+                                                                    <th>ດາວໂຫລດ</th>
+                                                                    <th>ສະຖານະ</th>
+                                                                    <th>ວັນທີ</th>
+                                                                    <th style="text-align:right;">ຈັດການ</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                {% for doc in my_uploads %}
+                                                                {% with ft=doc.get_file_type %}
+                                                                <tr>
+                                                                    <td>
+                                                                        <div class="file-identity">
+                                                                            <div class="file-icon-box fi-{{ ft }}">
+                                                                                <img src="{% static 'images/icons/'|add:doc.get_file_icon %}"
+                                                                                     alt="{{ ft }}" onerror="this.style.display='none'">
+                                                                            </div>
+                                                                            <div>
+                                                                                <div class="file-name" title="{{ doc.title }}">{{ doc.title }}</div>
+                                                                                <div class="file-sub">
+                                                                                    {{ ft|upper }}
+                                                                                    {% if doc.pages %} · {{ doc.pages }} ໜ້າ{% endif %}
+                                                                                    {% if doc.category %} · {{ doc.category }}{% endif %}
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        {% if doc.is_free %}
+                                                                            <span class="badge badge-free">ຟຣີ</span>
+                                                                        {% else %}
+                                                                            <span class="badge badge-paid">{{ doc.price|floatformat:0 }} ກີບ</span>
+                                                                        {% endif %}
+                                                                    </td>
+                                                                    <td>
+                                                                        <span style="font-weight:600;">{{ doc.downloads }}</span>
+                                                                        <span style="font-size:0.7rem;color:#94a3b8;"> ຄັ້ງ</span>
+                                                                    </td>
+                                                                    <td>
+                                                                        {% if doc.is_active %}
+                                                                            <span class="badge badge-active">ເປີດໃຊ້</span>
+                                                                        {% else %}
+                                                                            <span class="badge badge-inactive">ປິດ</span>
+                                                                        {% endif %}
+                                                                    </td>
+                                                                    <td style="color:#94a3b8;font-size:0.78rem;white-space:nowrap;">
+                                                                        {{ doc.created_at|date:"d/m/Y" }}
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="action-group" style="justify-content:flex-end;">
+                                                                            {% if doc.file %}
+                                                                            <a href="{{ doc.file.url }}" class="act-btn download" title="ດາວໂຫລດ" download>
+                                                                                <i class="fa-solid fa-download"></i>
+                                                                            </a>
+                                                                            {% endif %}
+                                                                            <a href="{% url 'document_detail' doc.pk %}" class="act-btn" title="ລາຍລະອຽດ">
+                                                                                <i class="fa-solid fa-eye"></i>
+                                                                            </a>
+                                                                            <a href="#" class="act-btn" title="ແກ້ໄຂ">
+                                                                                <i class="fa-solid fa-pen"></i>
+                                                                            </a>
+                                                                            <button class="act-btn danger"
+                                                                                    onclick="openDeleteModal('', '{{ doc.title|escapejs }}')"
+                                                                                    title="ລຶບ">
+                                                                                <i class="fa-solid fa-trash"></i>
+                                                                            </button>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                                {% endwith %}
+                                                                {% endfor %}
+                                                            </tbody>
+                                                        </table>
+                                                        {% else %}
+                                                        <div class="empty-state">
+                                                            <div class="empty-circle"><i class="fa-solid fa-file-circle-plus"></i></div>
+                                                            <h3>ຍັງບໍ່ມີເອກກະສານ</h3>
+                                                            <p>ເລີ່ມອັບໂຫລດເອກກະສານທຳອິດຂອງທ່ານ</p>
+                                                            <br>
+                                                            <a href="{% url 'upload_document' %}" class="btn-upload" style="display:inline-flex;">
+                                                                <i class="fa-solid fa-plus"></i> ອັບໂຫລດເລີຍ
+                                                            </a>
+                                                        </div>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+
+                                                <!-- TAB: PURCHASED -->
+                                                <div class="tab-panel {% if active_tab == 'purchased' %}active{% endif %}" id="panel-purchased">
+                                                    <div class="doc-table-wrap">
+                                                        {% if purchased_items %}
+                                                        <table class="doc-table">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>ເອກກະສານ</th>
+                                                                    <th>ຜູ້ຂາຍ</th>
+                                                                    <th>ລາຄາ</th>
+                                                                    <th>ວັນທີຊື້</th>
+                                                                    <th style="text-align:right;">ດາວໂຫລດ</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                {% for item in purchased_items %}
+                                                                {% with doc=item.document ft=item.document.get_file_type %}
+                                                                <tr>
+                                                                    <td>
+                                                                        <div class="file-identity">
+                                                                            <div class="file-icon-box fi-{{ ft }}">
+                                                                                <img src="{% static 'images/icons/'|add:doc.get_file_icon %}"
+                                                                                     alt="{{ ft }}" onerror="this.style.display='none'">
+                                                                            </div>
+                                                                            <div>
+                                                                                <div class="file-name" title="{{ doc.title }}">{{ doc.title }}</div>
+                                                                                <div class="file-sub">
+                                                                                    {{ ft|upper }}
+                                                                                    {% if doc.pages %} · {{ doc.pages }} ໜ້າ{% endif %}
+                                                                                    {% if doc.category %} · {{ doc.category }}{% endif %}
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td style="font-size:0.82rem;color:#64748b;">
+                                                                        {{ doc.seller.get_full_name|default:doc.seller.username }}
+                                                                    </td>
+                                                                    <td>
+                                                                        {% if doc.is_free %}
+                                                                            <span class="badge badge-free">ຟຣີ</span>
+                                                                        {% else %}
+                                                                            <span class="badge badge-paid">{{ item.price|default:doc.price|floatformat:0 }} ກີບ</span>
+                                                                        {% endif %}
+                                                                    </td>
+                                                                    <td style="color:#94a3b8;font-size:0.78rem;white-space:nowrap;">
+                                                                        {{ item.created_at|date:"d/m/Y" }}
+                                                                    </td>
+                                                                    <td style="text-align:right;">
+                                                                        {% if doc.file %}
+                                                                        <a href="{{ doc.file.url }}" class="btn-dl" download>
+                                                                            <i class="fa-solid fa-download"></i> ດາວໂຫລດ
+                                                                        </a>
+                                                                        {% else %}
+                                                                        <span style="font-size:0.75rem;color:#94a3b8;">ບໍ່ມີໄຟລ໌</span>
+                                                                        {% endif %}
+                                                                    </td>
+                                                                </tr>
+                                                                {% endwith %}
+                                                                {% endfor %}
+                                                            </tbody>
+                                                        </table>
+                                                        {% else %}
+                                                        <div class="empty-state">
+                                                            <div class="empty-circle"><i class="fa-solid fa-basket-shopping"></i></div>
+                                                            <h3>ຍັງບໍ່ມີການຊື້</h3>
+                                                            <p>ໄປເລືອກຊື້ເອກກະສານທີ່ຮ້ານ</p>
+                                                            <br>
+                                                            <a href="{% url 'home' %}" class="btn-upload"
+                                                               style="display:inline-flex;background:#10b981;">
+                                                                <i class="fa-solid fa-store"></i> ໄປຮ້ານ
+                                                            </a>
+                                                        </div>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- DASHBOARD CONTENT ENDS HERE -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<!-- DELETE MODAL -->
+<div class="modal-backdrop" id="deleteModal">
+    <div class="modal-box">
+        <div class="empty-circle" style="background:#fee2e2;color:#ef4444;">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+        <h3>ຢືນຢັນການລຶບ</h3>
+        <p id="deleteDocName"></p>
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="closeDeleteModal()">ຍົກເລີກ</button>
+            <a id="deleteLink" href="#" class="btn-confirm-del">ລຶບເລີຍ</a>
+        </div>
+    </div>
+</div>
+
+<!-- Mobile sidebar overlay -->
+<div id="sidebarOverlay"
+     style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:99;"
+     onclick="closeSidebar()"></div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+/* Tab switching */
+function switchTab(tab, btn) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('panel-' + tab).classList.add('active');
+    btn.classList.add('active');
+}
+
+/* Delete modal */
+function openDeleteModal(url, name) {
+    document.getElementById('deleteDocName').textContent = 'ທ່ານຕ້ອງການລຶບ "' + name + '" ແທ້ບໍ?';
+    document.getElementById('deleteLink').href = url;
+    document.getElementById('deleteModal').classList.add('open');
+}
+
+function closeDeleteModal() {
+    document.getElementById('deleteModal').classList.remove('open');
+}
+
+document.getElementById('deleteModal').addEventListener('click', function(e) {
+    if (e.target === this) closeDeleteModal();
+});
+
+/* Sidebar hamburger */
+const sidebar = document.getElementById('sidebar');
+const overlay = document.getElementById('sidebarOverlay');
+const hamburger = document.getElementById('hamburger');
+
+if (hamburger) {
+    hamburger.addEventListener('click', () => {
+        if (sidebar) {
+            sidebar.classList.toggle('open');
+            overlay.style.display = sidebar.classList.contains('open') ? 'block' : 'none';
+        }
+    });
+}
+
+function closeSidebar() {
+    if (sidebar) sidebar.classList.remove('open');
+    overlay.style.display = 'none';
+}
+</script>
+{% endblock %}

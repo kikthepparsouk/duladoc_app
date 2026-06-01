@@ -1,0 +1,969 @@
+{% extends 'wallet/base.html' %}
+{% load humanize %}
+{% block title %}Admin — ຄຳຂໍຖອນເງິນ{% endblock %}
+
+{% block content %}
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Noto+Sans+Lao:wght@300;400;500;600;700&display=swap');
+
+  :root {
+    /* ── Dark Theme Colors ── */
+    --bg:         #1e293b;
+    --card:       #f6f6f6;
+    --border:     #1a4893;
+    --border2:    #334155;
+
+    --text:       #3e3f41;
+    --muted:      #94a3b8;
+    --hint:       #64748b;
+
+    --pending-bg: rgba(245, 158, 11, 0.12);
+    --pending:    #f59e0b;
+
+    --success-bg: rgba(34, 197, 94, 0.12);
+    --success:    #22c55e;
+
+    --danger-bg:  rgba(239, 68, 68, 0.12);
+    --danger:     #ef4444;
+
+    --accent:     #60a5fa;
+    --accent2:    #3b82f6;
+
+    --radius:     10px;
+    --radius-lg:  14px;
+
+    --shadow:     0 4px 24px rgba(0,0,0,0.35);
+    --shadow-lg:  0 12px 50px rgba(0,0,0,0.45);
+
+    --mono:       'DM Mono', monospace;
+    --font:       'Noto Sans Lao', sans-serif;
+  }
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+  }
+
+  .aw-wrap {
+    max-width: 1180px;
+    margin: 36px auto;
+    padding: 0 20px 60px;
+    font-family: var(--font);
+    color: var(--text);
+  }
+
+  /* ── Header ── */
+  .aw-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .aw-header h1 {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .aw-header h1 span {
+    font-size: 24px;
+  }
+
+  /* ── Summary Chips ── */
+  .summary-chips {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    border: 1px solid;
+    backdrop-filter: blur(6px);
+  }
+
+  .chip-pending {
+    background: var(--pending-bg);
+    color: var(--pending);
+    border-color: rgba(245,158,11,0.3);
+  }
+
+  .chip-success {
+    background: var(--success-bg);
+    color: var(--success);
+    border-color: rgba(34,197,94,0.3);
+  }
+
+  .chip-danger {
+    background: var(--danger-bg);
+    color: var(--danger);
+    border-color: rgba(239,68,68,0.3);
+  }
+
+  .chip-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: currentColor;
+    flex-shrink: 0;
+  }
+
+  /* ── Section ── */
+  .aw-section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    margin-bottom: 24px;
+    overflow: hidden;
+  }
+
+  .aw-section-head {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255,255,255,0.02);
+  }
+
+  .aw-section-head h2 {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .count-badge {
+    background: var(--danger);
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 10px;
+    min-width: 22px;
+    text-align: center;
+  }
+
+  /* ── Table ── */
+  .aw-table-wrap {
+    overflow-x: auto;
+  }
+
+  .aw-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+  }
+
+  .aw-table thead th {
+    padding: 10px 16px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--hint);
+    background: rgba(255,255,255,0.03);
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+
+  .aw-table tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: all 0.2s ease;
+  }
+
+  .aw-table tbody tr:last-child {
+    border-bottom: none;
+  }
+
+  .aw-table tbody tr:hover {
+    background: rgba(255,255,255,0.03);
+  }
+
+  .aw-table td {
+    padding: 13px 16px;
+    vertical-align: middle;
+    color: var(--text);
+  }
+
+  /* ── User Cell ── */
+  .user-cell .uname {
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--accent);
+  }
+
+  .user-cell .uemail {
+    font-size: 11px;
+    color: var(--hint);
+    margin-top: 2px;
+  }
+
+  /* ── Amount ── */
+  .amount-cell {
+    font-family: var(--mono);
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--pending);
+    white-space: nowrap;
+  }
+
+  .amount-cell .unit {
+    font-size: 11px;
+    color: var(--hint);
+    font-family: var(--font);
+  }
+
+  /* ── Bank ── */
+  .bank-cell .bname {
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--text);
+  }
+
+  .bank-cell .bnum {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .bank-cell .bacc {
+    font-size: 11px;
+    color: var(--hint);
+    margin-top: 1px;
+  }
+
+  /* ── Date ── */
+  .date-cell {
+    font-size: 12px;
+    color: var(--hint);
+    white-space: nowrap;
+  }
+
+  /* ── QR ── */
+  .qr-thumb,
+  .mini-qr {
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid var(--border2);
+    cursor: zoom-in;
+    transition: all 0.2s ease;
+  }
+
+  .qr-thumb {
+    width: 54px;
+    height: 54px;
+  }
+
+  .mini-qr {
+    width: 38px;
+    height: 38px;
+  }
+
+  .qr-thumb:hover,
+  .mini-qr:hover {
+    transform: scale(1.08);
+    box-shadow: 0 8px 18px rgba(0,0,0,0.45);
+  }
+
+  .no-qr {
+    font-size: 12px;
+    color: var(--hint);
+    background: rgba(255,255,255,0.04);
+    border-radius: 6px;
+    padding: 4px 8px;
+    display: inline-block;
+  }
+
+  /* ── Action Buttons ── */
+  .action-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 220px;
+  }
+
+  .approve-form {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .file-input-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 10px;
+    background: rgba(255,255,255,0.03);
+    border: 1px dashed var(--border2);
+    border-radius: 6px;
+    font-size: 11px;
+    color: var(--muted);
+    cursor: pointer;
+    transition: 0.2s;
+    white-space: nowrap;
+  }
+
+  .file-input-label:hover {
+    background: rgba(255,255,255,0.06);
+  }
+
+  .file-input-label input {
+    display: none;
+  }
+
+  .btn-approve,
+  .btn-reject {
+    padding: 6px 14px;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: var(--font);
+    white-space: nowrap;
+    transition: all 0.2s ease;
+    color: white;
+  }
+
+  .btn-approve {
+    background: var(--success);
+  }
+
+  .btn-approve:hover {
+    background: #16a34a;
+    transform: translateY(-1px);
+  }
+
+  .btn-reject {
+    background: var(--danger);
+  }
+
+  .btn-reject:hover {
+    background: #dc2626;
+    transform: translateY(-1px);
+  }
+
+  /* ── Grid ── */
+  .aw-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  @media (max-width: 768px) {
+    .aw-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ── Mini Table ── */
+  .mini-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .mini-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+    font-size: 13px;
+    color: var(--text);
+  }
+
+  .mini-table tr:last-child td {
+    border-bottom: none;
+  }
+
+  .mini-table tr:hover td {
+    background: rgba(255,255,255,0.03);
+  }
+
+  .amount-success {
+    font-family: var(--mono);
+    font-weight: 700;
+    color: var(--success);
+    font-size: 14px;
+  }
+
+  .amount-danger {
+    font-family: var(--mono);
+    font-weight: 700;
+    color: var(--danger);
+    font-size: 14px;
+  }
+
+  /* ── Empty State ── */
+  .empty-state {
+    text-align: center;
+    padding: 48px 24px;
+    color: var(--hint);
+  }
+
+  .empty-state .icon {
+    font-size: 40px;
+    margin-bottom: 10px;
+  }
+
+  .empty-state p {
+    font-size: 13px;
+  }
+
+  /* ── Status Badges ── */
+  .badge-pending,
+  .badge-approved,
+  .badge-rejected {
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .badge-pending {
+    background: var(--pending-bg);
+    color: var(--pending);
+    border: 1px solid rgba(245,158,11,0.3);
+  }
+
+  .badge-approved {
+    background: var(--success-bg);
+    color: var(--success);
+    border: 1px solid rgba(34,197,94,0.3);
+  }
+
+  .badge-rejected {
+    background: var(--danger-bg);
+    color: var(--danger);
+    border: 1px solid rgba(239,68,68,0.3);
+  }
+
+  /* ── Lightbox ── */
+  .lightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.82);
+    backdrop-filter: blur(8px);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    cursor: zoom-out;
+  }
+
+  .lightbox.open {
+    display: flex;
+  }
+
+  .lightbox-img {
+    max-width: min(360px, 90vw);
+    max-height: 90vh;
+    border-radius: 14px;
+    border: 2px solid rgba(255,255,255,0.08);
+    box-shadow: 0 12px 48px rgba(0,0,0,0.6);
+    display: block;
+  }
+
+  .lightbox-close {
+    position: absolute;
+    top: -12px;
+    right: -12px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--danger);
+    color: white;
+    border: none;
+    font-size: 15px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .lightbox-label {
+    text-align: center;
+    color: rgba(255,255,255,0.6);
+    font-size: 11px;
+    margin-top: 10px;
+    letter-spacing: 0.05em;
+  }
+
+  /* ── Slip ── */
+  .slip-label {
+    font-size: 10px;
+    color: var(--hint);
+    text-align: center;
+    margin-top: 2px;
+  }
+
+  .image-group {
+    display: flex;
+    gap: 6px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .image-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* ── Mobile ── */
+  @media (max-width: 900px) {
+    .aw-table thead th:nth-child(7),
+    .aw-table tbody td:nth-child(7) {
+      display: none;
+    }
+  }
+
+
+
+  /* ── Pagination ── */
+.aw-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  padding: 14px 16px;
+  border-top: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+
+.aw-page-info {
+  text-align: center;
+  font-size: 11px;
+  color: var(--hint);
+  padding: 0 16px 12px;
+}
+
+.pg-btn {
+  padding: 5px 11px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  border: 1px solid var(--border2);
+  color: var(--muted);
+  background: rgba(255,255,255,0.03);
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.pg-btn:hover {
+  background: rgba(255,255,255,0.08);
+  color: var(--text);
+}
+
+.pg-btn.active {
+  background: var(--accent2);
+  border-color: var(--accent2);
+  color: white;
+}
+
+.pg-btn.disabled {
+  opacity: 0.35;
+  pointer-events: none;
+}
+</style>
+
+<div class="aw-wrap">
+
+  <!-- ── Page Header ── -->
+  <div class="aw-header">
+    <h1 class="" style="color: aliceblue;"><span>⚙️</span> ຈັດການຄຳຂໍຖອນເງິນ</h1>
+    <div class="summary-chips">
+      <span class="chip chip-pending">
+        <span class="chip-dot"></span>
+        ລໍຖ້າ {{ pending|length }}
+      </span>
+      <span class="chip chip-success">
+        <span class="chip-dot"></span>
+        ອະນຸມັດ {{ approved|length }}
+      </span>
+      <span class="chip chip-danger">
+        <span class="chip-dot"></span>
+        ປະຕິເສດ {{ rejected|length }}
+      </span>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       PENDING SECTION
+  ══════════════════════════════════════ -->
+  <div class="aw-section">
+    <div class="aw-section-head">
+      <h2>⏳ ລໍຖ້າດຳເນີນການ</h2>
+      {% if pending %}
+      <span class="count-badge">{{ pending|length }}</span>
+      {% endif %}
+    </div>
+
+    {% if pending %}
+    <div class="aw-table-wrap">
+      <table class="aw-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Seller</th>
+            <th>ຈຳນວນ</th>
+            <th>ທະນາຄານ</th>
+            <th>QR Code</th>
+            <th>ສລິບ (Admin)</th>
+            <th>ວັນທີ</th>
+            <th>ດຳເນີນການ</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for w in pending %}
+          <tr>
+
+            <!-- ID -->
+            <td style="color:var(--hint); font-size:12px; font-family:var(--mono);">#{{ w.pk }}</td>
+
+            <!-- User -->
+            <td>
+              <div class="user-cell">
+                <div class="uname">{{ w.user.username }}</div>
+                <div class="uemail">{{ w.user.email }}</div>
+              </div>
+            </td>
+
+            <!-- Amount -->
+            <td>
+              <div class="amount-cell">
+                {{ w.amount|intcomma }}
+                <span class="unit"> ກີບ</span>
+              </div>
+            </td>
+
+            <!-- Bank info -->
+            <td>
+              <div class="bank-cell">
+                <div class="bname">{{ w.bank_name }}</div>
+                <div class="bnum">{{ w.account_number }}</div>
+                <div class="bacc">{{ w.account_name }}</div>
+              </div>
+            </td>
+
+            <!-- QR Code (uploaded by seller) -->
+            <td>
+              {% if w.qrcode_image %}
+              <div class="image-item">
+                <img src="{{ w.qrcode_image.url }}"
+                     class="qr-thumb"
+                     onclick="openLightbox('{{ w.qrcode_image.url }}', 'QR Code — {{ w.user.username }}')"
+                     alt="QR Code">
+                <div class="slip-label">QR ບັນຊີ</div>
+              </div>
+              {% else %}
+              <span class="no-qr">ບໍ່ມີ</span>
+              {% endif %}
+            </td>
+
+            <!-- Slip (uploaded by admin at approve time) -->
+            <td>
+              {% if w.slip_image %}
+              <div class="image-item">
+                <img src="{{ w.slip_image.url }}"
+                     class="qr-thumb"
+                     onclick="openLightbox('{{ w.slip_image.url }}', 'ສລິບ — {{ w.user.username }}')"
+                     alt="Slip">
+                <div class="slip-label">ສລິບ</div>
+              </div>
+              {% else %}
+              <span class="no-qr">ຍັງບໍ່ມີ</span>
+              {% endif %}
+            </td>
+
+            <!-- Date -->
+            <td class="date-cell">{{ w.created_at|date:"d/m/Y" }}<br>{{ w.created_at|date:"H:i" }}</td>
+
+            <!-- Actions -->
+            <td>
+              <div class="action-group">
+
+                <!-- Approve + slip upload -->
+                <form method="POST" action="{% url 'admin_withdraw_approve' w.pk %}"
+                      enctype="multipart/form-data"
+                      class="approve-form"
+                      onsubmit="return confirm('ອະນຸມັດການຖອນ {{ w.amount|intcomma }} ກີບ ໃຫ້ {{ w.user.username }}?')">
+                  {% csrf_token %}
+                  <input type="hidden" name="action" value="approve">
+
+                  <label class="file-input-label" title="ແນບສລິບການໂອນ">
+                    <input type="file" name="slip_image" accept="image/*"
+                           onchange="previewSlipLabel(this, 'slip-lbl-{{ w.pk }}')">
+                    📎 <span id="slip-lbl-{{ w.pk }}">ສລິບ</span>
+                  </label>
+
+                  <button type="submit" class="btn-approve">✅ ອະນຸມັດ</button>
+                </form>
+
+                <!-- Reject -->
+                <form method="POST" action="{% url 'admin_withdraw_approve' w.pk %}"
+                      onsubmit="return confirm('ປະຕິເສດ ແລະ ຄືນເງິນ {{ w.amount|intcomma }} ກີບ ໃຫ້ {{ w.user.username }}?')">
+                  {% csrf_token %}
+                  <input type="hidden" name="action" value="reject">
+                  <button type="submit" class="btn-reject">❌ ປະຕິເສດ</button>
+                </form>
+
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    {% else %}
+    <div class="empty-state">
+      <div class="icon">🎉</div>
+      <p>ບໍ່ມີຄຳຂໍທີ່ລໍຖ້າ</p>
+    </div>
+    {% endif %}
+  </div>
+  <!-- end pending section -->
+
+  <!-- ══════════════════════════════════════
+       APPROVED + REJECTED
+  ══════════════════════════════════════ -->
+  <div class="aw-grid">
+
+    <!-- ── Approved ── -->
+<div class="aw-section" style="margin-bottom:0;">
+  <div class="aw-section-head">
+    <h2>✅ ອະນຸມັດລ່າສຸດ</h2>
+    {% if approved %}<span style="font-size:12px;color:var(--hint);">{{ approved.paginator.count }} ລາຍການ</span>{% endif %}
+  </div>
+
+  {% if approved %}
+  <div class="aw-table-wrap">
+    <table class="mini-table">
+      <tbody>
+        {% for w in approved %}
+        <tr>
+          <td>
+            <div class="user-cell">
+              <div class="uname" style="font-size:13px;">{{ w.user.username }}</div>
+              <div class="uemail">{{ w.reviewed_at|date:"d/m/Y H:i" }}</div>
+            </div>
+          </td>
+          <td>
+            <div class="amount-success">{{ w.amount|intcomma }}</div>
+            <div style="font-size:10px;color:var(--hint);">ກີບ</div>
+          </td>
+          <td>
+            <div style="font-size:12px;color:var(--muted);">{{ w.bank_name }}</div>
+            <div style="font-family:var(--mono);font-size:11px;color:var(--hint);">{{ w.account_number }}</div>
+          </td>
+          <td>
+            <div class="image-group">
+              {% if w.qrcode_image %}
+              <div class="image-item">
+                <img src="{{ w.qrcode_image.url }}" class="mini-qr"
+                     onclick="openLightbox('{{ w.qrcode_image.url }}','QR — {{ w.user.username }}')" alt="QR">
+                <div class="slip-label">QR</div>
+              </div>
+              {% endif %}
+              {% if w.slip_image %}
+              <div class="image-item">
+                <img src="{{ w.slip_image.url }}" class="mini-qr"
+                     onclick="openLightbox('{{ w.slip_image.url }}','ສລິບ — {{ w.user.username }}')" alt="Slip">
+                <div class="slip-label">ສລິບ</div>
+              </div>
+              {% endif %}
+              {% if not w.qrcode_image and not w.slip_image %}
+              <span class="no-qr">—</span>
+              {% endif %}
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Approved Pagination -->
+  {% if approved.has_other_pages %}
+  <div class="aw-pagination">
+    {% if approved.has_previous %}
+    <a href="?approved_page={{ approved.previous_page_number }}{% if request.GET.rejected_page %}&rejected_page={{ request.GET.rejected_page }}{% endif %}" class="pg-btn">← ກ່ອນ</a>
+    {% else %}
+    <span class="pg-btn disabled">← ກ່ອນ</span>
+    {% endif %}
+
+    {% for num in approved.paginator.page_range %}
+      {% if approved.number == num %}
+      <span class="pg-btn active">{{ num }}</span>
+      {% elif num >= approved.number|add:"-2" and num <= approved.number|add:"2" %}
+      <a href="?approved_page={{ num }}{% if request.GET.rejected_page %}&rejected_page={{ request.GET.rejected_page }}{% endif %}" class="pg-btn">{{ num }}</a>
+      {% endif %}
+    {% endfor %}
+
+    {% if approved.has_next %}
+    <a href="?approved_page={{ approved.next_page_number }}{% if request.GET.rejected_page %}&rejected_page={{ request.GET.rejected_page }}{% endif %}" class="pg-btn">ຕໍ່ໄປ →</a>
+    {% else %}
+    <span class="pg-btn disabled">ຕໍ່ໄປ →</span>
+    {% endif %}
+  </div>
+  <div class="aw-page-info">ໜ້າ {{ approved.number }} / {{ approved.paginator.num_pages }}</div>
+  {% endif %}
+
+  {% else %}
+  <div class="empty-state" style="padding:32px;">
+    <div class="icon" style="font-size:28px;">📭</div>
+    <p>ຍັງບໍ່ມີລາຍການ</p>
+  </div>
+  {% endif %}
+</div>
+
+    <!-- ── Rejected ── -->
+<div class="aw-section" style="margin-bottom:0;">
+  <div class="aw-section-head">
+    <h2>❌ ປະຕິເສດລ່າສຸດ</h2>
+    {% if rejected %}<span style="font-size:12px;color:var(--hint);">{{ rejected.paginator.count }} ລາຍການ</span>{% endif %}
+  </div>
+
+  {% if rejected %}
+  <div class="aw-table-wrap">
+    <table class="mini-table">
+      <tbody>
+        {% for w in rejected %}
+        <tr>
+          <td>
+            <div class="user-cell">
+              <div class="uname" style="font-size:13px;">{{ w.user.username }}</div>
+              <div class="uemail">{{ w.reviewed_at|date:"d/m/Y H:i" }}</div>
+            </div>
+          </td>
+          <td>
+            <div class="amount-danger">{{ w.amount|intcomma }}</div>
+            <div style="font-size:10px;color:var(--hint);">ກີບ</div>
+          </td>
+          <td>
+            <div style="font-size:12px;color:var(--muted);">{{ w.bank_name }}</div>
+            <div style="font-family:var(--mono);font-size:11px;color:var(--hint);">{{ w.account_number }}</div>
+          </td>
+          <td>
+            <div class="image-group">
+              {% if w.qrcode_image %}
+              <div class="image-item">
+                <img src="{{ w.qrcode_image.url }}" class="mini-qr"
+                     onclick="openLightbox('{{ w.qrcode_image.url }}','QR — {{ w.user.username }}')" alt="QR">
+                <div class="slip-label">QR</div>
+              </div>
+              {% endif %}
+              {% if not w.qrcode_image %}
+              <span class="no-qr">—</span>
+              {% endif %}
+            </div>
+            <div style="font-size:11px;color:var(--danger);margin-top:4px;">⚠️ ຄືນເງິນແລ້ວ</div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Rejected Pagination -->
+  {% if rejected.has_other_pages %}
+  <div class="aw-pagination">
+    {% if rejected.has_previous %}
+    <a href="?rejected_page={{ rejected.previous_page_number }}{% if request.GET.approved_page %}&approved_page={{ request.GET.approved_page }}{% endif %}" class="pg-btn">← ກ່ອນ</a>
+    {% else %}
+    <span class="pg-btn disabled">← ກ່ອນ</span>
+    {% endif %}
+
+    {% for num in rejected.paginator.page_range %}
+      {% if rejected.number == num %}
+      <span class="pg-btn active">{{ num }}</span>
+      {% elif num >= rejected.number|add:"-2" and num <= rejected.number|add:"2" %}
+      <a href="?rejected_page={{ num }}{% if request.GET.approved_page %}&approved_page={{ request.GET.approved_page }}{% endif %}" class="pg-btn">{{ num }}</a>
+      {% endif %}
+    {% endfor %}
+
+    {% if rejected.has_next %}
+    <a href="?rejected_page={{ rejected.next_page_number }}{% if request.GET.approved_page %}&approved_page={{ request.GET.approved_page }}{% endif %}" class="pg-btn">ຕໍ່ໄປ →</a>
+    {% else %}
+    <span class="pg-btn disabled">ຕໍ່ໄປ →</span>
+    {% endif %}
+  </div>
+  <div class="aw-page-info">ໜ້າ {{ rejected.number }} / {{ rejected.paginator.num_pages }}</div>
+  {% endif %}
+
+  {% else %}
+  <div class="empty-state" style="padding:32px;">
+    <div class="icon" style="font-size:28px;">📭</div>
+    <p>ຍັງບໍ່ມີລາຍການ</p>
+  </div>
+  {% endif %}
+</div>
+
+  </div>
+  <!-- end grid -->
+
+</div>
+<!-- end aw-wrap -->
+
+<!-- ══════════════════════════════════════
+     LIGHTBOX
+══════════════════════════════════════ -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <div class="lightbox-inner" onclick="event.stopPropagation()">
+    <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+    <img id="lightbox-img" class="lightbox-img" src="" alt="">
+    <div class="lightbox-label" id="lightbox-label"></div>
+  </div>
+</div>
+
+<script>
+// ── Lightbox ──
+function openLightbox(url, label) {
+  document.getElementById('lightbox-img').src   = url;
+  document.getElementById('lightbox-label').textContent = label || '';
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeLightbox();
+});
+
+// ── Slip file label preview ──
+function previewSlipLabel(input, labelId) {
+  const label = document.getElementById(labelId);
+  if (input.files && input.files[0]) {
+    const name = input.files[0].name;
+    label.textContent = name.length > 12 ? name.slice(0, 12) + '…' : name;
+  }
+}
+</script>
+
+{% endblock %}

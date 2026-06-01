@@ -1,0 +1,178 @@
+{% extends 'base.html' %}
+
+{% block title %}Verify Email - Duladoc{% endblock %}
+{% block meta_description %}Please verify your email to activate your account{% endblock %}
+
+{% block content %}
+
+{% load static %}
+<main class="main" style="font-family: phetsarath ot;">
+    <div class="page-header breadcrumb-wrap">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="{% url 'home' %}">Home</a>
+                <span></span> Verify Email
+            </div>
+        </div>
+    </div>
+
+    <section class="pt-150 pb-150">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6 m-auto">
+                    <div class="login_wrap widget-taber-content p-30 background-white border-radius-5">
+                        <div class="padding_eight_all bg-white">
+                            <!-- Success Icon -->
+                            <div style="text-align: center; margin-bottom: 30px;">
+                                <div style="font-size: 80px; margin-bottom: 20px;">📧</div>
+                                <h2 class="mb-10" style="font-family: phetsarath ot; color: #1f6feb;">
+                                    ກະລຸນາຢືນຢັນອີເມວ
+                                </h2>
+                                <p style="color: #666; font-size: 16px; margin-top: 10px;">
+                                    Please verify your email address
+                                </p>
+                            </div>
+
+                            <!-- Message Box -->
+                            <div style="background: #f0f7ff; border-left: 4px solid #1f6feb; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
+                                <p style="margin: 0; color: #1c2023; line-height: 1.6;">
+                                    <strong>ສະບາຍດີ {{ email }}!</strong><br><br>
+                                    ເຮົາໄດ້ສົ່ງອີເມວຢືນຢັນໄປຫາ <strong>{{ email }}</strong><br><br>
+                                    ກະລຸນາກວດເບິ່ງອີເມວຂອງທ່ານ ແລະ ຄລິກລິ້ງ "ຢືນຢັນອີເມວ" ເພື່ອເປີດໃຊ້ງານບັນຊີ
+                                </p>
+                            </div>
+
+                            <!-- Steps -->
+                            <div style="margin-bottom: 30px;">
+                                <h4 style="font-family: phetsarath ot; margin-bottom: 15px; color: #1c2023;">
+                                    ຂັ້ນຕອນການຢືນຢັນ:
+                                </h4>
+                                <div style="display: flex; gap: 15px; margin-bottom: 15px;">
+                                    <div style="background: #1f6feb; color: white; width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0;">
+                                        1
+                                    </div>
+                                    <div>
+                                        <p style="margin: 0; font-weight: 600;">ກວດເບິ່ງ Inbox</p>
+                                        <p style="margin: 5px 0 0 0; font-size: 14px; color: #666;">
+                                            ຊອກຫາອີເມວຈາກ Duladoc ໃນກ່ອງ Inbox ຂອງທ່ານ
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div style="display: flex; gap: 15px; margin-bottom: 15px;">
+                                    <div style="background: #1f6feb; color: white; width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0;">
+                                        2
+                                    </div>
+                                    <div>
+                                        <p style="margin: 0; font-weight: 600;">ຄລິກລິ້ງ</p>
+                                        <p style="margin: 5px 0 0 0; font-size: 14px; color: #666;">
+                                            ຄລິກປຸ່ມ "✅ ຢືນຢັນອີເມວ" ໃນອີເມວ
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div style="display: flex; gap: 15px;">
+                                    <div style="background: #1f6feb; color: white; width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0;">
+                                        3
+                                    </div>
+                                    <div>
+                                        <p style="margin: 0; font-weight: 600;">ເປີດໃຊ້ງານສຳເລັດ</p>
+                                        <p style="margin: 5px 0 0 0; font-size: 14px; color: #666;">
+                                            ບັນຊີຂອງທ່ານຈະຖືກເປີດໃຊ້ງານ ແລະ ສາມາດເຂົ້າສູ່ລະບົບໄດ້
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Warning Box -->
+                            <div style="background: #fff3cd; border-left: 4px solid #d29922; padding: 15px; border-radius: 8px; margin-bottom: 30px;">
+                                <p style="margin: 0; color: #856404; font-size: 14px;">
+                                    <strong>⚠️ ສຳຄັນ:</strong> ເບິ່ງກ່ອງ Spam ຫຼື Promotions ຖ້າບໍ່ເຫັນຂໍ້ຄວາມໃນ Inbox
+                                </p>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div style="margin-bottom: 20px;">
+                                <a href="{% url 'login_view' %}" class="btn btn-fill-out btn-block hover-up" style="background: #1f6feb; color: white; padding: 12px; text-align: center; border-radius: 8px; text-decoration: none; display: block; margin-bottom: 10px;">
+                                    ← ກັບໄປທີ່ການເຂົ້າສູ່ລະບົບ
+                                </a>
+                                <button onclick="location.reload()" class="btn btn-outline hover-up" style="width: 100%; padding: 12px; border: 1px solid #ddd; background: white; color: #1c2023; border-radius: 8px; cursor: pointer;">
+                                    🔄 ໂຫລດຊ້ຳ
+                                </button>
+                            </div>
+
+                            <!-- Contact Support -->
+                            <div style="text-align: center; margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee;">
+                                <p style="margin: 0; font-size: 14px; color: #666;">
+                                    ບໍ່ໄດ້ຮັບອີເມວ? <a href="{% url 'contact' %}" style="color: #1f6feb; text-decoration: none; font-weight: 600;">ຕິດຕໍ່ຊັບພອດ</a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<style>
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-family: 'phetsarath ot', sans-serif;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-decoration: none;
+    }
+
+    .btn:hover {
+        filter: brightness(0.95);
+    }
+
+    .btn-fill-out {
+        background: #1f6feb;
+        color: white;
+    }
+
+    .btn-outline {
+        background: transparent;
+        border: 1px solid #ddd;
+        color: #1c2023;
+    }
+
+    .btn-outline:hover {
+        background: #f8f9fa;
+    }
+
+    .btn-block {
+        width: 100%;
+        display: block;
+    }
+
+    .hover-up:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    @media (max-width: 576px) {
+        .col-lg-6 {
+            margin: 0 auto !important;
+            width: 100% !important;
+            padding: 0 15px;
+        }
+
+        h2 {
+            font-size: 24px !important;
+        }
+
+        .padding_eight_all {
+            padding: 20px !important;
+        }
+    }
+</style>
+
+{% endblock %}

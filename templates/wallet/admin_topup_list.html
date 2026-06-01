@@ -1,0 +1,141 @@
+{% extends 'wallet/base.html' %}
+{% block title %}Admin — ຄຳຂໍຕື່ມເງິນ{% endblock %}
+
+{% block content %}
+<div class="container" style=" font-family: phetsarath ot;">
+
+  <div class="page-title" style="color: #fff;">⚙️ ຈັດການຄຳຂໍຕື່ມເງິນ</div>
+  <div class="page-subtitle" style="color: #fff;">ກວດສອບສະລິບ ແລະ ອະນຸມັດການຕື່ມເງິນຂອງລູກຄ້າ</div>
+
+  <!-- Pending -->
+  <div class="card" style="margin-bottom:24px;">
+    <div class="card-header">
+      <div class="card-title">
+        ⏳ ຖ້າກວດສອບ
+        {% if pending %}
+          <span style="background:var(--danger); color:#fff; padding:2px 8px; border-radius:10px; font-size:12px; margin-left:8px;">{{ pending|length }}</span>
+        {% endif %}
+      </div>
+    </div>
+
+    {% if pending %}
+    <div class="table-wrap">
+      <table> 
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>ຜູ້ໃຊ້</th>
+            <th>ຈຳນວນ</th>
+            <th>ໝາຍເຫດ</th>
+            <th>ວັນທີ່ສົງ</th>
+            <th>ສະລິບ</th>
+            <th>ການດຳເນີນການ</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for req in pending %}
+          <tr>
+            <td class="text-subtle text-mono" style="color: black;">#{{ req.pk }}</td>
+            <td>
+              <strong style="font-size:12px; color:var(--text-subtle);">{{ req.user.username }}</strong>
+              <div style="font-size:12px; color:var(--text-subtle);">{{ req.user.email }}</div>
+            </td>
+            <td><span style="font-size:18px; font-weight:700; font-family:'IBM Plex Mono',monospace; color:var(--warning);">{{ req.amount }}฿</span></td>
+            <td style="color:var(--text-muted);">{{ req.note|default:"-"|truncatechars:40 }}</td>
+            <td class="text-muted">{{ req.created_at|date:"d/m/Y H:i" }}</td>
+            <td>
+              <a href="{% url 'admin_topup_slip' req.pk %}" target="_blank">
+                <img src="{% url 'admin_topup_slip' req.pk %}" alt="สลิป" style="width:60px; height:60px; object-fit:cover; border-radius:var(--radius); border:1px solid var(--border); cursor:zoom-in; transition:transform 0.2s;" onmouseenter="this.style.transform='scale(1.1)'" onmouseleave="this.style.transform='scale(1)'">
+              </a>
+            </td>
+            <td>
+              <div class="flex gap-8">
+                <form method="post" action="{% url 'admin_topup_approve' req.pk %}" style="display:inline;">
+                  {% csrf_token %}
+                  <input type="hidden" name="action" value="approve">
+                  <button type="submit" class="btn btn-success btn-sm" onclick="return confirm('อนุมัติเติมเงิน {{ req.amount }}฿ ให้ {{ req.user.username }}?')">
+                    ✅ ອະນຸມັດ
+                  </button>
+                </form>
+                <form method="post" action="{% url 'admin_topup_approve' req.pk %}" style="display:inline;">
+                  {% csrf_token %}
+                  <input type="hidden" name="action" value="reject">
+                  <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('ปฏิเสธคำขอนี้?')">
+                    ❌ ປະຕິເສດ
+                  </button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <div class="icon">🎉</div>
+      <p>ບໍ່ມີຄຳຂໍທີ່ລໍຖ້າ</p>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Recent Approved/Rejected -->
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+
+    <!-- Approved -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">✅ ອະນຸມັດລ່າສຸດ</div>
+      </div>
+      {% if approved %}
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>ຜູ້ໃຊ້</th><th>ຈຳນວນ</th><th>ວັນທີ</th></tr>
+          </thead>
+          <tbody>
+          {% for req in approved %}
+            <tr>
+              <td>{{ req.user.username }}</td>
+              <td><span class="amount-plus">+{{ req.amount }}฿</span></td>
+              <td class="text-muted">{{ req.reviewed_at|date:"d/m/Y H:i" }}</td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="empty-state" style="padding:24px 0;"><p>ຍັງບໍ່ມີລາຍການ</p></div>
+      {% endif %}
+    </div>
+
+    <!-- Rejected -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">❌ ປະຕິເສດລ່າສຸດ</div>
+      </div>
+      {% if rejected %}
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>ຜູ້ໃຊ້</th><th>ຈຳນວນ</th><th>ວັນທີ</th></tr>
+          </thead>
+          <tbody>
+          {% for req in rejected %}
+            <tr>
+              <td>{{ req.user.username }}</td>
+              <td><span class="amount-minus">{{ req.amount }}฿</span></td>
+              <td class="text-muted">{{ req.reviewed_at|date:"d/m/Y H:i" }}</td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="empty-state" style="padding:24px 0;"><p>ຍັງບໍ່ມີລາຍການ</p></div>
+      {% endif %}
+    </div>
+
+  </div>
+</div>
+{% endblock %}

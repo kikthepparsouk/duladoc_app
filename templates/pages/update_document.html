@@ -1,0 +1,612 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}ອັບເດດເອກະສານ - {{ doc.title }}{% endblock %}
+{% block meta_description %}ແກ້ໄຂຂໍ້ມູນເອກະສານຂອງທ່ານ{% endblock %}
+
+{% block content %}
+<main class="main">
+<style>
+  :root {
+    --border: #e2e8f0;
+    --accent: #1f6feb;
+    --success: #3fb950;
+    --danger: #f85149;
+    --text: #1c2023;
+    --text-muted: #64748b;
+  }
+
+  .dashboard-wrapper {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+  @media (max-width: 991px) {
+    .dashboard-wrapper { grid-template-columns: 1fr; gap: 20px; }
+  }
+
+  .dashboard-card {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 24px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  }
+
+  .dashboard-title {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    font-family: 'phetsarath ot', sans-serif;
+  }
+  .dashboard-subtitle {
+    color: var(--text-muted);
+    font-family: 'phetsarath ot', sans-serif;
+    font-size: 13px;
+  }
+
+  .section-title {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 14px;
+    font-family: 'phetsarath ot', sans-serif;
+    color: var(--text);
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+  @media (max-width: 640px) { .form-row { grid-template-columns: 1fr; } }
+  .form-row.full { grid-template-columns: 1fr; }
+
+  .form-group { display: flex; flex-direction: column; gap: 5px; }
+  .form-group label {
+    font-size: 13px; font-weight: 600;
+    color: var(--text); font-family: 'phetsarath ot', sans-serif;
+  }
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    padding: 9px 13px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-family: 'phetsarath ot', sans-serif;
+    font-size: 14px;
+    color: var(--text);
+    background: #fafafa;
+    outline: none;
+    transition: border 0.15s, box-shadow 0.15s;
+  }
+  .form-group input:focus,
+  .form-group textarea:focus,
+  .form-group select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(31,111,235,0.1);
+    background: white;
+  }
+  .form-group textarea { resize: vertical; min-height: 88px; }
+
+  .file-upload-box {
+    border: 2px dashed var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    background: #f8fafc;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .file-current {
+    font-size: 12px; color: var(--success);
+    font-family: 'phetsarath ot', sans-serif;
+  }
+  .file-hint {
+    font-size: 11px; color: var(--text-muted);
+    font-family: 'phetsarath ot', sans-serif;
+  }
+  .file-chosen {
+    font-size: 12px; color: var(--accent);
+    font-family: 'phetsarath ot', sans-serif;
+  }
+
+  .price-toggle { display: flex; gap: 10px; margin-bottom: 10px; }
+  .price-toggle label {
+    flex: 1; display: flex; align-items: center; gap: 6px;
+    padding: 8px 12px; border-radius: 10px; cursor: pointer;
+    font-size: 13px; font-weight: 500;
+    font-family: 'phetsarath ot', sans-serif;
+    transition: all 0.15s;
+  }
+  .price-toggle input[type="radio"] { width:14px; height:14px; margin:0; cursor:pointer; }
+
+  .cover-preview { display: flex; gap: 14px; align-items: flex-start; flex-wrap: wrap; }
+  .cover-thumb {
+    width: 70px; height: 70px; border-radius: 14px;
+    object-fit: cover; border: 1px solid var(--border); flex-shrink: 0;
+  }
+
+  .btn-download {
+    background: var(--accent); color: white; border: none;
+    padding: 10px 22px; border-radius: 10px; text-decoration: none;
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    font-family: 'phetsarath ot', sans-serif; cursor: pointer;
+    transition: all 0.2s; font-size: 14px; font-weight: 600;
+  }
+  .btn-download:hover { opacity: 0.9; color: white; transform: translateY(-1px); }
+  .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
+  .btn-outline:hover { background: #f8fafc; color: var(--text); }
+  .btn-save { background: linear-gradient(135deg, #163457, #1f6feb); }
+
+  .divider { height: 1px; background: var(--border); margin: 18px 0; }
+  .required-star { color: #e74c3c; }
+
+  .alert-msg {
+    padding: 10px 14px; border-radius: 10px; margin-bottom: 14px;
+    font-family: 'phetsarath ot', sans-serif; font-size: 14px;
+  }
+  .alert-success { background:#f0fdf4; border:1px solid #bbf7d0; color:#166534; }
+  .alert-error   { background:#fef2f2; border:1px solid #fecaca; color:#991b1b; }
+</style>
+
+<!-- Breadcrumb -->
+<div class="page-header breadcrumb-wrap">
+  <div class="container">
+    <div class="breadcrumb" style="font-family: phetsarath ot;">
+      <a href="{% url 'home' %}">Home</a>
+      <span></span>
+      <a href="{% url 'my-documents' %}">My Documents</a>
+      <span></span> ອັບເດດເອກະສານ
+    </div>
+  </div>
+</div>
+
+<section class="pt-50 pb-150">
+  <div class="container">
+    <div class="dashboard-wrapper">
+
+      <!-- SIDEBAR -->
+      <div class="col-md-13" style="font-family: phetsarath ot;">
+        <div class="dashboard-menu">
+          <ul class="nav flex-column" role="tablist">
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'dashboard' %}">
+                <i class="fi-rs-settings-sliders mr-10"></i>Dashboard
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'seller_dashboard' %}">
+                <i class="fa-solid fa-dollar-sign mr-10"></i> ລາຍໄດ້
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'topup_request' %}">
+                <i class="fa-solid fa-dollar-sign mr-10"></i> ຕື່ມເງິນ
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'withdraw_request' %}">
+                <i class="fa-solid fa-money-bill mr-10"></i> ຖອນເງິນ
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="{% url 'my-documents' %}">
+                <i class="fa-solid fa-file mr-10"></i> ແກ້ໄຂເອກະສານ
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#"
+                 onclick="document.getElementById('logoutModal').style.display='flex'; return false;">
+                <i class="fi-rs-sign-out mr-10"></i>Logout
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- MAIN CONTENT -->
+      <div style="min-width:0;">
+
+        <!-- Header card -->
+        <div class="dashboard-card">
+          <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+            {% if doc.preview_image %}
+              <img src="{{ doc.preview_image.url }}"
+                   style="width:58px;height:58px;border-radius:12px;object-fit:cover;border:1px solid var(--border);">
+            {% else %}
+              <div style="width:58px;height:58px;border-radius:12px;background:#f1f5f9;
+                          display:flex;align-items:center;justify-content:center;font-size:1.8rem;">📄</div>
+            {% endif %}
+            <div>
+              <div class="dashboard-title">✏️ ອັບເດດເອກະສານ</div>
+              <div class="dashboard-subtitle">
+                {{ doc.title }} · ສ້າງວັນທີ {{ doc.created_at|date:"d M Y" }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert-msg {% if message.tags == 'error' %}alert-error{% else %}alert-success{% endif %}">
+              {{ message }}
+            </div>
+          {% endfor %}
+        {% endif %}
+
+        <form method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+
+          <!-- Basic Info -->
+          <div class="dashboard-card">
+            <div class="section-title">📋 ຂໍ້ມູນພື້ນຖານ</div>
+
+            <div class="form-row full">
+              <div class="form-group">
+                <label>ຊື່ເອກະສານ <span class="required-star">*</span></label>
+                <input type="text" name="title" value="{{ doc.title }}" required
+                       placeholder="ຊື່ເອກະສານ">
+              </div>
+            </div>
+
+            <!-- <div class="form-row">
+              <div class="form-group">
+                <label>ໝວດໝູ່ <span class="required-star">*</span></label>
+                <select name="level1" required>
+                  <option value="" disabled>-- ເລືອກໝວດໝູ່ --</option>
+                  {% for cat in categories %}
+                    <option value="{{ cat.id }}"
+                      {% if doc.category %}
+                        {% if doc.category.id == cat.id %}selected
+                        {% elif doc.category.parent and doc.category.parent.id == cat.id %}selected
+                        {% endif %}
+                      {% endif %}>{{ cat.name }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="form-group">
+                <label>ຈຳນວນໜ້າ <span class="required-star">*</span></label>
+                <input type="number" name="pages" value="{{ doc.pages }}"
+                       min="1" max="1000" required placeholder="1–1000">
+              </div>
+            </div> -->
+            {# Replace the entire category form-group in update_document.html with this #}
+
+<div class="form-row">
+  <div class="form-group">
+    <label>ໝວດໝູ່ <span class="required-star">*</span></label>
+
+    <!-- Level 1 -->
+    <select name="level1" id="level1" required>
+      <option value="" disabled>-- ເລືອກໝວດໝູ່ 1 --</option>
+      {% for cat in categories %}
+        <option value="{{ cat.id }}">{{ cat.name }}</option>
+      {% endfor %}
+    </select>
+
+    <!-- Level 2 (shown after level1 chosen) -->
+    <select name="level2" id="level2" style="margin-top:8px; display:none;">
+      <option value="">-- ເລືອກໝວດໝູ່ 2 --</option>
+    </select>
+
+    <!-- Level 3 (shown after level2 chosen) -->
+    <select name="level3" id="level3" style="margin-top:8px; display:none;">
+      <option value="">-- ເລືອກໝວດໝູ່ 3 --</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label>ຈຳນວນໜ້າ <span class="required-star">*</span></label>
+    <input type="number" name="pages" value="{{ doc.pages }}"
+           min="1" max="1000" required placeholder="1–1000">
+  </div>
+</div>
+
+
+
+
+<script>
+(function () {
+  // ── Data passed from Django ──────────────────────────────
+  // Current category chain: [level1_id, level2_id, level3_id]
+  // Missing levels are null.
+  const CURRENT_CAT = {{ current_category_chain|safe }};
+  // e.g. [3, 12, null]  or  [3, null, null]  or  [3, 12, 47]
+
+  const sel1 = document.getElementById('level1');
+  const sel2 = document.getElementById('level2');
+  const sel3 = document.getElementById('level3');
+
+  // ── Cascade helpers ─────────────────────────────────────
+  function loadSubs(parentId, targetSelect, preselectId, callback) {
+    fetch(`/ajax/load-subcategories/?parent_id=${parentId}`)
+      .then(r => r.json())
+      .then(data => {
+        targetSelect.innerHTML = '<option value="">-- ເລືອກໝວດໝູ່ --</option>';
+        if (!data.length) {
+          targetSelect.style.display = 'none';
+          if (callback) callback([]);
+          return;
+        }
+        data.forEach(item => {
+          const opt = document.createElement('option');
+          opt.value = item.id;
+          opt.textContent = item.name;
+          if (preselectId && item.id == preselectId) opt.selected = true;
+          targetSelect.appendChild(opt);
+        });
+        targetSelect.style.display = 'block';
+        if (callback) callback(data);
+      });
+  }
+
+  // ── Live cascade on user change ─────────────────────────
+  sel1.addEventListener('change', function () {
+    sel3.style.display = 'none'; sel3.innerHTML = '';
+    loadSubs(this.value, sel2, null, null);
+  });
+
+  sel2.addEventListener('change', function () {
+    loadSubs(this.value, sel3, null, null);
+  });
+
+  // ── Pre-select on page load ──────────────────────────────
+  const [id1, id2, id3] = CURRENT_CAT;
+
+  if (id1) {
+    // Select level 1
+    sel1.value = id1;
+
+    if (id2) {
+      // Load level 2, preselect id2, then load level 3
+      loadSubs(id1, sel2, id2, function () {
+        if (id3) {
+          loadSubs(id2, sel3, id3, null);
+        }
+      });
+    }
+  }
+})();
+</script>
+
+            <div class="form-row full">
+              <div class="form-group">
+                <label>ລາຍລະອຽດ</label>
+                <textarea name="description"
+                          placeholder="ອະທິບາຍເນື້ອຫາເອກະສານ...">{{ doc.description }}</textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- Price -->
+          <div class="dashboard-card">
+            <div class="section-title">💰 ລາຄາ</div>
+
+            <div class="price-toggle">
+              <label id="label-paid"
+                style="border:{% if doc.price > 0 %}2px solid #1a73e8;background:#e8f0fe{% else %}1px solid #e2e8f0;background:white{% endif %};">
+                <input type="radio" name="price_type" value="paid"
+                       {% if doc.price > 0 %}checked{% endif %}
+                       onchange="togglePrice(this)" style="accent-color:#1a73e8;">
+                <span id="span-paid" style="color:{% if doc.price > 0 %}#1a73e8{% else %}#64748b{% endif %};">ຕັ້ງລາຄາ</span>
+              </label>
+              <label id="label-free"
+                style="border:{% if doc.price == 0 %}2px solid #2e7d32;background:#e8f5e9{% else %}1px solid #e2e8f0;background:white{% endif %};">
+                <input type="radio" name="price_type" value="free"
+                       {% if doc.price == 0 %}checked{% endif %}
+                       onchange="togglePrice(this)" style="accent-color:#2e7d32;">
+                <span id="span-free" style="color:{% if doc.price == 0 %}#2e7d32{% else %}#64748b{% endif %};">ຟຣີ (ທຸກຄົນດາວໂຫຼດໄດ້)</span>
+              </label>
+            </div>
+
+            <div id="priceWrapper"
+                 style="display:flex;align-items:center;gap:10px;
+                        {% if doc.price == 0 %}opacity:0.4;pointer-events:none;{% endif %}">
+              <div class="form-group" style="flex:1;margin:0;">
+                <input type="number" id="docPrice" name="price"
+                       value="{{ doc.price }}" min="500" max="1000000"
+                       {% if doc.price > 0 %}required{% endif %}
+                       {% if doc.price == 0 %}disabled{% endif %}
+                       placeholder="ຕົວຢ່າງ: 10000">
+              </div>
+              <span style="color:var(--text-muted);font-family:'phetsarath ot',sans-serif;
+                           font-size:14px;white-space:nowrap;">₭ ກີບ</span>
+            </div>
+            <div id="priceHint"
+                 style="font-size:12px;color:var(--text-muted);margin-top:6px;
+                        font-family:'phetsarath ot',sans-serif;">
+              {% if doc.price == 0 %}ເອກະສານນີ້ດາວໂຫຼດໄດ້ຟຣີ
+              {% else %}ແນະນຳ 5,000 – 1,000,000 ກີບ ຍິ່ງຖືກຍິ່ງຂາຍດີ{% endif %}
+            </div>
+          </div>
+
+          <!-- Files -->
+          <div class="dashboard-card">
+            <div class="section-title">📁 ໄຟລ໌ (ເລືອກໃໝ່ຖ້າຕ້ອງການປ່ຽນ)</div>
+
+            <!-- Main file -->
+            <div class="form-row full" style="margin-bottom:14px;">
+              <div class="form-group">
+                <label>ໄຟລ໌ຫຼັກ (DOC, PDF, PPT, XLS…)</label>
+                <div class="file-upload-box">
+                  {% if doc.file %}
+                    <div class="file-current">✅ {{ doc.file.name|cut:"documents/" }}</div>
+                  {% endif %}
+                  <input type="file" name="file" id="mainFileInput"
+                         accept=".doc,.docx,.pdf,.ppt,.pptx,.xls,.xlsx"
+                         style="font-family:'phetsarath ot',sans-serif;font-size:13px;">
+                  <span class="file-hint">DOC DOCX PDF PPT PPTX XLS XLSX · ສູງສຸດ 100MB</span>
+                  <span class="file-chosen" id="mainFileChosen"></span>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <!-- PDF preview -->
+              <div class="form-group">
+                <label>PDF ສຳລັບພລີວິວ</label>
+                <div class="file-upload-box">
+                  {% if doc.preview_file %}
+                    <div class="file-current">✅ {{ doc.preview_file.name }}</div>
+                  {% endif %}
+                  <input type="file" name="preview_file" id="previewPdfInput"
+                         accept=".pdf"
+                         style="font-family:'phetsarath ot',sans-serif;font-size:13px;">
+                  <span class="file-hint">.pdf · ສູງສຸດ 32MB</span>
+                  <span class="file-chosen" id="previewPdfChosen"></span>
+                </div>
+              </div>
+
+              <!-- ZIP/RAR -->
+              <div class="form-group">
+                <label>ໄຟລ໌ ZIP / RAR ແນບ</label>
+                <div class="file-upload-box">
+                  {% if doc.attached_file %}
+                    <div class="file-current">✅ {{ doc.name_attached_file|default:doc.attached_file.name }}</div>
+                  {% endif %}
+                  <input type="file" name="attached_file" id="zipInput"
+                         accept=".zip,.rar"
+                         style="font-family:'phetsarath ot',sans-serif;font-size:13px;">
+                  <span class="file-hint">.zip .rar · ສູງສຸດ 32MB</span>
+                  <span class="file-chosen" id="zipChosen"></span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Attachment display name -->
+            <div class="form-row full">
+              <div class="form-group">
+                <label>ຊື່ສະແດງໄຟລ໌ແນບ</label>
+                <input type="text" name="name_attached_file"
+                       value="{{ doc.name_attached_file }}"
+                       placeholder="ຊື່ທີ່ຜູ້ໃຊ້ຈະເຫັນ">
+              </div>
+            </div>
+
+            <!-- Cover image -->
+            <div class="divider"></div>
+            <div class="form-group">
+              <label>ຮູບໜ້າປົກ</label>
+              <div class="cover-preview">
+                {% if doc.preview_image %}
+                  <img src="{{ doc.preview_image.url }}" class="cover-thumb" id="coverThumb">
+                {% else %}
+                  <div class="cover-thumb"
+                       style="background:#f1f5f9;display:flex;align-items:center;
+                              justify-content:center;font-size:1.6rem;" id="coverThumb">🖼️</div>
+                {% endif %}
+                <div class="file-upload-box" style="flex:1;">
+                  <input type="file" name="preview_image" id="coverInput"
+                         accept=".jpg,.jpeg,.png"
+                         style="font-family:'phetsarath ot',sans-serif;font-size:13px;">
+                  <span class="file-hint">JPG PNG · ສູງສຸດ 32MB</span>
+                  <span class="file-chosen" id="coverChosen"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div style="display:flex;justify-content:space-between;align-items:center;
+                      flex-wrap:wrap;gap:12px;margin-bottom:40px;">
+            <a href="{% url 'my-documents' %}" class="btn-download btn-outline">← ກັບຄືນ</a>
+            <button type="submit" class="btn-download btn-save">💾 ບັນທຶກການປ່ຽນແປງ</button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- Logout modal -->
+<div id="logoutModal"
+     style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;
+            background:rgba(0,0,0,0.5);z-index:99999;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:12px;padding:2rem;width:300px;
+              text-align:center;font-family:'phetsarath ot',sans-serif;position:relative;">
+    <i class="fi-rs-sign-out" style="font-size:2rem;color:#e74c3c;display:block;margin-bottom:1rem;"></i>
+    <h5 style="margin:0 0 0.5rem;font-size:18px;">ອອກຈາກລະບົບ?</h5>
+    <p style="color:#666;font-size:14px;margin:0 0 1.5rem;">ທ່ານແນ່ໃຈບໍ່ວ່າຕ້ອງການ Logout?</p>
+    <div style="display:flex;gap:10px;">
+      <button onclick="document.getElementById('logoutModal').style.display='none'"
+              style="flex:1;padding:10px;border:1px solid #ccc;border-radius:8px;
+                     background:#fff;cursor:pointer;font-family:'phetsarath ot',sans-serif;">
+        ຍົກເລີກ
+      </button>
+      <a href="{% url 'logout' %}"
+         style="flex:1;padding:10px;border-radius:8px;background:#e74c3c;color:#fff;
+                text-decoration:none;display:flex;align-items:center;justify-content:center;
+                font-weight:600;font-family:'phetsarath ot',sans-serif;">
+        Logout
+      </a>
+    </div>
+  </div>
+</div>
+
+<script>
+document.getElementById('logoutModal').addEventListener('click', function(e) {
+  if (e.target === this) this.style.display = 'none';
+});
+
+window.togglePrice = function(radio) {
+  const input     = document.getElementById('docPrice');
+  const wrapper   = document.getElementById('priceWrapper');
+  const hint      = document.getElementById('priceHint');
+  const labelPaid = document.getElementById('label-paid');
+  const labelFree = document.getElementById('label-free');
+  const spanPaid  = document.getElementById('span-paid');
+  const spanFree  = document.getElementById('span-free');
+
+  if (radio.value === 'free') {
+    labelFree.style.border='2px solid #2e7d32'; labelFree.style.background='#e8f5e9';
+    spanFree.style.color='#2e7d32';
+    labelPaid.style.border='1px solid #e2e8f0'; labelPaid.style.background='white';
+    spanPaid.style.color='#64748b';
+    input.value='0'; input.disabled=true; input.removeAttribute('required');
+    wrapper.style.opacity='0.4'; wrapper.style.pointerEvents='none';
+    hint.textContent='ເອກະສານນີ້ຈະດາວໂຫຼດໄດ້ຟຣີສຳລັບທຸກຄົນ';
+  } else {
+    labelPaid.style.border='2px solid #1a73e8'; labelPaid.style.background='#e8f0fe';
+    spanPaid.style.color='#1a73e8';
+    labelFree.style.border='1px solid #e2e8f0'; labelFree.style.background='white';
+    spanFree.style.color='#64748b';
+    input.value=''; input.disabled=false; input.setAttribute('required','required');
+    wrapper.style.opacity='1'; wrapper.style.pointerEvents='auto';
+    hint.textContent='ແນະນຳ 5,000 – 1,000,000 ກີບ ຍິ່ງຖືກຍິ່ງຂາຍດີ';
+  }
+};
+
+function bindFileLabel(inputId, labelId) {
+  const el = document.getElementById(inputId);
+  const lb = document.getElementById(labelId);
+  if (!el || !lb) return;
+  el.addEventListener('change', function() {
+    lb.textContent = this.files.length
+      ? '📎 ' + this.files[0].name + ' (' + (this.files[0].size/1024/1024).toFixed(2) + ' MB)'
+      : '';
+  });
+}
+bindFileLabel('mainFileInput',   'mainFileChosen');
+bindFileLabel('previewPdfInput', 'previewPdfChosen');
+bindFileLabel('zipInput',        'zipChosen');
+
+document.getElementById('coverInput').addEventListener('change', function() {
+  if (!this.files.length) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const t = document.getElementById('coverThumb');
+    t.outerHTML = '<img src="' + e.target.result + '" class="cover-thumb" id="coverThumb" '
+      + 'style="width:70px;height:70px;border-radius:14px;object-fit:cover;'
+      + 'border:1px solid var(--border);flex-shrink:0;">';
+  };
+  reader.readAsDataURL(this.files[0]);
+  document.getElementById('coverChosen').textContent = '📎 ' + this.files[0].name;
+});
+</script>
+{% endblock %}

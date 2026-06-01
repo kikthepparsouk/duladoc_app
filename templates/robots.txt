@@ -1,0 +1,27 @@
+# Duladoc robots.txt
+# Allows search engines to crawl your website
+
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /auth/login/
+Disallow: /auth/register/
+Disallow: /accounts/
+Disallow: /ckeditor/
+Disallow: /media/uploads/
+Disallow: /protected/
+Disallow: /search/
+Disallow: /*?*
+
+# Specific rules for Googlebot
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+# Bingbot
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+# Sitemap location
+Sitemap: https://duladoc.com/sitemap.xml

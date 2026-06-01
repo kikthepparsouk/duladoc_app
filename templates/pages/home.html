@@ -1,0 +1,664 @@
+{% extends 'base.html' %}
+
+{% block title %}Duladoc{% endblock %}
+{% block meta_description %}
+Duladoc - Your Trusted Document Management Solution
+{% endblock %}
+{% load humanize %}
+
+{% block content %}
+
+{% load static %}
+<main class="main" style="font-family: phetsarath ot;">
+    <style>
+        .product-grid-4 .col-lg-3,
+.product-grid-4 .col-md-4,
+.product-grid-4 .col-sm-6,
+.product-grid-4 .col-6 {
+    display: flex;
+}
+
+
+.product-content-wrap {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+
+        .font-all {
+            font-family: 'Phetsarath OT', sans-serif;
+        }
+
+        .product-img {
+            width: 100%;
+            aspect-ratio: 4 / 3;
+            overflow: hidden;
+        }
+
+        .product-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Category height in top of home page */
+        .category-image {
+            width: 100%;
+            height: 160px;
+            /* ความสูงเดียวกันทุก device */
+            overflow: hidden;
+        }
+
+        .category-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            /* ครอบรูปให้เต็มกล่อง */
+            display: block;
+        }
+    </style>
+    {% include "includes/top_slide_show.html" %}
+    <section class=" section-padding mt-15 mb-25">
+        <div class="container wow fadeIn animated">
+            <h3 class="section-title mb-20" style="font-family: phetsarath ot;"><span>ໝວດໝູ່</span>ເອກະສານນິຍົມ</h3>
+            <div class="carausel-6-columns-cover position-relative">
+                <div class="slider-arrow slider-arrow-2 carausel-6-columns-arrow" id="carausel-6-columns-arrows"></div>
+                <div class="carausel-6-columns" id="carausel-6-columns">
+                    {% for cat in categories %}
+                    <div class="card-1">
+                        <figure class="img-hover-scale overflow-hidden">
+                            <a href="{% url 'doc_by_category' cat.id %}">
+                                {% if cat.photo %}
+                                <div class="category-image">
+                                    <img loading="lazy" src="{{ cat.photo.url }}" alt="{{ cat.name }}">
+                                </div>
+
+                                {% else %}
+                                <div class="category-image">
+                                    <img loading="lazy" src="{% static 'imgs/shop/category-thumb-1.jpg' %}" alt="{{ cat.name }}">
+                                </div>
+                                {% endif %}
+                            </a>
+                        </figure>
+                        <h5>
+                            <a href="{% url 'doc_by_category' cat.id %}" style="font-family: phetsarath ot;">
+                                {{ cat.name|truncatechars:18 }}
+                            </a>
+                        </h5>
+                    </div>
+                    {% endfor %}
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- <section class="featured section-padding position-relative">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-2 col-md-4 mb-md-3 mb-lg-0">
+                    <div class="banner-features wow fadeIn animated hover-up">
+                        <img src="{% static 'imgs/theme/icons/feature-1.png' %}" alt="">
+                        <h4 class="bg-1">Free Shipping</h4>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 mb-md-3 mb-lg-0">
+                    <div class="banner-features wow fadeIn animated hover-up">
+                        <img src="{% static 'imgs/theme/icons/feature-2.png' %}" alt="">
+                        <h4 class="bg-3">Online Order</h4>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 mb-md-3 mb-lg-0">
+                    <div class="banner-features wow fadeIn animated hover-up">
+                        <img src="{% static 'imgs/theme/icons/feature-3.png' %}" alt="">
+                        <h4 class="bg-2">Save Money</h4>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 mb-md-3 mb-lg-0">
+                    <div class="banner-features wow fadeIn animated hover-up">
+                        <img src="{% static 'imgs/theme/icons/feature-4.png' %}" alt="">
+                        <h4 class="bg-4">Promotions</h4>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 mb-md-3 mb-lg-0">
+                    <div class="banner-features wow fadeIn animated hover-up">
+                        <img src="{% static 'imgs/theme/icons/feature-5.png' %}" alt="">
+                        <h4 class="bg-5">Happy Sell</h4>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 mb-md-3 mb-lg-0">
+                    <div class="banner-features wow fadeIn animated hover-up">
+                        <img src="{% static 'imgs/theme/icons/feature-6.png' %}" alt="">
+                        <h4 class="bg-6">24/7 Support</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section> -->
+    <section class="product-tabs section-padding position-relative wow fadeIn animated">
+        <div class="bg-square"></div>
+        <div class="container">
+            <div class="tab-header">
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="nav-tab-one" data-bs-toggle="tab" data-bs-target="#tab-one"
+                            type="button" role="tab" aria-controls="tab-one" aria-selected="true"
+                            style="font-family: phetsarath ot;">ເອກະສານແນະນຳ</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="nav-tab-two" data-bs-toggle="tab" data-bs-target="#tab-two"
+                            type="button" role="tab" aria-controls="tab-two" aria-selected="false"
+                            style="font-family: phetsarath ot;">ເອກະສານຍອດນິຍົມ</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="nav-tab-three" data-bs-toggle="tab" data-bs-target="#tab-three"
+                            type="button" role="tab" aria-controls="tab-three" aria-selected="false"
+                            style="font-family: phetsarath ot;">ເອກະສານມາໃໝ່</button>
+                    </li>
+                </ul>
+                <a href="{% url 'all_documents' %}" class="view-more d-none d-md-flex" style="font-family: phetsarath ot;">ເບິ່ງເພີ່ມຕື່ມ<i
+                        class="fi-rs-angle-double-small-right"></i></a>
+            </div>
+            <!--End nav-tabs-->
+            <div class="tab-content wow fadeIn animated" id="myTabContent">
+                <div class="tab-pane fade show active" id="tab-one" role="tabpanel" aria-labelledby="tab-one">
+                    <div class="row product-grid-4">
+
+                        {% if featured %}
+                        {% for doc in featured %}
+                        <div class="col-lg-3 col-md-4 col-sm-6 col-6">
+                            <div class="product-cart-wrap mb-30">
+
+                                <!-- DOCUMENT IMAGE -->
+                                <div class="product-img-action-wrap">
+                                    <div class="product-img product-img-zoom font-all">
+                                        <a href="{% url 'document_detail' doc.id %}">
+
+                                            {% if doc.preview_image %}
+                                            <img loading="lazy" class="default-img" style="font-family: phetsarath ot;" src="{{ doc.preview_image.url }}"
+                                                alt="{{ doc.title }}">
+                                            {% else %}
+                                            <img loading="lazy" class="default-img" style="font-family: phetsarath ot;"
+                                                src="{% static 'imgs/logo/' %}{{ doc.get_file_icon }}"
+                                                alt="{{ doc.title }}">
+                                            {% endif %}
+
+                                        </a>
+                                    </div>
+
+                                    <!-- ACTION ICONS -->
+                                    <div class="product-action-1">
+                                        <a aria-label="View" class="action-btn hover-up"
+                                            href="{% url 'document_detail' doc.id %}">
+                                            <i class="fi-rs-eye"></i>
+                                        </a>
+                                    </div>
+
+                                    {% if doc.is_featured_book %}
+                                    <div class="product-badges product-badges-position product-badges-mrg">
+                                        <span class="hot">Featured</span>
+                                    </div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- DOCUMENT CONTENT -->
+                                <div class="product-content-wrap">
+
+                                    <!-- CATEGORY -->
+                                    {% if doc.category %}
+                                    <div class="product-category d-flex">
+                                        <a href="">{{ doc.category.name |truncatechars:15  }}</a>
+                                        <span class="ms-auto" style="font-size: 10px;">{{ doc.created_at|date:"M d, Y" }}</span>
+                                    </div>
+                                    {% endif %}
+
+                                    <!-- TITLE -->
+                                    <h2 style="font-family: phetsarath ot;">
+                                        <a href="{% url 'document_detail' doc.id %}">
+                                            {{ doc.title|truncatechars:25 }} <span><img loading="lazy" class="default-img"
+                                                    src="{% static 'imgs/logo/' %}{{ doc.get_file_icon }}"
+                                                    alt="{{ doc.title }}" style="width: 15px;"></span>
+                                        </a>
+                                    </h2>
+
+                                    <!-- DOWNLOAD / RATING (แทน rating เดิม) -->
+                                    <div class="justify-content-between d-flex mt-10 ">
+                                        <span>
+                                            <span><i class="fas fa-file-alt"></i> {{ doc.pages|intcomma }} ໜ້າ</span>
+                                            <span><i class="fas fa-download"></i> {{ doc.downloads|floatformat:0 |intcomma }}
+                                                ຄັ້ງ</span>
+                                            <span><i class="fas fa-eye"></i> {{ doc.preview_count|intcomma }} ຄັ້ງ</span>
+                                        </span>
+                                    </div>
+
+                                    <!-- PRICE -->
+                                    <div class="product-price">
+                                        {% if doc.is_free %}
+                                        <span class="text-success">Free</span>
+                                        {% else %}
+                                        <span>{{ doc.price |intcomma}} ກີບ</span>
+                                        {% endif %}
+                                    </div>
+
+                                    
+                                    <!-- ACTION -->
+                                    <div class="product-action-1 show">
+                                        <button aria-label="Download"
+                                                class="action-btn hover-up"
+                                                
+                                                onclick="handleDownload({{ doc.id }}, this)">
+                                            <i class="fas fa-download"></i>
+                                        </button>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        {% else %}
+                        <div class="col-12 text-center">
+                            <h4>No documents available</h4>
+                        </div>
+                        {% endif %}
+
+                    </div>
+
+                    <!--End product-grid-4-->
+                </div>
+                <!--En tab one (Featured)-->
+                <div class="tab-pane fade" id="tab-two" role="tabpanel" aria-labelledby="tab-two">
+                    <div class="row product-grid-4">
+                        {% if popular %}
+                        {% for doc in popular %}
+                        <div class="col-lg-3 col-md-4 col-sm-6 col-6">
+                            <div class="product-cart-wrap mb-30">
+
+                                <!-- DOCUMENT IMAGE -->
+                                <div class="product-img-action-wrap font-all">
+                                    <div class="product-img product-img-zoom">
+                                        <a href="{% url 'document_detail' doc.id %}">
+
+                                            {% if doc.preview_image %}
+                                            <img loading="lazy" class="default-img" style="font-family: phetsarath ot;" src="{{ doc.preview_image.url }}"
+                                                alt="{{ doc.title }}">
+                                            {% else %}
+                                            <img loading="lazy" class="default-img" style="font-family: phetsarath ot;"
+                                                src="{% static 'imgs/logo/' %}{{ doc.get_file_icon }}"
+                                                alt="{{ doc.title }}">
+                                            {% endif %}
+
+                                        </a>
+                                    </div>
+
+                                    <!-- ACTION ICONS -->
+                                    <div class="product-action-1">
+                                        <a aria-label="View" class="action-btn hover-up"
+                                            href="{% url 'document_detail' doc.id %}">
+                                            <i class="fi-rs-eye"></i>
+                                        </a>
+                                    </div>
+
+                                    {% if doc.is_popular_book %}
+                                    <div class="product-badges product-badges-position product-badges-mrg">
+                                        <span class="sale">Popular</span>
+                                    </div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- DOCUMENT CONTENT -->
+                                <div class="product-content-wrap">
+
+                                    <!-- CATEGORY -->
+                                    {% if doc.category %}
+                                    <div class="product-category d-flex">
+                                        <a href="">{{ doc.category.name |truncatechars:15  }}</a>
+                                        <span class="ms-auto" style="font-size: 10px;">{{ doc.created_at|date:"M d, Y" }}</span>
+                                    </div>
+                                    {% endif %}
+
+                                    <!-- TITLE -->
+                                    <h2 style="font-family: phetsarath ot;">
+                                        <a href="{% url 'document_detail' doc.id %}">
+                                            {{ doc.title|truncatechars:25 }} <span><img loading="lazy" class="default-img"
+                                                    src="{% static 'imgs/logo/' %}{{ doc.get_file_icon }}"
+                                                    alt="{{ doc.title }}" style="width: 15px;"></span>
+                                        </a>
+                                    </h2>
+
+                                    <!-- DOWNLOAD / RATING (แทน rating เดิม) -->
+                                    <div class="">
+                                        <span>
+                                            <span><i class="fas fa-file-alt"></i> {{ doc.pages|intcomma }} ໜ້າ</span>
+                                            <span><i class="fas fa-download"></i> {{ doc.downloads|floatformat:0 |intcomma }}ຄັ້ງ</span>
+                                            <span><i class="fas fa-eye"></i> {{ doc.preview_count|intcomma }} ຄັ້ງ</span>
+                                        </span>
+                                    </div>
+
+                                    <!-- PRICE -->
+                                    <div class="product-price">
+                                        {% if doc.is_free %}
+                                        <span class="text-success">Free</span>
+                                        {% else %}
+                                        <span>{{ doc.price |intcomma}} ກີບ</span>
+                                        {% endif %}
+                                    </div>
+
+                                    <!-- ACTION -->
+                                    <div class="product-action-1 show">
+                                        <button aria-label="Download"
+                                                class="action-btn hover-up"
+                                                
+                                                onclick="handleDownload({{ doc.id }}, this)">
+                                            <i class="fas fa-download"></i>
+                                        </button>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        {% else %}
+                        <div class="col-12 text-center">
+                            <h4>No documents available</h4>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <!--End product-grid-4-->
+                </div>
+                <!--En tab two (Popular)-->
+                <div class="tab-pane fade" id="tab-three" role="tabpanel" aria-labelledby="tab-three">
+                    <div class="row product-grid-4">
+                        {% if new_docs %}
+                        {% for doc in new_docs %}
+                        <div class="col-lg-3 col-md-4 col-sm-6 col-6">
+                            <div class="product-cart-wrap mb-30">
+
+                                <!-- DOCUMENT IMAGE -->
+                                <div class="product-img-action-wrap font-all">
+                                    <div class="product-img product-img-zoom">
+                                        <a href="{% url 'document_detail' doc.id %}">
+
+                                            {% if doc.preview_image %}
+                                            <img loading="lazy" class="default-img" style="font-family: phetsarath ot;" src="{{ doc.preview_image.url }}"
+                                                alt="{{ doc.title }}">
+                                            {% else %}
+                                            <img loading="lazy" class="default-img" style="font-family: phetsarath ot;"
+                                                src="{% static 'imgs/logo/' %}{{ doc.get_file_icon }}"
+                                                alt="{{ doc.title }}">
+                                            {% endif %}
+
+                                        </a>
+                                    </div>
+
+                                    <!-- ACTION ICONS -->
+                                    <div class="product-action-1">
+                                        <a aria-label="View" class="action-btn hover-up"
+                                            href="{% url 'document_detail' doc.id %}">
+                                            <i class="fi-rs-eye"></i>
+                                        </a>
+                                    </div>
+
+                                    {% if doc.is_new_book %}
+                                    <div class="product-badges product-badges-position product-badges-mrg">
+                                        <span class="new">New</span>
+                                    </div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- DOCUMENT CONTENT -->
+                                <div class="product-content-wrap">
+
+                                    <!-- CATEGORY -->
+                                    {% if doc.category %}
+                                    <div class="product-category d-flex">
+                                        <a href="">{{ doc.category.name |truncatechars:15  }}</a>
+                                        <span class="ms-auto" style="font-size: 10px;">{{ doc.created_at|date:"M d, Y" }}</span>
+                                    </div>
+                                    {% endif %}
+
+                                    <!-- TITLE -->
+                                    <h2 style="font-family: phetsarath ot;">
+                                        <a href="{% url 'document_detail' doc.id %}">
+                                            {{ doc.title|truncatechars:25 }} <span><img loading="lazy" class="default-img"
+                                                    src="{% static 'imgs/logo/' %}{{ doc.get_file_icon }}"
+                                                    alt="{{ doc.title }}" style="width: 15px;"></span>
+                                        </a>
+                                    </h2>
+
+                                    <!-- DOWNLOAD / RATING (แทน rating เดิม) -->
+                                    <div class="">
+                                        <span>
+                                            <span><i class="fas fa-file-alt"></i> {{ doc.pages|intcomma }} ໜ້າ</span>
+                                            <span><i class="fas fa-download"></i> {{ doc.downloads|floatformat:0 |intcomma }}
+                                                ຄັ້ງ</span>
+                                            <span><i class="fas fa-eye"></i> {{ doc.preview_count|intcomma }} ຄັ້ງ</span>
+                                        </span>
+                                    </div>
+
+                                    <!-- PRICE -->
+                                    <div class="product-price">
+                                        {% if doc.is_free %}
+                                        <span class="text-success">Free</span>
+                                        {% else %}
+                                        <span>{{ doc.price |intcomma}} ກີບ</span>
+                                        {% endif %}
+                                    </div>
+
+                                    <!-- ACTION -->
+                                    <div class="product-action-1 show">
+                                        <button aria-label="Download"
+                                                class="action-btn hover-up"
+                                                
+                                                onclick="handleDownload({{ doc.id }}, this)">
+                                            <i class="fas fa-download"></i>
+                                        </button>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        {% else %}
+                        <div class="col-12 text-center">
+                            <h4>No documents available</h4>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <!--End product-grid-4-->
+                </div>
+                <!--En tab three (New added)-->
+            </div>
+            <!--End tab-content-->
+        </div>
+    </section>
+    <section class="banner-2 section-padding pb-0">
+        <div class="container">
+            <div class="banner-img banner-big wow fadeIn animated f-none">
+                {% if banner %}
+                <img loading="lazy" src="{{ banner.image.url }}" alt="{{ banner.title }}">
+                <div class="banner-text d-md-block d-none">
+                    <h4 class="mb-15 mt-40 text-brand" style="font-family: phetsarath ot;">{{ banner.title }}</h4>
+                    <h1 class="fw-600 mb-20" style="font-family: phetsarath ot;">
+                        {{ banner.subtitle }}<br>{{ banner.subtitle2 }}
+                    </h1>
+                    <a href="{{ banner.button_link }}" class="btn" style="font-family: phetsarath ot;">
+                        {{ banner.button_text }}
+                        <i class="fi-rs-arrow-right"></i>
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+    <section class="banners mb-15">
+        <div class="container">
+            <div class="row">
+                {% for banner in small_banner %}
+                <div class="col-lg-4 col-md-6">
+                    <div class="banner-img wow fadeIn animated">
+                        <img loading="lazy" src="{{ banner.image.url }}" alt="{{ banner.title }}">
+                        <div class="banner-text">
+                            <span>{{ banner.title }}</span>
+                            <h4>{{ banner.subtitle_one }}<br>{{ banner.subtitle_two }}</h4>
+                            <a href="{{ banner.button_link }}">{{ banner.button_text }} <i
+                                    class="fi-rs-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+
+            </div>
+        </div>
+    </section>
+    <section class="section-padding">
+        <div class="container wow fadeIn animated">
+            <h3 class="section-title mb-20 font-all"><span>ເອກະສານ</span> ເຂົ້າໃໝ່</h3>
+            <div class="carausel-6-columns-cover position-relative">
+                <div class="slider-arrow slider-arrow-2 carausel-6-columns-arrow" id="carausel-6-columns-2-arrows">
+                </div>
+                <div class="carausel-6-columns carausel-arrow-center" id="carausel-6-columns-2">
+                    {% for doc in all_documents %}
+                    <div class="product-cart-wrap small hover-up">
+                        <div class="product-img-action-wrap">
+                            <div class="product-img product-img-zoom">
+                                <a href="{% url 'document_detail' doc.id %}">
+                                        {% if doc.preview_image %}
+                                            <img loading="lazy" class="default-img" src="{{ doc.preview_image.url }}"
+                                                alt="{{ doc.title }}">
+                                            <img loading="lazy" class="hover-img" src="{{ doc.preview_image.url }}" alt="{{ doc.title }}">
+                                            
+                                            {% else %}
+                                            <img loading="lazy" class="default-img"
+                                                src="{% static 'imgs/logo/' %}{{ doc.get_file_icon }}"
+                                                alt="{{ doc.title }}">
+                                        {% endif %}
+                                </a>
+                            </div>
+                            <div class="product-action-1">
+                                <a aria-label="View" class="action-btn hover-up" href="{% url 'document_detail' doc.id %}">
+                                    <i class="fi-rs-eye"></i>
+                                </a>
+
+                            </div>
+                            {% if doc.is_new_book %}
+                            <div class="product-badges product-badges-position product-badges-mrg d-flex justify-content-between align-items-center">
+                                <span class="hot">Hot</span>
+                                <span>
+                                    <img loading="lazy" class="default-img"
+                                        src="{% static 'imgs/logo/' %}{{ doc.get_file_icon }}"
+                                        alt="{{ doc.title }}"
+                                        style="width:15px;">
+                                </span>
+                                <span class="ms-auto" style="font-size: 10px; color: black;">{{ doc.created_at|date:"M d, Y" }}</span>
+                            </div>
+
+                            {% elif doc.is_popular_book %}
+                            <div class="product-badges product-badges-position product-badges-mrg d-flex justify-content-between align-items-center">
+                                <span class="new">New</span>
+                                <span>
+                                    <img loading="lazy" class="default-img"
+                                        src="{% static 'imgs/logo/' %}{{ doc.get_file_icon }}"
+                                        alt="{{ doc.title }}"
+                                        style="width:15px;">
+                                </span>
+                                <span class="ms-auto" style="font-size: 10px; color: black;">{{ doc.created_at|date:"M d, Y" }}</span>
+
+                            </div>
+                            {% elif doc.is_featured_book %}
+                            <div class="product-badges product-badges-position product-badges-mrg d-flex justify-content-between align-items-center">
+                                <span class="sale">Sale</span>
+                                <span>
+                                    <img class="default-img"
+                                        src="{% static 'imgs/logo/' %}{{ doc.get_file_icon }}"
+                                        alt="{{ doc.title }}"
+                                        style="width:15px;">
+                                </span>
+                                <span class="ms-auto" style="font-size: 10px; color: black;">{{ doc.created_at|date:"M d, Y" }}</span>
+                            </div>
+                            {% else %}
+                            <div class="product-badges product-badges-position product-badges-mrg d-flex justify-content-between align-items-center">
+                                <span class="hot">-25%</span>
+                                <span>
+                                    <img loading="lazy" class="default-img"
+                                        src="{% static 'imgs/logo/' %}{{ doc.get_file_icon }}"
+                                        alt="{{ doc.title }}"
+                                        style="width:15px;">
+                                </span>
+                                <span class="ms-auto" style="font-size: 10px; color: black;">{{ doc.created_at|date:"M d, Y" }}</span>
+                            </div>
+                            {% endif %}
+
+                        </div>
+                        <div class="product-content-wrap" style="font-family: phetsarath ot;">
+                            <h2 style="font-family: phetsarath ot;"><a href="{% url 'document_detail' doc.id %}">{{ doc.title | truncatewords:10 }}</a></h2>
+                            <div class="" title="90%">
+                                
+                                    <span><i class="fas fa-file-alt"></i> {{ doc.pages|intcomma }} ໜ້າ</span>
+                                            <span><i class="fas fa-download"></i> {{ doc.downloads|floatformat:0 |intcomma }}ຄັ້ງ</span>
+                                            <span><i class="fas fa-eye"></i> {{ doc.preview_count|intcomma }} ຄັ້ງ</span>
+                                
+                            </div>
+                            <div class="product-price">
+                                {% if doc.is_free %}
+                                <span class="text-success" style="font-size:15px;">Free</span>
+                                {% else %}
+                                <span style="font-size:15px;">{{ doc.price|intcomma }} ກີບ</span>
+                                {% endif %}
+                                <button aria-label="Download"
+                                        class="action-btn hover-up"
+                                        style="background:none; border:none; cursor:pointer; padding:0;"
+                                        onclick="handleDownload({{ doc.id }}, this)">
+                                    <i class="fas fa-download" style="font-size:15px;"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    <!--End product-cart-wrap-2-->
+
+                </div>
+            </div>
+        </div>
+    </section>
+    <div style="height: 60px;"></div>
+
+    <!-- <section class="section-padding">
+        <div class="container">
+            <h3 class="section-title mb-20 wow fadeIn animated"><span>Featured</span> Brands</h3>
+            <div class="carausel-6-columns-cover position-relative wow fadeIn animated">
+                <div class="slider-arrow slider-arrow-2 carausel-6-columns-arrow" id="carausel-6-columns-3-arrows">
+                </div>
+                <div class="carausel-6-columns text-center" id="carausel-6-columns-3">
+                    <div class="brand-logo">
+                        <img class="img-grey-hover" src="{% static 'imgs/banner/brand-1.png' %}" alt="">
+                    </div>
+                    <div class="brand-logo">
+                        <img class="img-grey-hover" src="{% static 'imgs/banner/brand-2.png' %}" alt="">
+                    </div>
+                    <div class="brand-logo">
+                        <img class="img-grey-hover" src="{% static 'imgs/banner/brand-3.png' %}" alt="">
+                    </div>
+                    <div class="brand-logo">
+                        <img class="img-grey-hover" src="{% static 'imgs/banner/brand-4.png' %}" alt="">
+                    </div>
+                    <div class="brand-logo">
+                        <img class="img-grey-hover" src="{% static 'imgs/banner/brand-5.png' %}" alt="">
+                    </div>
+                    <div class="brand-logo">
+                        <img class="img-grey-hover" src="{% static 'imgs/banner/brand-6.png' %}" alt="">
+                    </div>
+                    <div class="brand-logo">
+                        <img class="img-grey-hover" src="{% static 'imgs/banner/brand-3.png' %}" alt="">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section> -->
+
+</main>
+<!-- End Main -->
+
+
+{% endblock %}
