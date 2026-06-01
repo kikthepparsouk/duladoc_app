@@ -254,4 +254,7 @@ if not os.path.exists(SITEMAPS_DIR):
     os.makedirs(SITEMAPS_DIR, exist_ok=True)
 
 
-
+CSRF_TRUSTED_ORIGINS = [
+    "https://duladoc.com",
+    "https://www.duladoc.com",
+]
