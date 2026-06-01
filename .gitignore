@@ -175,3 +175,5 @@ cython_debug/
 
 duladoc/.env.docker
 duladoc/.env.production
+.env.docker
+.env.production
