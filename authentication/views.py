@@ -61,19 +61,19 @@ def logout(request):
     return redirect('home')
 
 
-# import uuid
-# from django.shortcuts import render, redirect, get_object_or_404
-# from django.contrib import auth, messages
-# from django.contrib.auth import authenticate, login
-# from django.contrib.auth.models import User
-# from django.core.mail import send_mail
-# from django.conf import settings
-# from .forms import LoginForm, SignUpForm
-# from .models import EmailVerificationToken
-# from category.models import Category
-# from django.template.loader import render_to_string
-# from django.utils.html import strip_tags
-# from django_ratelimit.decorators import ratelimit
+import uuid
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import auth, messages
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.models import User
+from django.core.mail import send_mail
+from django.conf import settings
+from .forms import LoginForm, SignUpForm
+from .models import EmailVerificationToken
+from category.models import Category
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from django_ratelimit.decorators import ratelimit
 
 # # ✅ Rate limit: 5 login attempts per hour per IP
 # @ratelimit(key='ip', rate='5/h', method='POST', block=True)
@@ -148,31 +148,31 @@ def logout(request):
 
 
 
-# def activate_account(request, token):
-#     # ✅ แปลง string กลับเป็น UUID
-#     try:
-#         token_uuid = uuid.UUID(token)
-#     except ValueError:
-#         messages.error(request, '❌ ລິ້ງບໍ່ຖືກຕ້ອງ')
-#         return redirect('login_view')
+def activate_account(request, token):
+    # ✅ แปลง string กลับเป็น UUID
+    try:
+        token_uuid = uuid.UUID(token)
+    except ValueError:
+        messages.error(request, '❌ ລິ້ງບໍ່ຖືກຕ້ອງ')
+        return redirect('login_view')
     
-#     # ✅ หา token ใน database
-#     token_obj = get_object_or_404(EmailVerificationToken, token=token_uuid)
-#     user = token_obj.user
+    # ✅ หา token ใน database
+    token_obj = get_object_or_404(EmailVerificationToken, token=token_uuid)
+    user = token_obj.user
 
-#     if user.is_active:
-#         messages.info(request, '✅ ບັນຊີນີ້ຢືນຢັນແລ້ວ')
-#         return redirect('login_view')
+    if user.is_active:
+        messages.info(request, '✅ ບັນຊີນີ້ຢືນຢັນແລ້ວ')
+        return redirect('login_view')
 
-#     # ✅ เปิดใช้งาน account
-#     user.is_active = True
-#     user.save()
+    # ✅ เปิดใช้งาน account
+    user.is_active = True
+    user.save()
 
-#     # ✅ ลบ token ที่ใช้แล้ว
-#     token_obj.delete()
+    # ✅ ลบ token ที่ใช้แล้ว
+    token_obj.delete()
 
-#     messages.success(request, '✅ ຢືນຢັນສຳເລັດ! ສາມາດເຂົ້າສູ່ລະບົບໄດ້ເລີຍ')
-#     return redirect('login_view')
+    messages.success(request, '✅ ຢືນຢັນສຳເລັດ! ສາມາດເຂົ້າສູ່ລະບົບໄດ້ເລີຍ')
+    return redirect('login_view')
 
 
 # def logout(request):
