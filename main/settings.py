@@ -275,3 +275,6 @@ CSRF_TRUSTED_ORIGINS = [
     "https://duladoc.com",
     "https://www.duladoc.com",
 ]
+
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
