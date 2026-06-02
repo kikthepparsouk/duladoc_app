@@ -12,7 +12,7 @@ WATERMARK_TEXT = "PREVIEW ONLY - BUY TO DOWNLOAD"
 MAX_PREVIEW_PAGES = 15
 
 # บน Windows ใช้ path ที่ระบุ, บน Linux/PythonAnywhere ใช้ที่อยู่ใน PATH อยู่แล้ว
-POPPLER_PATH = r"C:\poppler\Library\bin" if platform.system() == "Windows" else None
+POPPLER_PATH = r"./media/app/media" if platform.system() == "Windows" else None
 
 
 def _poppler_kwargs():

@@ -79,7 +79,7 @@ python manage.py collectstatic --noinput
 python manage.py runserver
 
 # Test in browser:
-# - http://localhost:8000/robots.txt
+# - http://duladoc/robots.txt
 # - http://localhost:8000/sitemap.xml
 ```
 
