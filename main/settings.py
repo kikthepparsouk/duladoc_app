@@ -80,7 +80,13 @@ def parse_allowed_hosts(value):
         return [item.strip() for item in value.split(',')]
     return ['localhost', '127.0.0.1', 'duladoc.com', 'www.duladoc.com']
 
-ALLOWED_HOSTS = parse_allowed_hosts(os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1,duladoc.com,www.duladoc.com"))
+ALLOWED_HOSTS = [
+    "duladoc.com",
+    "www.duladoc.com",
+    "localhost",
+    "127.0.0.1",
+    "backend",
+]
 
 
 # Application definition
