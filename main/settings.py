@@ -254,7 +254,7 @@ EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=parse_bool)
 EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
 DEFAULT_FROM_EMAIL = f'Duladoc <{EMAIL_HOST_USER}>'
-
+EMAIL_USE_SSL = config('EMAIL_USE_SSL', default=False, cast=parse_bool) 
 SITE_URL = config('SITE_URL', default='https://duladoc.com/')
 
 # ========== SEO Configuration ==========
