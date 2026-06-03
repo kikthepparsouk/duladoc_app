@@ -106,7 +106,7 @@ def register_user(request):
         if form.is_valid():
             # ✅ ສ້າງ user ແຕ່ປິດການໃຊ້ງານກ່ອນ
             user = form.save(commit=False)
-            user.is_active = False
+            user.is_active = True
             user.save()
 
             token_obj = EmailVerificationToken.objects.create(user=user)
