@@ -108,6 +108,7 @@ INSTALLED_APPS = [
     'wallet',
     'documents.apps.DocumentsConfig',  # <-- keep this
     'category',
+    'django_ses',
     
 ]
 
@@ -247,14 +248,22 @@ CACHES = {
 }
 
 # ทดสอบด้วย Gmail
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = config('EMAIL_HOST', default='smtp.gmail.com')
-EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)
-EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=parse_bool)
-EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
-EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
-DEFAULT_FROM_EMAIL = f'Duladoc <{EMAIL_HOST_USER}>'
-EMAIL_USE_SSL = config('EMAIL_USE_SSL', default=False, cast=parse_bool) 
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = config('EMAIL_HOST', default='smtp.gmail.com')
+# EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)
+# EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=parse_bool)
+# EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
+# EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
+# DEFAULT_FROM_EMAIL = f'Duladoc <{EMAIL_HOST_USER}>'
+# EMAIL_USE_SSL = config('EMAIL_USE_SSL', default=False, cast=parse_bool) 
+
+# Amazon SES
+EMAIL_BACKEND = config('EMAIL_BACKEND', default='django_ses.SESBackend')
+AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID', default='')
+AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY', default='')
+AWS_SES_REGION_NAME = config('AWS_SES_REGION_NAME', default='ap-southeast-1')
+AWS_SES_REGION_ENDPOINT = f'email.{AWS_SES_REGION_NAME}.amazonaws.com'
+DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='noreply@duladoc.com')
 SITE_URL = config('SITE_URL', default='https://duladoc.com/')
 
 # ========== SEO Configuration ==========
