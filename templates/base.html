@@ -698,6 +698,8 @@
                                             {% endif %}
                                         </ul>
                                     </li>
+
+                                   
                                 </ul>
                             </nav>
                         </div>
@@ -709,33 +711,6 @@
                     </p>
                     <div class="header-action-right d-block d-lg-none">
                         <div class="header-action-2">
-                            <div class="header-action-2"
-                                style="display: flex; align-items: center; gap: 15px; margin-right: 20px;">
-                                <!-- Deposit Button -->
-                                <a href="http://" target="_blank" rel="noopener noreferrer">
-                                    <span style="font-size: 1.2em; font-size: 16px;">💰</span>
-                                </a>
-
-                            </div>
-                            <div class="header-action-2"
-                                style="display: flex; align-items: center; gap: 15px; margin-right: 30px;">
-                                <!-- Document Button -->
-                                <a href="{% url 'upload_document' %}" target="_blank" rel="noopener noreferrer">
-
-                                    <i class="fas fa-file-upload " style="color: #F15412; font-size: 15px;"></i>
-                                </a>
-                                <i class="fas fa-user-hard-hat"></i>
-                            </div>
-                            <div class="header-action-2"
-                                style="display: flex; align-items: center; gap: 15px; margin-right: 30px;">
-                                <!-- Document Button -->
-                                <a href="{% url 'upload_document' %}" target="_blank" rel="noopener noreferrer">
-
-                                    <i class="fa-solid fa-people-carry-box"
-                                        style="color: #F15412; font-size: 15px;"></i>
-                                </a>
-                            </div>
-
                             <div class="header-action-icon-2 d-block d-lg-none">
                                 <div class="burger-icon burger-icon-white">
                                     <span class="burger-icon-top"></span>
@@ -814,18 +789,31 @@
                                     </li>
                                     {% endfor %}
                                     <li class="menu-item-has-children"><span class="menu-expand"></span><a
-                                            href="/home">Home</a></li>
+                                            href=""></a></li>
+                                  
+                                    
+                                    
+
                                     <li class="menu-item-has-children"><span class="menu-expand"></span><a
-                                            href="shop.html">shop</a></li>
-                                    <li class="menu-item-has-children"><span class="menu-expand"></span><a
-                                            href="blog.html">Blog</a></li>
-                                    <li class="menu-item-has-children"><span class="menu-expand"></span><a
-                                            href="#">Language</a>
+                                            href="#">My Account</a>
                                         <ul class="dropdown">
-                                            <li><a href="#">English</a></li>
-                                            <li><a href="#">French</a></li>
-                                            <li><a href="#">German</a></li>
-                                            <li><a href="#">Spanish</a></li>
+                                            {% if user.is_authenticated %}
+                                            <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                                            <li><a href="{% url 'upload_document' %}">ອັບໂຫຼດເອກະສານ</a></li>
+                                            <li><a href="{% url 'workdocument_create' %}">ຝາກເຮັດເອກະສານ</a></li>
+                                            <li><a href="{% url 'seller_dashboard' %}">Seller Dashboard</a></li>
+                                            
+
+                                            <li onclick="confirmLogout()" style="cursor:pointer;">
+                                                <a href="#">ອອກຈາກລະບົບ</a>
+                                                <form id="logout-form" method="POST" action="{% url 'logout' %}" style="display:none;">
+                                                    {% csrf_token %}
+                                                </form>
+                                            </li>
+                                            {% else %}
+                                            <li><a href="{% url 'login_view' %}">ເຂົ້າລະບົບ</a></li>
+                                            <li><a href="{% url 'register_user' %}">ລົງທະບຽນ</a></li>
+                                            {% endif %}
                                         </ul>
                                     </li>
                                 </ul>
@@ -838,17 +826,39 @@
                 </div>
                 <div class="mobile-header-info-wrap mobile-header-border">
                     <div class="single-mobile-header-info mt-30">
-                        <a href="contact.html"> Our location </a>
+                        <a href="{%url 'home' %}"> Home </a>
                     </div>
                     <div class="single-mobile-header-info">
-                        <a href="login.html">Log In </a>
+                        <a href="{%url 'all_documents' %}">ເອກະສານທັງໝັດ </a>
                     </div>
                     <div class="single-mobile-header-info">
-                        <a href="register.html">Sign Up</a>
+                        <a href="{%url 'all_jobs_documents' %}">ວຽກເອກະສານ</a>
                     </div>
                     <div class="single-mobile-header-info">
-                        <a href="#">(+1) 0000-000-000 </a>
+                        <a href="{%url 'contact' %}">ຕິດຕໍ່ພວກເຮົາ</a>
                     </div>
+
+                    
+                    {% if not user.is_authenticated %}
+                    <div class="single-mobile-header-info">
+                            <a href="{% url 'login_view' %}">Login</a>
+                    </div>
+                    <div class="single-mobile-header-info">
+                            <a href="{% url 'register_user' %}">Register</a>
+                    </div>
+                    {% else %}
+                    <div class="single-mobile-header-info" onclick="confirmLogout()" style="cursor:pointer;">
+                            <a href="#">ອອກຈາກລະບົບ</a>
+                            <form id="logout-form" method="POST" action="{% url 'logout' %}" style="display:none;">
+                                {% csrf_token %}
+                            </form>
+                    </div>
+                    {% endif %}
+                    
+                </div>
+                <div class="mobile-social-icon mb-15">
+                    <h5 class="mb-15 text-grey-4" style="font-family: phetsarath ot;">ສະບາຍດີ: {{ user.username }}</h5>
+                    
                 </div>
                 <div class="mobile-social-icon">
                     <h5 class="mb-15 text-grey-4">Follow Us</h5>
@@ -1310,6 +1320,39 @@ document.addEventListener('DOMContentLoaded', function () {
         if (e.target === this) this.style.display = 'none';
     });
 </script>
+
+
+
+
+<script>
+function confirmLogout() {
+    if (confirm("Are you sure you want to logout?")) {
+        document.getElementById('logout-form').submit();
+    }
+}
+</script>
+<!-- Logout Confirm Modal -->
+<div id="logout-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; justify-content:center; align-items:center;">
+    <div style="background:#fff; padding:30px; border-radius:10px; text-align:center; width:300px;">
+        <h3 style="margin-bottom:10px;">ຢືນຢັນຊື້ອອກຈາກລະບົບ</h3>
+        <p style="margin-bottom:20px; color:#666;">ທ່ານຕ້ອງການອອກຈາກກລະບົບບໍ?</p>
+        <button onclick="document.getElementById('logout-form').submit()" 
+            style="background:#F15412; color:#fff; border:none; padding:10px 25px; border-radius:5px; cursor:pointer; margin-right:10px;">
+            ອອກຈາກລະບົບ
+        </button>
+        <button onclick="document.getElementById('logout-modal').style.display='none'" 
+            style="background:#eee; color:#333; border:none; padding:10px 25px; border-radius:5px; cursor:pointer;">
+            Cancel
+        </button>
+    </div>
+</div>
+
+<li onclick="document.getElementById('logout-modal').style.display='flex'" style="cursor:pointer;">
+    <a href="#">Logout</a>
+    <form id="logout-form" method="POST" action="{% url 'logout' %}" style="display:none;">
+        {% csrf_token %}
+    </form>
+</li>
 </body>
 
 </html>
