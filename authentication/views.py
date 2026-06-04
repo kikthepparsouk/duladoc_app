@@ -40,7 +40,7 @@ def register_user(request):
             user = authenticate(username=username, password=raw_password)
             msg = 'User created successfully!'
             success = True
-            return redirect("/")
+            return redirect("dashboard")
         else:
             msg = 'Form is not valid'
     else:
