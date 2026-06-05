@@ -936,11 +936,10 @@
                     <div class="col-lg-2 col-md-3">
                         <h5 class="widget-title wow fadeIn animated font-all">ກ່ຽວກັບເຮົາ</h5>
                         <ul class="footer-list wow fadeIn animated mb-sm-5 mb-md-0 font-all">
-                            <li><a href="#">ກ່ຽວກັບ Duladoc</a></li>
-                            <li><a href="#">ນະໂຍບາຍຄວາມເປັນສ່ວນຕົວ</a></li>
-                            <li><a href="#">ເງື່ອນໄຂການໃຊ້ງານ</a></li>
+                            <li><a href="{% url 'all_jobs_documents' %}">ວຽກເອກະສານ</a></li>
+                            <li><a href="{% url 'topup_request' %}">ຕື່ມເງິນ</a></li>
                             <li><a href="{% url 'contact' %}">ຕິດຕໍ່ພວກເຮົາ</a></li>
-                            <li><a href="#">ຊ່ວຍເຫຼືອ / FAQ</a></li>
+                            <li><a href="{% url 'contact' %}">ຊ່ວຍເຫຼືອ / FAQ</a></li>
                         </ul>
                     </div>
                     <!-- My Account -->
@@ -951,7 +950,7 @@
                             <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
                             <li><a href="{% url 'upload_document' %}">ອັບໂຫຼດເອກະສານ</a></li>
                             <li><a href="{% url 'seller_dashboard' %}">Seller Dashboard</a></li>
-                            <li><a href="{% url 'topup_request' %}">ຕື່ມເງິນ</a></li>
+                            
                             <!-- <li>
                                 <form method="POST" action="{% url 'logout' %}" style="display:inline;">
                                     {% csrf_token %}
@@ -966,7 +965,7 @@
                             <li><a href="{% url 'register_user' %}">ລົງທະບຽນ</a></li>
                             {% endif %}
                             <li><a href="{% url 'all_documents' %}">ເອກະສານທັງໝົດ</a></li>
-                            <li><a href="{% url 'all_jobs_documents' %}">ວຽກເອກະສານ</a></li>
+                            
                         </ul>
                     </div>
                     <div class="col-lg-4 mob-center">
