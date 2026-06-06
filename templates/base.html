@@ -520,7 +520,7 @@
                             <ul>
                                 {% if user.is_authenticated %}
                                 
-                                <li><i class="fi-rs-user"></i>ສະບາຍດີ: {{ user.username }} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href=""onclick="document.getElementById('logoutModal').style.display='flex'; return false;"><i class="fi-rs-sign-out"></i>ອອກຈາກລະບົບ</a>
+                                <li><i class="fi-rs-user"></i>ສະບາຍດີ: {{ user.username|truncatechars:20 }} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href=""onclick="document.getElementById('logoutModal').style.display='flex'; return false;"><i class="fi-rs-sign-out"></i>ອອກຈາກລະບົບ</a>
 
                                 </li>
                                 {% else %}
