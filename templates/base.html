@@ -47,6 +47,32 @@
     <!-- SEO: Sitemap & Robots -->
     <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml">
     <style>
+        #news-flash {
+            width: 100%;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        #news-flash ul {
+            display: flex;
+            align-items: center;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            animation: ticker 20s linear infinite;
+            width: max-content;
+        }
+
+        #news-flash ul li {
+            padding: 0 30px;
+            font-size: 1rem;        /* ← increase this */
+            line-height: 1.5;
+        }
+
+        @keyframes ticker {
+            0%   { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
         /* Fix sidebar width on desktop */
 
 
@@ -496,7 +522,7 @@
                             </ul>
                         </div>
                     </div>
-                    <div class="col-xl-6 col-lg-6">
+                    <!-- <div class="col-xl-6 col-lg-6">
                         <div class="text-center">
                             <div id="news-flash" class="d-inline-block">
                                 <ul>
@@ -507,6 +533,22 @@
                                         <a href="{{ news.link_url }}">
                                             {{ news.link_text }}
                                         </a>
+                                        {% endif %}
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div> -->
+                    <div class="col-xl-6 col-lg-6 d-flex align-items-center" style="min-height: 50px;">
+                        <div class="text-center w-100">
+                            <div id="news-flash" class="d-inline-block w-100">
+                                <ul>
+                                    {% for news in news_list %}
+                                    <li>
+                                        {{ news.message }}
+                                        {% if news.link_url %}
+                                        <a href="{{ news.link_url }}">{{ news.link_text }}</a>
                                         {% endif %}
                                     </li>
                                     {% endfor %}
