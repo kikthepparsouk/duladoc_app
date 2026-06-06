@@ -25,34 +25,34 @@
 #     return render(request, "accounts/login.html", context)
  
  
-def register_user(request):
-    categories = Category.objects.filter(parent__isnull=True).prefetch_related('children__children')
+# def register_user(request):
+#     categories = Category.objects.filter(parent__isnull=True).prefetch_related('children__children')
 
-    msg = None
-    success = False
+#     msg = None
+#     success = False
 
-    if request.method == "POST":
-        form = SignUpForm(request.POST)
-        if form.is_valid():
-            form.save()
-            username = form.cleaned_data.get("username")
-            raw_password = form.cleaned_data.get("password1")
-            user = authenticate(username=username, password=raw_password)
-            msg = 'User created successfully!'
-            success = True
-            return redirect("dashboard")
-        else:
-            msg = 'Form is not valid'
-    else:
-        form = SignUpForm()
+#     if request.method == "POST":
+#         form = SignUpForm(request.POST)
+#         if form.is_valid():
+#             form.save()
+#             username = form.cleaned_data.get("username")
+#             raw_password = form.cleaned_data.get("password1")
+#             user = authenticate(username=username, password=raw_password)
+#             msg = 'User created successfully!'
+#             success = True
+#             return redirect("dashboard")
+#         else:
+#             msg = 'Form is not valid'
+#     else:
+#         form = SignUpForm()
 
-    context = {
-        'form': form,
-        'msg': msg,
-        'success': success,
-        'categories': categories,
-    }
-    return render(request, "accounts/register.html", context)
+#     context = {
+#         'form': form,
+#         'msg': msg,
+#         'success': success,
+#         'categories': categories,
+#     }
+#     return render(request, "accounts/register.html", context)
 
 
 # def logout(request):
@@ -96,83 +96,83 @@ def login_view(request):
     return render(request, "accounts/login.html", {'form': form, 'categories': categories})
 
 
-# def register_user(request):
-#     categories = Category.objects.filter(
-#         parent__isnull=True
-#     ).prefetch_related('children__children')
+def register_user(request):
+    categories = Category.objects.filter(
+        parent__isnull=True
+    ).prefetch_related('children__children')
 
-#     if request.method == "POST":
-#         form = SignUpForm(request.POST)
-#         if form.is_valid():
-#             # ✅ ສ້າງ user ແຕ່ປິດການໃຊ້ງານກ່ອນ
-#             user = form.save(commit=False)
-#             user.is_active = False
-#             user.save()
+    if request.method == "POST":
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            # ✅ ສ້າງ user ແຕ່ປິດການໃຊ້ງານກ່ອນ
+            user = form.save(commit=False)
+            user.is_active = False
+            user.save()
 
-#             token_obj = EmailVerificationToken.objects.create(user=user)
-#             activate_url = f"{settings.SITE_URL}/accounts/activate/{token_obj.token}/"
+            token_obj = EmailVerificationToken.objects.create(user=user)
+            activate_url = f"{settings.SITE_URL}/accounts/activate/{token_obj.token}/"
 
-#             # ✅ ใช้ HTML email
-#             html_message = render_to_string('accounts/email_verification.html', {
-#                 'username': user.username,
-#                 'activate_url': activate_url,
-#             })
-#             plain_message = strip_tags(html_message)
+            # ✅ ใช้ HTML email
+            html_message = render_to_string('accounts/email_verification.html', {
+                'username': user.username,
+                'activate_url': activate_url,
+            })
+            plain_message = strip_tags(html_message)
 
-#             send_mail(
-#                 subject='✅ ຢືນຢັນອີເມວຂອງທ່ານ - Duladoc',
-#                 message=plain_message,
-#                 html_message=html_message,  # ✅ เพิ่ม HTML
-#                 from_email=settings.DEFAULT_FROM_EMAIL,
-#                 recipient_list=[user.email],
-#                 fail_silently=False,
-#             )
-#             # ✅ ส่ง email ไปให้ verify page
-#             return render(request, 'accounts/verify_email.html', {
-#                 'email': user.email,
-#                 'categories': categories,
-#             })
-#             # messages.success(
-#             #     request,
-#             #     f'✅ ສົ່ງລິ້ງຢືນຢັນໄປທີ່ {user.email} ແລ້ວ ກະລຸນາກວດເບິ່ງອີເມວ'
-#             # )
-#         else:
-#             messages.error(request, '❌ ກະລຸນາກວດສອບຂໍ້ມູນ')
-#     else:
-#         form = SignUpForm()
+            send_mail(
+                subject='✅ ຢືນຢັນອີເມວຂອງທ່ານ - Duladoc',
+                message=plain_message,
+                html_message=html_message,  # ✅ เพิ่ม HTML
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[user.email],
+                fail_silently=False,
+            )
+            # ✅ ส่ง email ไปให้ verify page
+            return render(request, 'accounts/verify_email.html', {
+                'email': user.email,
+                'categories': categories,
+            })
+            # messages.success(
+            #     request,
+            #     f'✅ ສົ່ງລິ້ງຢືນຢັນໄປທີ່ {user.email} ແລ້ວ ກະລຸນາກວດເບິ່ງອີເມວ'
+            # )
+        else:
+            messages.error(request, '❌ ກະລຸນາກວດສອບຂໍ້ມູນ')
+    else:
+        form = SignUpForm()
 
-#     return render(request, "accounts/register.html", {
-#         'form': form,
-#         'categories': categories,
-#     })
+    return render(request, "accounts/register.html", {
+        'form': form,
+        'categories': categories,
+    })
 
 
 
-# def activate_account(request, token):
-#     # ✅ แปลง string กลับเป็น UUID
-#     try:
-#         token_uuid = uuid.UUID(token)
-#     except ValueError:
-#         messages.error(request, '❌ ລິ້ງບໍ່ຖືກຕ້ອງ')
-#         return redirect('login_view')
+def activate_account(request, token):
+    # ✅ แปลง string กลับเป็น UUID
+    try:
+        token_uuid = uuid.UUID(token)
+    except ValueError:
+        messages.error(request, '❌ ລິ້ງບໍ່ຖືກຕ້ອງ')
+        return redirect('login_view')
     
-#     # ✅ หา token ใน database
-#     token_obj = get_object_or_404(EmailVerificationToken, token=token_uuid)
-#     user = token_obj.user
+    # ✅ หา token ใน database
+    token_obj = get_object_or_404(EmailVerificationToken, token=token_uuid)
+    user = token_obj.user
 
-#     if user.is_active:
-#         messages.info(request, '✅ ບັນຊີນີ້ຢືນຢັນແລ້ວ')
-#         return redirect('login_view')
+    if user.is_active:
+        messages.info(request, '✅ ບັນຊີນີ້ຢືນຢັນແລ້ວ')
+        return redirect('login_view')
 
-#     # ✅ เปิดใช้งาน account
-#     user.is_active = True
-#     user.save()
+    # ✅ เปิดใช้งาน account
+    user.is_active = True
+    user.save()
 
-#     # ✅ ลบ token ที่ใช้แล้ว
-#     token_obj.delete()
+    # ✅ ลบ token ที่ใช้แล้ว
+    token_obj.delete()
 
-#     messages.success(request, '✅ ຢືນຢັນສຳເລັດ! ສາມາດເຂົ້າສູ່ລະບົບໄດ້ເລີຍ')
-#     return redirect('login_view')
+    messages.success(request, '✅ ຢືນຢັນສຳເລັດ! ສາມາດເຂົ້າສູ່ລະບົບໄດ້ເລີຍ')
+    return redirect('login_view')
 
 
 def logout(request):
