@@ -1291,7 +1291,7 @@ def update_document(request, doc_id):
         doc.title       = title
         doc.description = description
         doc.pages       = pages or doc.pages
-        doc.price       = 0 if price_type == 'free' else (int(price) if price else doc.price)
+        doc.price       = 0 if price_type == 'free' else (int(float(price)) if price else doc.price)
 
         if cat_id:
             try:

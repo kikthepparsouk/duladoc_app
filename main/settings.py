@@ -275,7 +275,7 @@ DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='a5a71d001@smtp-brevo.
 # AWS_SES_REGION_NAME = config('AWS_SES_REGION_NAME', default='ap-southeast-1')
 # AWS_SES_REGION_ENDPOINT = f'email.{AWS_SES_REGION_NAME}.amazonaws.com'
 # DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='noreply@duladoc.com')
-SITE_URL = config('SITE_URL', default='https://duladoc.com/')
+SITE_URL = config('SITE_URL', default='https://duladoc.com')
 
 # ========== SEO Configuration ==========
 SITE_ID = 1
