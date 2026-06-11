@@ -63,7 +63,7 @@ class Document(models.Model):
                 allowed_extensions=[
                     'pdf', 'doc', 'docx', 'ppt', 'txt',
                     'pptx', 'pot', 'potx', 'xls',
-                    'xlsx', 'pps', 'ppsx'
+                    'xlsx', 'pps', 'ppsx','pub'
                 ]  
             ),
             validate_file_size
