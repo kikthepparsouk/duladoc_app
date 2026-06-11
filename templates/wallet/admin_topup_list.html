@@ -7,7 +7,7 @@
   <div class="page-title" style="color: #fff;">⚙️ ຈັດການຄຳຂໍຕື່ມເງິນ</div>
   <div class="page-subtitle" style="color: #fff;">ກວດສອບສະລິບ ແລະ ອະນຸມັດການຕື່ມເງິນຂອງລູກຄ້າ</div>
   <div style="font-size:12px; color:var(--text-muted); text-align:right; margin-bottom:8px;">
-    🔄 ອັບເດດໃນ <span id="countdown">3</span> ນາທີ
+    🔄 ອັບເດດໃນ <span id="countdown">04:00</span> ນາທີ
 </div>
 
   <!-- Pending -->
@@ -144,9 +144,12 @@
 
 
 <script>
-let t = 240;
+let t = 240; // 4 ນາທີ = 240 ວິນາທີ
 setInterval(() => {
-    document.getElementById('countdown').textContent = --t;
+    t--;
+    const min = String(Math.floor(t / 60)).padStart(2, '0');
+    const sec = String(t % 60).padStart(2, '0');
+    document.getElementById('countdown').textContent = `${min}:${sec}`;
     if (t <= 0) location.reload();
 }, 1000);
 </script>
