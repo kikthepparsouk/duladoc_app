@@ -6,6 +6,9 @@
 
   <div class="page-title" style="color: #ddd;">⚙️ ລາຍໄດ້ຂອງລະບົບ</div>
   <div class="page-subtitle" style="color: #ddd;">ພາບລວມຄ່າທຳນຽມ ແລະ ຍອດຂາຍທັງໝົດ</div>
+  <div style="font-size:12px; color:var(--text-muted); text-align:right; margin-bottom:8px;">
+    🔄 ອັບເດດໃນ <span id="countdown">01:00</span>ນາທີ
+</div>
 
   <!-- Stats -->
   <div class="stats-grid">
@@ -428,5 +431,18 @@
     }
   }
 </style>
+
+
+
+<script>
+let t = 60; // 3 ນາທີ = 180 ວິນາທີ
+setInterval(() => {
+    t--;
+    const min = String(Math.floor(t / 60)).padStart(2, '0');
+    const sec = String(t % 60).padStart(2, '0');
+    document.getElementById('countdown').textContent = `${min}:${sec}`;
+    if (t <= 0) location.reload();
+}, 1000);
+</script>
 
 {% endblock %}
