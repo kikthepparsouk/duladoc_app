@@ -59,7 +59,7 @@ class DocumentAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         if obj.file:
             ext = obj.file.name.split('.')[-1].lower()
-            if ext not in ['pdf', 'doc', 'docx', 'ppt', 'txt', 'pptx', 'pot', 'potx', 'xls', 'xlsx', 'pps', 'ppsx']:
+            if ext not in ['pdf', 'doc', 'docx', 'ppt', 'txt', 'pptx', 'pot', 'potx', 'xls', 'xlsx', 'pps', 'ppsx','pub']:
                 raise ValidationError('Only PDF, DOC, DOCX, PPT, TXT, PPTX, POT, POTX, XLS, XLSX, PPS or PPSX files are allowed.')
         super().save_model(request, obj, form, change)
  
