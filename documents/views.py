@@ -19,7 +19,7 @@ from django.contrib.auth.decorators import login_required
 import mimetypes
 
 # ✅ Allowed file extensions and MIME types for upload
-ALLOWED_EXTENSIONS = {'pdf', 'docx', 'pptx', 'xlsx'}
+ALLOWED_EXTENSIONS = {'pdf', 'docx', 'pptx', 'xlsx','pub'}
 ALLOWED_MIMETYPES = {
     'application/pdf',
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document',  # docx
