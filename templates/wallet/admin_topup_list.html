@@ -6,6 +6,9 @@
 
   <div class="page-title" style="color: #fff;">⚙️ ຈັດການຄຳຂໍຕື່ມເງິນ</div>
   <div class="page-subtitle" style="color: #fff;">ກວດສອບສະລິບ ແລະ ອະນຸມັດການຕື່ມເງິນຂອງລູກຄ້າ</div>
+  <div style="font-size:12px; color:var(--text-muted); text-align:right; margin-bottom:8px;">
+    🔄 ອັບເດດໃນ <span id="countdown">3</span> ນາທີ
+</div>
 
   <!-- Pending -->
   <div class="card" style="margin-bottom:24px;">
@@ -138,4 +141,13 @@
 
   </div>
 </div>
+
+
+<script>
+let t = 30;
+setInterval(() => {
+    document.getElementById('countdown').textContent = --t;
+    if (t <= 0) location.reload();
+}, 1000);
+</script>
 {% endblock %}
