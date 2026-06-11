@@ -56,12 +56,12 @@ class DocumentAdmin(admin.ModelAdmin):
     readonly_fields = ['preview_count', 'downloads']
     search_fields = ('title', 'description', 'seller__username')
 
-    def save_model(self, request, obj, form, change):
-        if obj.file:
-            ext = obj.file.name.split('.')[-1].lower()
-            if ext not in ['pdf', 'doc', 'docx', 'ppt', 'txt', 'pptx', 'pot', 'potx', 'xls', 'xlsx', 'pps', 'ppsx','pub']:
-                raise ValidationError('Only PDF, DOC, DOCX, PPT, TXT, PPTX, POT, POTX, XLS, XLSX, PPS or PPSX files are allowed.')
-        super().save_model(request, obj, form, change)
+    # def save_model(self, request, obj, form, change):
+    #     if obj.file:
+    #         ext = obj.file.name.split('.')[-1].lower()
+    #         if ext not in ['pdf', 'doc', 'docx', 'ppt', 'txt', 'pptx', 'pot', 'potx', 'xls', 'xlsx', 'pps', 'ppsx','pub']:
+    #             raise ValidationError('Only PDF, DOC, DOCX, PPT, TXT, PPTX, POT, POTX, XLS, XLSX, PPS or PPSX files are allowed.')
+    #     super().save_model(request, obj, form, change)
  
 
 @admin.register(HeroSlider)
