@@ -498,7 +498,7 @@ Duladoc - Your Trusted Document Management Solution
                 {% for banner in small_banner %}
                 <div class="col-lg-4 col-md-6">
                     <div class="banner-img wow fadeIn animated">
-                        <img loading="lazy" src="{{ banner.image.url }}" alt="{{ banner.title }}">
+                        <img loading="lazy" src="{{ banner.image.url }}" alt="{{ banner.title }}" style="min-width: 600px; max-height: 255px; max-width: 600px; max-height: 255px;">
                         <div class="banner-text">
                             <span>{{ banner.title }}</span>
                             <h4>{{ banner.subtitle_one }}<br>{{ banner.subtitle_two }}</h4>
