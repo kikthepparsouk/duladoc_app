@@ -314,7 +314,7 @@ Duladoc - Your Trusted Document Management Solution
                             style="font-family: 'phetsarath ot', sans-serif;">ໝວດໝູ່ຍອດນິຍົມ</h4>
                         <ul class="categories">
                             {% for category in popular_categories %}
-                            <li>
+                            <li style="font-family: phetsarath ot;">
                                 <a href="{% url 'doc_by_category' category.id %}"
                                 {% if request.resolver_match.url_name == 'doc_by_category' and request.resolver_match.kwargs.id == category.id %}
                                 class="active"
