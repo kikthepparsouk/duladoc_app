@@ -42,9 +42,9 @@ class SmallBanner(models.Model):
         return self.title
 
 def validate_file_size(value):
-    limit = 20 * 1024 * 1024  # 20 MB
+    limit = 100 * 1024 * 1024  # 20 MB
     if value.size > limit:
-        raise ValidationError('File too large. Max size is 20MB.')
+        raise ValidationError('File too large. Max size is 100MB.')
 
 
 class Document(models.Model):
