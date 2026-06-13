@@ -80,17 +80,17 @@ def homepage(request):
     featured = Document.objects.filter(
         is_featured_book=True,
         is_active=True
-    ).select_related('seller', 'category').order_by('-created_at')[:10]
+    ).select_related('seller', 'category').order_by('-created_at')[:12]
 
     popular = Document.objects.filter(
         is_popular_book=True,
         is_active=True
-    ).select_related('seller', 'category').order_by('-created_at')[:10]
+    ).select_related('seller', 'category').order_by('-created_at')[:12]
 
     new_docs = Document.objects.filter(
         is_new_book=True,
         is_active=True
-    ).select_related('seller', 'category').order_by('-created_at')[:10]
+    ).select_related('seller', 'category').order_by('-created_at')[:12]
     
     # Banner sections
     banner = Banner.objects.filter(is_active=True).first()
