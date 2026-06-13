@@ -90,7 +90,7 @@ def homepage(request):
     new_docs = Document.objects.filter(
         is_new_book=True,
         is_active=True
-    ).select_related('seller', 'category').order_by('-created_at')[:13]
+    ).select_related('seller', 'category').order_by('-created_at')[:12]
     
     # Banner sections
     banner = Banner.objects.filter(is_active=True).first()
