@@ -26,7 +26,7 @@ ALLOWED_MIMETYPES = {
     'application/vnd.openxmlformats-officedocument.presentationml.presentation',  # pptx
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',  # xlsx
 }
-MAX_FILE_SIZE = 20 * 1024 * 1024  # Keep view validation aligned with the model limit.
+MAX_FILE_SIZE = 100 * 1024 * 1024  # Keep view validation aligned with the model limit.
 
 def validate_file_upload(file_obj, max_size=MAX_FILE_SIZE):
     """
